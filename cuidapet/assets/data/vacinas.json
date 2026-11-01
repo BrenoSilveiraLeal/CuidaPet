@@ -1,0 +1,305 @@
+{
+  "version": "2026.11",
+  "updated": "2026-11-01",
+  "disclaimer": "Calendário de referência montado a partir das diretrizes citadas. A indicação final, o produto e as datas dependem do histórico, da região e da avaliação do médico-veterinário.",
+  "fields": {
+    "ages": "Idade (em semanas) de cada dose do esquema inicial de filhote. [0] = primeiro dia de vida.",
+    "adultDoses": "Doses do esquema inicial quando o animal começa já adulto.",
+    "gap": "Dias entre as doses do esquema de adulto.",
+    "interval": "Dias até cada reforço depois do esquema inicial. null = dose única.",
+    "level": "obrigatoria | essencial | recomendada | opcional | regional",
+    "onlySex": "Só vale para este sexo (ex.: brucelose em fêmeas bovinas).",
+    "onlyBreeds": "Só vale para estas raças/tipos."
+  },
+  "sources": {
+    "wsava-caes": { "label": "WSAVA · Diretrizes de vacinação 2024 (cães)", "url": "https://wsava.org/wp-content/uploads/2025/11/WSAVA_VaccinesTable1_A3_POR-Dogs.pdf" },
+    "wsava-gatos": { "label": "WSAVA · Diretrizes de vacinação 2024 (gatos)", "url": "https://wsava.org/wp-content/uploads/2025/11/WSAVA_VaccinesTable2_A3_POR-Cats.pdf" },
+    "pratica-br": { "label": "Calendário usual em clínicas no Brasil (reforço anual)" },
+    "mapa-pnse": { "label": "MAPA · Programa Nacional de Sanidade dos Equídeos (AIE e Mormo para a GTA)" },
+    "mapa-pncrh": { "label": "MAPA · Programa Nacional de Controle da Raiva dos Herbívoros" },
+    "mapa-pncebt": { "label": "MAPA · Programa Nacional de Controle e Erradicação da Brucelose e Tuberculose" },
+    "mapa-aftosa": { "label": "MAPA · Brasil livre de febre aftosa sem vacinação: a vacina não é mais aplicada" },
+    "embrapa-pequenos": { "label": "Embrapa · Manejo sanitário de caprinos e ovinos" },
+    "embrapa-aves": { "label": "Embrapa Suínos e Aves · Sanidade de galinhas de criação" },
+    "embrapa-suinos": { "label": "Embrapa Suínos e Aves · Programa vacinal de suínos" },
+    "exoticos": { "label": "Medicina de animais selvagens e exóticos (check-ups e exames de rotina)" }
+  },
+  "species": {
+    "cachorro": {
+      "sources": ["wsava-caes"],
+      "items": [
+        { "key": "v10", "name": "Essencial: cinomose, adenovírus e parvovírus (V8/V10)", "kind": "vacina", "level": "essencial", "ages": [8, 12, 16, 26], "adultDoses": 1, "gap": 28, "interval": 1095,
+          "desc": "Vacina essencial da WSAVA (CDV, CAV-2 e CPV-2). Filhote: a cada 2–4 semanas até 16 semanas ou mais e revacinação com 26 semanas; adulto sem histórico: 1 dose. Depois, reforço não mais que a cada 3 anos. No Brasil ela costuma vir na V8/V10, que também tem leptospirose (reforço anual)." },
+        { "key": "raiva", "name": "Raiva", "kind": "vacina", "level": "obrigatoria", "ages": [12], "adultDoses": 1, "interval": 365,
+          "desc": "Essencial pela WSAVA onde a raiva existe ou a lei exige. No Brasil é obrigatória: dose única a partir de 12 semanas e reforço anual, também aplicada nas campanhas públicas." },
+        { "key": "lepto", "name": "Leptospirose", "kind": "vacina", "level": "recomendada", "ages": [8, 12], "adultDoses": 2, "gap": 28, "interval": 365,
+          "desc": "Não essencial na WSAVA, mas indicada onde a doença ocorre (como em boa parte do Brasil). 2 doses com 2–4 semanas de intervalo e reforço anual. Costuma vir junto na V8/V10." },
+        { "key": "gripe", "name": "Tosse dos canis (Bordetella + parainfluenza)", "kind": "vacina", "level": "recomendada", "ages": [8, 12], "adultDoses": 2, "gap": 28, "interval": 365,
+          "desc": "Não essencial na WSAVA. Indicada para quem frequenta creche, hotel, banho e tosa ou convive com muitos cães. A versão intranasal/oral pode ser de dose única." },
+        { "key": "influenza", "name": "Influenza canina (CIV)", "kind": "vacina", "level": "opcional", "ages": [8, 11], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "Não essencial na WSAVA. Só onde há circulação do vírus da gripe canina." },
+        { "key": "leish", "name": "Leishmaniose", "kind": "vacina", "level": "regional", "ages": [26, 29, 32], "adultDoses": 3, "gap": 21, "interval": 365,
+          "desc": "Não essencial na WSAVA; para áreas onde a leishmaniose visceral ocorre. A partir de 6 meses, com teste negativo antes da 1ª dose. Não substitui coleira ou repelente contra o mosquito-palha." },
+        { "key": "lyme", "name": "Doença de Lyme (Borrelia)", "kind": "vacina", "level": "opcional", "ages": [12, 16], "adultDoses": 2, "gap": 28, "interval": 365,
+          "desc": "Não essencial na WSAVA. Só para cães em regiões com carrapatos transmissores da Borrelia; pouco usada no Brasil." },
+        { "key": "giardia", "name": "Giardíase", "kind": "vacina", "level": "naorecomendada", "ages": [8, 11], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "A WSAVA não recomenda: há pouca evidência de proteção. Prefira higiene, vermífugo e exame de fezes." },
+        { "key": "corona", "name": "Coronavírus canino (CCoV)", "kind": "vacina", "level": "naorecomendada", "ages": [8, 11], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "A WSAVA não recomenda: a doença é leve e não há prova de que a vacina proteja. Aparece em algumas vacinas polivalentes." }
+      ]
+    },
+    "gato": {
+      "sources": ["wsava-gatos"],
+      "items": [
+        { "key": "v4", "name": "Essencial: panleucopenia, herpesvírus e calicivírus (V3/V4/V5)", "kind": "vacina", "level": "essencial", "ages": [8, 12, 16, 26], "adultDoses": 2, "gap": 28, "interval": 1095,
+          "desc": "Vacina essencial da WSAVA (FPV, FHV-1 e FCV). Filhote: a cada 2–4 semanas até 16 semanas ou mais e revacinação com 26 semanas; adulto sem histórico: 2 doses. Depois, a cada 3 anos para gatos de baixo risco (gatos de alto risco, como os de gatil ou com acesso à rua, podem precisar de reforço anual para herpes e calicivírus)." },
+        { "key": "raiva", "name": "Raiva", "kind": "vacina", "level": "obrigatoria", "ages": [12], "adultDoses": 1, "interval": 365,
+          "desc": "Essencial pela WSAVA onde a raiva existe ou a lei exige. No Brasil é obrigatória: dose única a partir de 12 semanas e reforço anual." },
+        { "key": "felv", "name": "Leucemia felina (FeLV)", "kind": "vacina", "level": "recomendada", "ages": [8, 12], "adultDoses": 2, "gap": 28, "interval": 730,
+          "desc": "A WSAVA considera essencial para gatos com menos de 1 ano onde a FeLV é comum (caso do Brasil) e não essencial para adultos sem risco. Teste antes da 1ª dose; reforço 1 ano depois e então a cada 2–3 anos. Vem na V5." },
+        { "key": "clamidia", "name": "Clamidiose (Chlamydia felis)", "kind": "vacina", "level": "opcional", "ages": [9, 12], "adultDoses": 2, "gap": 28, "interval": 365,
+          "desc": "Não essencial na WSAVA. Para casas com muitos gatos e infecção confirmada. Vem na V4 e na V5." },
+        { "key": "bordetella", "name": "Bordetella bronchiseptica", "kind": "vacina", "level": "opcional", "ages": [8], "adultDoses": 1, "interval": 365,
+          "desc": "Não essencial na WSAVA. Só em gatis ou abrigos com surto confirmado." },
+        { "key": "pif", "name": "Peritonite infecciosa felina (PIF)", "kind": "vacina", "level": "naorecomendada", "ages": [16], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "A WSAVA não recomenda: a proteção é incerta. Não é vendida no Brasil." }
+      ]
+    },
+    "coelho": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up e avaliação dentária", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Os dentes do coelho crescem a vida toda. A consulta anual previne má oclusão e abscessos." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [8], "interval": 180,
+          "desc": "Pesquisa de vermes e coccídios nas fezes." },
+        { "key": "rhd", "name": "Doença hemorrágica viral (RHDV)", "kind": "vacina", "level": "opcional", "ages": [5], "interval": 365,
+          "desc": "Vacina usada na Europa. Hoje não há vacina registrada no Brasil; registre aqui se o coelho foi vacinado fora do país." },
+        { "key": "mixo", "name": "Mixomatose", "kind": "vacina", "level": "opcional", "ages": [5], "interval": 365,
+          "desc": "Vacina usada na Europa. Hoje não há vacina registrada no Brasil; proteja o coelho de mosquitos e pulgas." }
+      ]
+    },
+    "hamster": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [4], "interval": 365,
+          "desc": "Roedores pequenos não têm vacinas. O check-up detecta tumores e problemas de dentes e de pele no início." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [4], "interval": 180,
+          "desc": "Pesquisa de vermes e protozoários nas fezes." }
+      ]
+    },
+    "roedor": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [5], "interval": 365,
+          "desc": "Ratos, camundongos e gerbils não têm vacinas. O check-up avalia dentes, pele, peso e respiração (doenças respiratórias são comuns em ratos)." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [5], "interval": 180,
+          "desc": "Pesquisa de vermes, ácaros e protozoários." }
+      ]
+    },
+    "chinchila": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up e avaliação dentária", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Chinchilas não têm vacinas. Dentes que crescem demais são o problema mais comum da espécie." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [8], "interval": 180,
+          "desc": "Pesquisa de giárdia e outros parasitas nas fezes." }
+      ]
+    },
+    "porquinho": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up e avaliação dentária", "kind": "consulta", "level": "essencial", "ages": [4], "interval": 365,
+          "desc": "Avalia dentes, pele e peso. Porquinhos escondem sinais de dor e precisam de acompanhamento." },
+        { "key": "vitc", "name": "Avaliação nutricional (vitamina C)", "kind": "consulta", "level": "recomendada", "ages": [4], "interval": 365,
+          "desc": "Porquinhos-da-índia não produzem vitamina C. A avaliação previne escorbuto e problemas nas articulações." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [4], "interval": 180,
+          "desc": "Pesquisa de vermes, ácaros e protozoários." }
+      ]
+    },
+    "furao": {
+      "sources": ["exoticos", "pratica-br"],
+      "items": [
+        { "key": "cinomose", "name": "Cinomose", "kind": "vacina", "level": "essencial", "ages": [8, 11, 14], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "A cinomose é quase sempre fatal em furões. Usa-se vacina recomendada pelo veterinário para a espécie." },
+        { "key": "raiva", "name": "Antirrábica", "kind": "vacina", "level": "recomendada", "ages": [12], "interval": 365,
+          "desc": "Recomendada para todos os furões, principalmente os que passeiam ao ar livre." },
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Avalia glândulas adrenais e insulinoma, doenças comuns em furões a partir dos 3 anos." }
+      ]
+    },
+    "passaro": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up com veterinário de aves", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Aves escondem sinais de doença. A consulta anual é a principal prevenção." },
+        { "key": "parasito", "name": "Exame de fezes", "kind": "exame", "level": "recomendada", "ages": [8], "interval": 180,
+          "desc": "Pesquisa de vermes, giárdia e leveduras." },
+        { "key": "psitacose", "name": "Exame de psitacose (clamídia)", "kind": "exame", "level": "recomendada", "ages": [12], "interval": null,
+          "onlyBreeds": ["Calopsita", "Periquito-australiano", "Papagaio", "Agapornis", "Arara", "Cacatua", "Ring-neck", "Rosela"],
+          "desc": "Indicado ao adquirir papagaios, calopsitas e outros psitacídeos. A clamidiose pode passar para pessoas." }
+      ]
+    },
+    "galinha": {
+      "sources": ["embrapa-aves"],
+      "items": [
+        { "key": "marek", "name": "Doença de Marek", "kind": "vacina", "level": "essencial", "ages": [0], "interval": null,
+          "desc": "Aplicada no primeiro dia de vida, geralmente ainda no incubatório. Dose única." },
+        { "key": "newcastle", "name": "Doença de Newcastle", "kind": "vacina", "level": "essencial", "ages": [1, 4], "adultDoses": 2, "gap": 21, "interval": 90,
+          "desc": "Doença de notificação obrigatória. Vacina na água ou no olho, com reforços a cada 3 meses em aves de postura." },
+        { "key": "gumboro", "name": "Gumboro", "kind": "vacina", "level": "recomendada", "ages": [2, 3], "interval": null,
+          "desc": "Protege a bolsa de Fabricius, órgão de defesa das aves jovens. Aplicada na água de bebida." },
+        { "key": "bouba", "name": "Bouba aviária", "kind": "vacina", "level": "recomendada", "ages": [4], "interval": 365,
+          "desc": "Punção na membrana da asa. Previne feridas na crista, barbela e boca causadas por poxvírus." }
+      ]
+    },
+    "pato": {
+      "sources": ["embrapa-aves", "exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Avalia penas, patas, peso e respiração." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [8], "interval": 180,
+          "desc": "Aves aquáticas com acesso a lagos pegam vermes com facilidade." }
+      ]
+    },
+    "jabuti": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [0], "interval": 365,
+          "desc": "Avalia casco, bico, unhas, peso e hidratação. Ideal antes e depois do período de menor atividade no inverno." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "essencial", "ages": [0], "interval": 180,
+          "desc": "Parasitas são a causa mais comum de doença em répteis." }
+      ]
+    },
+    "tartaruga": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [0], "interval": 365,
+          "desc": "Avalia casco, olhos, pele e flutuação. Olhos inchados costumam indicar falta de vitamina A ou água ruim." },
+        { "key": "agua", "name": "Teste da água (pH, amônia, nitrito)", "kind": "exame", "level": "essencial", "ages": [0], "interval": 30,
+          "desc": "A maior parte das doenças de tartarugas aquáticas vem da qualidade da água." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "recomendada", "ages": [0], "interval": 180,
+          "desc": "Pesquisa de vermes e protozoários nas fezes." }
+      ]
+    },
+    "cobra": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [0], "interval": 365,
+          "desc": "Avalia muda, peso, boca e respiração. Problemas respiratórios são comuns quando a temperatura do terrário cai." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "essencial", "ages": [0], "interval": 180,
+          "desc": "Parasitas são a causa mais comum de doença em répteis." }
+      ]
+    },
+    "iguana": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Check-up anual", "kind": "consulta", "level": "essencial", "ages": [0], "interval": 365,
+          "desc": "Avalia pele, unhas, peso e comportamento. Lagartos estressados param de comer." },
+        { "key": "calcio", "name": "Exame de sangue (cálcio e fósforo)", "kind": "exame", "level": "recomendada", "ages": [12], "interval": 365,
+          "desc": "Previne a doença metabólica óssea, comum em lagartos com pouca luz UVB ou dieta pobre em cálcio." },
+        { "key": "parasito", "name": "Exame parasitológico", "kind": "exame", "level": "essencial", "ages": [0], "interval": 180,
+          "desc": "Parasitas são a causa mais comum de doença em répteis." }
+      ]
+    },
+    "anfibio": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "agua", "name": "Teste da água (pH, amônia, nitrito)", "kind": "exame", "level": "essencial", "ages": [0], "interval": 30,
+          "desc": "Anfíbios absorvem tudo pela pele: água e substrato limpos são a principal prevenção." },
+        { "key": "checkup", "name": "Avaliação com veterinário de exóticos", "kind": "consulta", "level": "recomendada", "ages": [0], "interval": 365,
+          "desc": "Indicada ao notar pele opaca, inchaço, vermelhidão ou falta de apetite." }
+      ]
+    },
+    "aranha": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "checkup", "name": "Avaliação com veterinário de exóticos", "kind": "consulta", "level": "opcional", "ages": [0], "interval": 365,
+          "desc": "Aranhas não têm vacinas. Procure um veterinário se houver dificuldade na muda, perda de patas ou parasitas (ácaros)." }
+      ]
+    },
+    "peixe": {
+      "sources": ["exoticos"],
+      "items": [
+        { "key": "agua", "name": "Teste da água (pH, amônia, nitrito)", "kind": "exame", "level": "essencial", "ages": [0], "interval": 30,
+          "desc": "A maior parte das doenças em peixes vem da qualidade da água. Faça o teste todo mês e anote os resultados." },
+        { "key": "checkup", "name": "Avaliação com veterinário de peixes", "kind": "consulta", "level": "recomendada", "ages": [0], "interval": 365,
+          "desc": "Indicada para aquários com espécies sensíveis ou ao notar manchas, nadadeiras fechadas ou falta de apetite." }
+      ]
+    },
+    "cavalo": {
+      "sources": ["mapa-pnse", "mapa-pncrh", "pratica-br"],
+      "items": [
+        { "key": "tetano", "name": "Tétano", "kind": "vacina", "level": "essencial", "ages": [20, 24], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Cavalos são muito sensíveis à toxina tetânica, presente no solo e em ferimentos." },
+        { "key": "encef", "name": "Encefalomielite equina", "kind": "vacina", "level": "essencial", "ages": [20, 24], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Protege contra as encefalomielites Leste e Oeste, transmitidas por mosquitos." },
+        { "key": "influenza", "name": "Influenza equina", "kind": "vacina", "level": "essencial", "ages": [26, 30], "adultDoses": 2, "gap": 30, "interval": 180,
+          "desc": "Gripe equina, muito contagiosa em haras, provas e eventos. Exigida em muitas competições." },
+        { "key": "raiva", "name": "Raiva dos herbívoros", "kind": "vacina", "level": "regional", "ages": [16, 20], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Transmitida por morcegos hematófagos. Obrigatória nas áreas de risco definidas pelo serviço veterinário do estado." },
+        { "key": "herpes", "name": "Rinopneumonite (herpesvírus equino)", "kind": "vacina", "level": "recomendada", "ages": [26, 30], "adultDoses": 2, "gap": 30, "interval": 180,
+          "desc": "Doença respiratória e causa de aborto. Éguas prenhes recebem doses extras no 5º, 7º e 9º mês de gestação." },
+        { "key": "garrotilho", "name": "Garrotilho (adenite equina)", "kind": "vacina", "level": "opcional", "ages": [26, 29], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "Indicada em haras com histórico da doença ou muito trânsito de animais." },
+        { "key": "aie", "name": "Exame de anemia infecciosa (AIE)", "kind": "exame", "level": "obrigatoria", "ages": [26], "interval": 60,
+          "desc": "Obrigatório para emitir a GTA (transporte), participar de eventos e vender. Validade usual de 60 dias (pode variar por estado)." },
+        { "key": "mormo", "name": "Exame de mormo", "kind": "exame", "level": "obrigatoria", "ages": [26], "interval": 60,
+          "desc": "Exigido junto com o AIE para a GTA, leilões e competições. Validade usual de 60 dias." }
+      ]
+    },
+    "bovino": {
+      "sources": ["mapa-pncebt", "mapa-pncrh", "mapa-aftosa", "pratica-br"],
+      "items": [
+        { "key": "brucelose", "name": "Brucelose (B19 ou RB51)", "kind": "vacina", "level": "obrigatoria", "ages": [13], "interval": null, "onlySex": "Fêmea",
+          "desc": "Obrigatória para fêmeas de 3 a 8 meses, aplicada por veterinário cadastrado. Dose única, com comprovante para o serviço veterinário oficial." },
+        { "key": "clostridioses", "name": "Clostridioses (carbúnculo e outras)", "kind": "vacina", "level": "essencial", "ages": [12, 16], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Vacina polivalente contra carbúnculo sintomático, gangrena gasosa, enterotoxemia e botulismo (conforme o produto)." },
+        { "key": "raiva", "name": "Raiva dos herbívoros", "kind": "vacina", "level": "regional", "ages": [12, 16], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Obrigatória nas áreas de risco definidas pelo serviço veterinário do estado. Transmitida por morcegos hematófagos." },
+        { "key": "lepto", "name": "Leptospirose", "kind": "vacina", "level": "recomendada", "ages": [16, 20], "adultDoses": 2, "gap": 30, "interval": 180,
+          "desc": "Causa aborto e queda na produção de leite. Reforço a cada 6 meses." },
+        { "key": "ibr", "name": "IBR / BVD (reprodutivas)", "kind": "vacina", "level": "opcional", "ages": [26, 30], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Para rebanhos de reprodução. Aplicar antes da estação de monta." }
+      ]
+    },
+    "cabra": {
+      "sources": ["embrapa-pequenos", "mapa-pncrh"],
+      "items": [
+        { "key": "clostridioses", "name": "Clostridioses (polivalente)", "kind": "vacina", "level": "essencial", "ages": [8, 12], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Enterotoxemia e tétano são as principais causas de morte súbita em cabritos. Fêmeas prenhes recebem reforço cerca de 30 dias antes do parto." },
+        { "key": "raiva", "name": "Raiva dos herbívoros", "kind": "vacina", "level": "regional", "ages": [12, 16], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Obrigatória nas áreas de risco definidas pelo serviço veterinário do estado." },
+        { "key": "linfadenite", "name": "Linfadenite caseosa", "kind": "vacina", "level": "opcional", "ages": [12, 16], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "Reduz os abscessos (caroços) nos gânglios. Indicada em rebanhos com histórico da doença." },
+        { "key": "opg", "name": "Exame de fezes (OPG)", "kind": "exame", "level": "essencial", "ages": [8], "interval": 60,
+          "desc": "Verminose é o maior problema de saúde de cabras. O OPG mostra quando vermifugar e evita resistência ao remédio." }
+      ]
+    },
+    "ovelha": {
+      "sources": ["embrapa-pequenos", "mapa-pncrh"],
+      "items": [
+        { "key": "clostridioses", "name": "Clostridioses (polivalente)", "kind": "vacina", "level": "essencial", "ages": [8, 12], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Enterotoxemia e tétano são as principais causas de morte súbita em cordeiros. Ovelhas prenhes recebem reforço cerca de 30 dias antes do parto." },
+        { "key": "raiva", "name": "Raiva dos herbívoros", "kind": "vacina", "level": "regional", "ages": [12, 16], "adultDoses": 2, "gap": 30, "interval": 365,
+          "desc": "Obrigatória nas áreas de risco definidas pelo serviço veterinário do estado." },
+        { "key": "linfadenite", "name": "Linfadenite caseosa", "kind": "vacina", "level": "opcional", "ages": [12, 16], "adultDoses": 2, "gap": 21, "interval": 365,
+          "desc": "Reduz os abscessos (caroços) nos gânglios. Indicada em rebanhos com histórico da doença." },
+        { "key": "opg", "name": "Exame de fezes (OPG)", "kind": "exame", "level": "essencial", "ages": [8], "interval": 60,
+          "desc": "Verminose (principalmente Haemonchus) é o maior problema de saúde de ovinos. O OPG orienta a vermifugação." }
+      ]
+    },
+    "porco": {
+      "sources": ["embrapa-suinos", "exoticos"],
+      "items": [
+        { "key": "circo", "name": "Circovirose", "kind": "vacina", "level": "recomendada", "ages": [3], "interval": null,
+          "desc": "Dose única nos leitões, a partir de 3 semanas." },
+        { "key": "erisipela", "name": "Erisipela suína", "kind": "vacina", "level": "recomendada", "ages": [8, 11], "adultDoses": 2, "gap": 21, "interval": 180,
+          "desc": "Doença de pele e articulações. Reforço a cada 6 meses." },
+        { "key": "parvo", "name": "Parvovirose + leptospirose (reprodutiva)", "kind": "vacina", "level": "opcional", "ages": [26, 29], "adultDoses": 2, "gap": 21, "interval": 180, "onlySex": "Fêmea",
+          "desc": "Para fêmeas que vão reproduzir: evita abortos e leitões natimortos." },
+        { "key": "checkup", "name": "Check-up anual (cascos e dentes)", "kind": "consulta", "level": "essencial", "ages": [8], "interval": 365,
+          "desc": "Mini porcos precisam de casqueamento e controle de peso. Machos têm presas que crescem." }
+      ]
+    }
+  }
+}
