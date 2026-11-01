@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>CuidaPet - Carteira de saúde, lembretes e loja para o seu pet</title>
+  <meta name="description" content="Crie seu perfil, cadastre todos os seus pets e acompanhe vacinas, consultas, lembretes e compras em um só lugar. No computador e no celular.">
+  <meta name="theme-color" content="#0284c7">
+
+  <!-- App instalável -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="CuidaPet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="assets/css/base.css">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <div class="shell" id="device">
+    <!-- Menu lateral (computador) -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>
+
+    <div class="main">
+      <!-- Barra superior (computador) -->
+      <header class="desk-top" id="deskTop"></header>
+
+      <main class="screen" id="screen" tabindex="-1"></main>
+
+      <!-- Abas inferiores (celular) -->
+      <nav class="tabbar" id="tabbar" aria-label="Navegação principal"></nav>
+    </div>
+
+    <div class="sheet-backdrop" id="sheetBackdrop"></div>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-hidden="true"></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <clipPath id="appHeroMask" clipPathUnits="objectBoundingBox">
+        <path d="M 0 0 L 1 0 L 1 0.86 L 0.96 0.86
+                 C 0.89 0.86, 0.89 0.93, 0.85 0.965
+                 C 0.82 0.99, 0.79 1, 0.74 1
+                 L 0.26 1
+                 C 0.21 1, 0.18 0.99, 0.15 0.965
+                 C 0.11 0.93, 0.11 0.86, 0.04 0.86
+                 L 0 0.86 Z" />
+      </clipPath>
+      <clipPath id="heroCardMask" clipPathUnits="objectBoundingBox">
+        <path d="M 0 0 L 1 0 L 1 0.85 L 0.73 0.85 C 0.69 0.85, 0.665 0.89, 0.66 0.94 C 0.655 0.98, 0.63 0.99, 0.60 0.99
+                 L 0.40 0.99 C 0.37 0.99, 0.345 0.98, 0.34 0.94 C 0.335 0.89, 0.31 0.85, 0.27 0.85 L 0 0.85 Z" />
+      </clipPath>
+    </defs>
+  </svg>
+
+  <!-- Firebase (login com Google + banco de dados). Só é usado se assets/js/config.js estiver preenchido. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script src="assets/js/config.js"></script>
+  <script>window.CP_IMG_BASE = 'assets/img/';</script>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
