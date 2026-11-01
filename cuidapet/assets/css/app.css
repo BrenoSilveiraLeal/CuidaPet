@@ -258,6 +258,12 @@ button.row:active { transform: scale(0.98); }
 .row .r-main small { display: block; color: var(--text-muted); font-size: 0.78rem; margin-top: 2px; }
 .row .r-end { display: flex; align-items: center; gap: 6px; color: #94a3b8; }
 
+/* Carteira: nomes longos e selos não devem alargar os cartões no celular. */
+.vaccine-row { min-width: 0; }
+.vaccine-row .r-main { min-width: 0; }
+.vaccine-row .r-main strong { white-space: normal; overflow-wrap: anywhere; line-height: 1.3; }
+.vaccine-row .r-end { flex-shrink: 0; }
+
 .empty { text-align: center; padding: 30px 10px; color: var(--text-muted); }
 .empty img { width: 150px; margin: 0 auto 12px; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.18)); animation: floatMascot 3s ease-in-out infinite alternate; }
 .empty strong { display: block; color: var(--text-dark); font-size: 1.1rem; margin-bottom: 6px; }
@@ -892,7 +898,7 @@ a.row { text-decoration: none; color: inherit; }
   .side-badge.late { background: #ef4444; }
   .side-pets { padding: 14px; border-radius: 18px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); }
   .side-pets small { display: block; font-weight: 700; font-size: 0.76rem; opacity: 0.9; margin-bottom: 10px; }
-  .side-pets > div { display: grid; grid-template-columns: repeat(3, 44px); justify-content: start; gap: 8px; }
+  .side-pets > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-items: center; gap: 8px; }
   .side-pets button { width: 44px; height: 44px; display: grid; place-items: center; border: 2px solid transparent; border-radius: 50%; padding: 0; background: none; transition: transform 0.2s var(--ease-bounce); }
   .side-pets button:hover { transform: scale(1.08); }
   .side-pets button.on { border-color: #fff; }

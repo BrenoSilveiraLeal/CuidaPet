@@ -265,7 +265,7 @@
 
   const levelTag = (v) => `<span class="lv ${C.levels[v.level].cls}">${C.levels[v.level].label}</span>`;
   const vrow = ({ v, st, label }) => `
-      <button class="row" data-go="#/vacina/${v.key}">
+      <button class="row vaccine-row" data-go="#/vacina/${v.key}">
         <span class="r-ic ${st.cls}">${icon(kindIcon(v), 22)}</span>
         <span class="r-main"><strong>${v.name}</strong><small>${label}</small><small class="lv-line">${levelTag(v)}</small></span>
         <span class="r-end"><span class="status ${st.cls}">${st.label}</span>${icon('right', 18)}</span>
