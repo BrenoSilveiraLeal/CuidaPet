@@ -1,5 +1,5 @@
 /* Service worker do CuidaPet: deixa o app instalável e abrindo mesmo sem internet. */
-const CACHE = 'cuidapet-v12';
+const CACHE = 'cuidapet-v13';
 const CORE = [
   './',
   'index.html',
@@ -11,6 +11,8 @@ const CORE = [
   'assets/js/app.js',
   'assets/data/vacinas.json',
   'assets/img/hero.jpg',
+  'assets/img/boi.png',
+  'assets/img/bode.png',
   'assets/icons/icon-192.png',
 ];
 

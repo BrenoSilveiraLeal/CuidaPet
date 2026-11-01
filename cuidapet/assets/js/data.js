@@ -148,9 +148,10 @@
     cobra: { 'Corn snake': B('snake-corn') },
   };
   // Mascote do pet: raça + sexo (fêmeas usam a versão com óculos e coleira rosa)
+  const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png' };
   const breedImg = (sp, breed, sex) => {
     const src = (breedImages[sp] && breedImages[sp][breed]) || species[sp].img;
-    return female(sex) ? femaleImg(src) : src;
+    return female(sex) ? femaleImg(src) : (maleSpeciesImages[sp] || src);
   };
 
   const reminderTypes = {
