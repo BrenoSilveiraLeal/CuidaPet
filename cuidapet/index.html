@@ -6,6 +6,12 @@
   <title>CuidaPet - Carteira de saúde, lembretes e loja para o seu pet</title>
   <meta name="description" content="Crie seu perfil, cadastre todos os seus pets e acompanhe vacinas, consultas, lembretes e compras em um só lugar. No computador e no celular.">
   <meta name="theme-color" content="#0284c7">
+  <style>
+    #startupSplash{position:fixed;inset:0;z-index:99999;display:grid;place-content:center;justify-items:center;gap:12px;background:#0284c7;color:white;font:700 34px Fredoka,'Trebuchet MS',sans-serif;transition:opacity .2s ease}
+    #startupSplash .paws{font:26px sans-serif;letter-spacing:10px;opacity:.8}
+    #startupSplash.done{opacity:0;pointer-events:none}
+    @media(prefers-reduced-motion:reduce){#startupSplash{transition:none}}
+  </style>
 
   <!-- App instalável -->
   <link rel="manifest" href="manifest.webmanifest">
@@ -23,6 +29,7 @@
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
+  <div id="startupSplash" role="status" aria-label="Carregando CuidaPet"><span class="paws">🐾 🐾</span><span>CuidaPet</span></div>
   <div class="shell" id="device">
     <!-- Menu lateral (computador) -->
     <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>

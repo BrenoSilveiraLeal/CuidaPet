@@ -1130,8 +1130,9 @@
     <div class="view">
       ${topbar('Meu perfil')}
       <div class="profile-head">${userAvatar(84)}<strong>${esc(S.profile.name)}</strong><small>Tutor(a) de ${S.pets.length} ${S.pets.length === 1 ? 'pet' : 'pets'} · perfil de demonstração</small></div>
+      <label class="profile-photo-control">${icon('camera', 16)} ${S.profile.photo ? 'Trocar foto do tutor' : 'Adicionar foto do tutor'}<input type="file" accept="image/*" data-photo-user></label>
       <div class="sec-title" style="margin-top:0"><h2>Meus pets</h2><button class="link-btn" data-act="newPet">${icon('plus', 14)} Adicionar</button></div>
-      <div class="pet-switch" style="margin-top:0">${S.pets.map((x) => `<button data-go="#/pet/${x.id}">${avatar(x)}${esc(x.name)}</button>`).join('')}<button class="add" data-act="newPet" aria-label="Cadastrar pet"><span class="avatar">${icon('plus', 22)}</span>Novo</button></div>
+      <div class="pet-switch centered" style="margin-top:0">${S.pets.map((x) => `<button data-go="#/pet/${x.id}">${avatar(x)}${esc(x.name)}</button>`).join('')}<button class="add" data-act="newPet" aria-label="Cadastrar pet"><span class="avatar">${icon('plus', 22)}</span>Novo</button></div>
       <div class="sec-title"><h2>Dados pessoais</h2></div>
       <form data-form="perfil">
         ${field('Nome completo', `<input name="name" value="${esc(S.profile.name)}" autocomplete="name">`)}
@@ -1300,6 +1301,7 @@
     timers.forEach(clearInterval);
     timers = [];
     if (booting || bootError) {
+      if (bootError) document.getElementById('startupSplash')?.remove();
       screen.className = 'screen flush';
       screen.innerHTML = bootError
         ? `<div class="boot"><span class="boot-logo">CuidaPet</span><p class="muted-sm" style="max-width:320px;text-align:center">Não foi possível carregar a base de vacinas (${esc(bootError)}). Abra o site por um servidor (não direto do arquivo) e recarregue.</p></div>`
@@ -1307,6 +1309,8 @@
       document.body.classList.add('is-auth');
       return;
     }
+    const startupSplash = document.getElementById('startupSplash');
+    if (startupSplash) { startupSplash.classList.add('done'); setTimeout(() => startupSplash.remove(), 220); }
     let { name, args } = parse();
     if (!V[name]) name = 'home';
     if (!S.pets.length && NEEDS_PET.has(name)) name = 'semPet';
@@ -1834,7 +1838,7 @@
     if (el.dataset.modelCheck && ui.newPet) ui.newPet[el.dataset.modelCheck] = el.checked;
     if (el.dataset.bk === 'date' && ui.booking && el.value) { ui.booking.date = el.value; ui.booking.time = null; render(true); }
     if (el.dataset.setting) { S.settings[el.dataset.setting] = el.checked; save(); toast(el.checked ? 'Notificação ativada' : 'Notificação desativada'); }
-    if (el.hasAttribute('data-photo') && el.files && el.files[0]) {
+    if ((el.hasAttribute('data-photo') || el.hasAttribute('data-photo-user')) && el.files && el.files[0]) {
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
@@ -1844,8 +1848,9 @@
           c.width = c.height = size;
           const s = Math.min(img.width, img.height);
           c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-          ui.newPet.photo = c.toDataURL('image/jpeg', 0.82);
-          render(true);
+          const photo = c.toDataURL('image/jpeg', 0.82);
+          if (el.hasAttribute('data-photo-user')) { S.profile.photo = photo; save(); render(true); toast('Foto do tutor atualizada'); }
+          else { ui.newPet.photo = photo; render(true); }
         };
         img.src = reader.result;
       };
