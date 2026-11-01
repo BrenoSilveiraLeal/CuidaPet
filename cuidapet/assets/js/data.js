@@ -73,7 +73,7 @@
       'Tigre-d\'água', 'Cágado-de-barbicha', 'Muçuã', 'Outra']),
     cobra: S('cobra', 'Cobra', 'Cobras', 'snake.png', 'repteis', 'kg', 'da sua', '20 a 30 anos', [
       'Píton-real (Ball python)', 'Corn snake', 'Jiboia', 'King snake', 'Milk snake', 'Hognose', 'Gopher snake', 'Outra']),
-    iguana: S('iguana', 'Lagarto / iguana', 'Lagartos', 'iguana.png', 'repteis', 'kg', 'do seu', '10 a 20 anos', [
+    iguana: S('iguana', 'Lagarto / Iguana', 'Lagartos / Iguanas', 'iguana.png', 'repteis', 'kg', 'do seu', '10 a 20 anos', [
       'Iguana-verde', 'Pogona (Dragão-barbudo)', 'Gecko-leopardo', 'Gecko-de-crista', 'Teiú', 'Dragão-d\'água', 'Camaleão', 'Uromastyx', 'Outra']),
     anfibio: S('anfibio', 'Anfíbio', 'Anfíbios', 'frog.png', 'outros', 'g', 'do seu', '5 a 15 anos', [
       'Axolote', 'Sapo-boi (Pacman)', 'Perereca-de-olhos-vermelhos', 'Rã-touro', 'Salamandra', 'Outra']),
@@ -82,16 +82,16 @@
     peixe: S('peixe', 'Peixe', 'Peixes', 'fish.png', 'peixes', 'g', 'do seu', '2 a 20 anos', [
       'Kinguio', 'Acará-bandeira', 'Acará-disco', 'Barbo', 'Betta', 'Carpa', 'Cascudo', 'Ciclídeo africano', 'Coridora', 'Espada', 'Guppy', 'Molinésia', 'Neon', 'Oscar',
       'Paulistinha (Zebrafish)', 'Peixe-palhaço (marinho)', 'Platy', 'Tetra-negro', 'Tricogaster', 'Outra']),
-    cavalo: S('cavalo', 'Cavalo e égua', 'Cavalos e éguas', 'horse.png', 'equinos', 'kg', 'do seu', '25 a 30 anos', [
+    cavalo: S('cavalo', 'Cavalo / Égua', 'Cavalos / Éguas', 'horse.png', 'equinos', 'kg', 'do seu', '25 a 30 anos', [
       'Mangalarga Marchador', 'Andaluz', 'Appaloosa', 'Árabe', 'Brasileiro de Hipismo', 'Bretão', 'Campolina', 'Crioulo', 'Frísio', 'Lusitano', 'Mangalarga Paulista', 'Marajoara',
       'Paint Horse', 'Pampa', 'Pantaneiro', 'Percheron', 'Piquira', 'Pônei', 'Puro-Sangue Inglês', 'Quarto de Milha', 'Jumento', 'Muar (burro/mula)', 'Sem raça definida (SRD)', 'Outra']),
     porco: S('porco', 'Mini porco', 'Mini porcos', 'pig.png', 'fazenda', 'kg', 'do seu', '12 a 18 anos', [
       'Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Piau', 'Outra']),
-    cabra: S('cabra', 'Cabra e bode', 'Cabras e bodes', 'goat.png', 'fazenda', 'kg', 'da sua', '12 a 15 anos', [
+    cabra: S('cabra', 'Cabra / Bode', 'Cabras / Bodes', 'goat.png', 'fazenda', 'kg', 'da sua', '12 a 15 anos', [
       'Saanen', 'Anglo-nubiana', 'Boer', 'Canindé', 'Moxotó', 'Pigmeia', 'Toggenburg', 'Sem raça definida (SRD)', 'Outra']),
     ovelha: S('ovelha', 'Ovelha', 'Ovelhas', 'sheep.png', 'fazenda', 'kg', 'da sua', '10 a 12 anos', [
       'Santa Inês', 'Dorper', 'Lacaune', 'Merino', 'Morada Nova', 'Suffolk', 'Texel', 'Sem raça definida (SRD)', 'Outra']),
-    bovino: S('bovino', 'Boi / vaca', 'Bovinos', 'cow.png', 'fazenda', 'kg', 'do seu', '15 a 20 anos', [
+    bovino: S('bovino', 'Boi / Vaca', 'Bois / Vacas', 'cow.png', 'fazenda', 'kg', 'do seu', '15 a 20 anos', [
       'Nelore', 'Angus', 'Brahman', 'Gir', 'Girolando', 'Guzerá', 'Hereford', 'Holandesa', 'Jersey', 'Mini Jersey', 'Senepol', 'Tabapuã', 'Sem raça definida (SRD)', 'Outra']),
   };
   const speciesOrder = ['cachorro', 'gato', 'coelho', 'hamster', 'roedor', 'chinchila', 'porquinho', 'furao', 'passaro', 'galinha', 'pato', 'jabuti', 'tartaruga', 'cobra', 'iguana',

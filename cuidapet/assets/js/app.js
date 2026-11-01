@@ -1864,6 +1864,7 @@
   /* ------------------------------------------------------------ Início */
   // Abre direto no perfil base: carrega a base de vacinas (como uma API) e o que este navegador já salvou.
   const start = async () => {
+    const splashStartedAt = performance.now();
     render();
     try {
       await C.loadVaccines();
@@ -1878,6 +1879,8 @@
     S = saved && saved.version === STATE_VERSION ? saved : fresh(true);
     if (!S.pets.some((p) => p.id === S.active)) S.active = S.pets[0] ? S.pets[0].id : null;
     save();
+    const splashRemaining = 1000 - (performance.now() - splashStartedAt);
+    if (splashRemaining > 0) await new Promise((resolve) => setTimeout(resolve, splashRemaining));
     booting = false;
     render();
   };
