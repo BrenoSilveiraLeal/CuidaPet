@@ -82,12 +82,12 @@
     peixe: S('peixe', 'Peixe', 'Peixes', 'fish.png', 'peixes', 'g', 'do seu', '2 a 20 anos', [
       'Kinguio', 'Acará-bandeira', 'Acará-disco', 'Barbo', 'Betta', 'Carpa', 'Cascudo', 'Ciclídeo africano', 'Coridora', 'Espada', 'Guppy', 'Molinésia', 'Neon', 'Oscar',
       'Paulistinha (Zebrafish)', 'Peixe-palhaço (marinho)', 'Platy', 'Tetra-negro', 'Tricogaster', 'Outra']),
-    cavalo: S('cavalo', 'Cavalo', 'Cavalos', 'horse.png', 'equinos', 'kg', 'do seu', '25 a 30 anos', [
+    cavalo: S('cavalo', 'Cavalo e égua', 'Cavalos e éguas', 'horse.png', 'equinos', 'kg', 'do seu', '25 a 30 anos', [
       'Mangalarga Marchador', 'Andaluz', 'Appaloosa', 'Árabe', 'Brasileiro de Hipismo', 'Bretão', 'Campolina', 'Crioulo', 'Frísio', 'Lusitano', 'Mangalarga Paulista', 'Marajoara',
       'Paint Horse', 'Pampa', 'Pantaneiro', 'Percheron', 'Piquira', 'Pônei', 'Puro-Sangue Inglês', 'Quarto de Milha', 'Jumento', 'Muar (burro/mula)', 'Sem raça definida (SRD)', 'Outra']),
     porco: S('porco', 'Mini porco', 'Mini porcos', 'pig.png', 'fazenda', 'kg', 'do seu', '12 a 18 anos', [
       'Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Piau', 'Outra']),
-    cabra: S('cabra', 'Cabra', 'Cabras', 'goat.png', 'fazenda', 'kg', 'da sua', '12 a 15 anos', [
+    cabra: S('cabra', 'Cabra e bode', 'Cabras e bodes', 'goat.png', 'fazenda', 'kg', 'da sua', '12 a 15 anos', [
       'Saanen', 'Anglo-nubiana', 'Boer', 'Canindé', 'Moxotó', 'Pigmeia', 'Toggenburg', 'Sem raça definida (SRD)', 'Outra']),
     ovelha: S('ovelha', 'Ovelha', 'Ovelhas', 'sheep.png', 'fazenda', 'kg', 'da sua', '10 a 12 anos', [
       'Santa Inês', 'Dorper', 'Lacaune', 'Merino', 'Morada Nova', 'Suffolk', 'Texel', 'Sem raça definida (SRD)', 'Outra']),
