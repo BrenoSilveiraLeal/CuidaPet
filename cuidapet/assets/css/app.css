@@ -614,13 +614,12 @@ button.row:active { transform: scale(0.98); }
 .shop-for { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .shop-for small { color: var(--text-muted); font-weight: 600; font-size: 0.78rem; }
 
-.cats { display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px; padding: 2px 20px; scrollbar-width: none; }
-.cats::-webkit-scrollbar { display: none; }
+.cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 4px; margin: 0 0 16px; padding: 2px 0; }
 /* categorias centralizadas; se não couberem, a rolagem continua começando pela primeira */
 .cats button:first-child { margin-left: auto; }
 .cats button:last-child { margin-right: auto; }
-@media (min-width: 900px) { .cats { gap: 28px; } .cats button { width: 76px; } }
-.cats button { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 64px; border: 0; background: none; font-size: 0.72rem; font-weight: 700; }
+@media (min-width: 900px) { .cats { gap: 10px; } }
+.cats button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; border: 0; background: none; font-size: 0.72rem; font-weight: 700; text-align: center; }
 .cats .c-ic { width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 1px solid var(--line); color: var(--primary-blue-dark); transition: transform 0.25s var(--ease-bounce); }
 .cats button:active .c-ic { transform: scale(0.9); }
 .cats button:nth-child(5n+1) .c-ic { background: #fff7ed; color: #ea580c; }
