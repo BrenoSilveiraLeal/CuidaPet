@@ -1314,12 +1314,12 @@
       document.body.classList.add('startup-revealing');
       startupSplash.classList.add('done');
       document.getElementById('startupBrand')?.classList.add('docked');
-      setTimeout(() => document.body.classList.add('startup-sidebar-ready'), 1050);
+      setTimeout(() => document.body.classList.add('startup-sidebar-ready'), 1350);
       setTimeout(() => {
         startupSplash.remove();
         document.getElementById('startupBrand')?.remove();
         document.body.classList.remove('startup-revealing', 'startup-sidebar-ready');
-      }, 1900);
+      }, 2550);
     }
     let { name, args } = parse();
     if (!V[name]) name = 'home';
