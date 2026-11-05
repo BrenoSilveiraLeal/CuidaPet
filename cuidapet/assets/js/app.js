@@ -1310,7 +1310,17 @@
       return;
     }
     const startupSplash = document.getElementById('startupSplash');
-    if (startupSplash) { startupSplash.classList.add('done'); setTimeout(() => startupSplash.remove(), 220); }
+    if (startupSplash) {
+      document.body.classList.add('startup-revealing');
+      startupSplash.classList.add('done');
+      document.getElementById('startupBrand')?.classList.add('docked');
+      setTimeout(() => document.body.classList.add('startup-sidebar-ready'), 1050);
+      setTimeout(() => {
+        startupSplash.remove();
+        document.getElementById('startupBrand')?.remove();
+        document.body.classList.remove('startup-revealing', 'startup-sidebar-ready');
+      }, 1900);
+    }
     let { name, args } = parse();
     if (!V[name]) name = 'home';
     if (!S.pets.length && NEEDS_PET.has(name)) name = 'semPet';

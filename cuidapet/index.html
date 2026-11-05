@@ -8,12 +8,13 @@
   <meta name="theme-color" content="#0284c7">
   <link rel="preload" as="image" href="assets/img/hero.jpg">
   <style>
-    #startupSplash{position:fixed;inset:0;z-index:99999;display:grid;place-content:center;justify-items:center;gap:18px;background:#0284c7 url('assets/img/hero.jpg') center/cover no-repeat;color:white;font:700 3.4rem Fredoka,'Trebuchet MS',sans-serif;transition:opacity .2s ease}
-    #startupSplash .boot-logo{text-shadow:0 4px 18px rgba(0,0,0,.2)}
-    #startupSplash .spinner{width:34px;height:34px;border-radius:50%;border:4px solid rgba(255,255,255,.35);border-top-color:#fff;animation:startupSpin .8s linear infinite}
-    @keyframes startupSpin{to{transform:rotate(360deg)}}
-    #startupSplash.done{opacity:0;pointer-events:none}
-    @media(prefers-reduced-motion:reduce){#startupSplash{transition:none}}
+    #startupSplash{position:fixed;inset:0;z-index:99999;background:#0284c7 url('assets/img/hero.jpg') 30% center/cover no-repeat;transition:width 1.8s cubic-bezier(.65,0,.25,1),transform 1.8s cubic-bezier(.65,0,.25,1),padding 1.8s cubic-bezier(.65,0,.25,1);will-change:width,transform}
+    #startupBrand{position:fixed;z-index:100001;left:50%;top:50%;transform:translate(-50%,-50%);color:white;font:700 3.4rem Fredoka,'Trebuchet MS',sans-serif;text-shadow:0 4px 18px rgba(0,0,0,.2);transition:left 1.8s cubic-bezier(.65,0,.25,1),top 1.8s cubic-bezier(.65,0,.25,1),transform 1.8s cubic-bezier(.65,0,.25,1),font-size 1.8s cubic-bezier(.65,0,.25,1)}
+    #startupSplash.done{pointer-events:none}
+    @media(min-width:900px){#startupSplash.done{width:264px}#startupBrand.docked{left:28px;top:26px;transform:none;font-size:2.3rem}body.startup-sidebar-ready .sidebar{position:relative;z-index:100000}body.startup-revealing .sidebar .side-logo{visibility:hidden}body.startup-revealing .sidebar>*{animation:sidebarRise .55s cubic-bezier(.2,.75,.25,1) both}body.startup-revealing .sidebar>.side-logo{animation:none}body.startup-revealing .sidebar>.side-nav{animation-delay:1.12s}body.startup-revealing .sidebar>.side-pets{animation-delay:1.24s}body.startup-revealing .sidebar>.side-user{animation-delay:1.34s}body.startup-revealing .side-nav button{animation:sidebarRise .42s cubic-bezier(.2,.75,.25,1) both}body.startup-revealing .side-nav button:nth-child(1){animation-delay:1.12s}body.startup-revealing .side-nav button:nth-child(2){animation-delay:1.18s}body.startup-revealing .side-nav button:nth-child(3){animation-delay:1.24s}body.startup-revealing .side-nav button:nth-child(4){animation-delay:1.3s}body.startup-revealing .side-nav button:nth-child(5){animation-delay:1.36s}body.startup-revealing .side-nav button:nth-child(6){animation-delay:1.42s}body.startup-revealing .side-nav button:nth-child(7){animation-delay:1.48s}body.startup-revealing .side-nav button:nth-child(8){animation-delay:1.54s}}
+    @media(max-width:899px){#startupSplash.done{transform:translateY(-100%)}#startupBrand.docked{top:-150vh;transform:translate(-50%,-50%)}}
+    @keyframes sidebarRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @media(prefers-reduced-motion:reduce){#startupSplash,#startupBrand{transition:none}body.startup-revealing .sidebar>* ,body.startup-revealing .side-nav button{animation:none!important}}
   </style>
 
   <!-- App instalável -->
@@ -32,7 +33,8 @@
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 <body>
-  <div id="startupSplash" role="status" aria-label="Carregando CuidaPet"><span class="boot-logo">CuidaPet</span><span class="spinner"></span></div>
+  <div id="startupSplash" aria-hidden="true"></div>
+  <span id="startupBrand" role="status" aria-label="CuidaPet">CuidaPet</span>
   <div class="shell" id="device">
     <!-- Menu lateral (computador) -->
     <aside class="sidebar" id="sidebar" aria-label="Menu principal"></aside>
