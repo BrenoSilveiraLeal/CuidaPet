@@ -482,7 +482,7 @@
         </button>
 
         <div class="sec-title"><h2>Ofertas para ${esc(p.name)}</h2><button class="link-btn" data-go="#/loja">Ver todas ${icon('right', 14)}</button></div>
-        <div class="hscroll">${offers.map(pcard).join('')}</div>
+        <div class="hscroll pet-offers">${offers.map(pcard).join('')}</div>
       </div>`,
     };
   };
