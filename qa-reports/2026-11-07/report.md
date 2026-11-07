@@ -15,8 +15,8 @@
 - O formulário de edição mantém selecionável a raça antiga de pets já salvos, mesmo quando ela saiu da lista de novos cadastros.
 - Reteste com Playwright CLI em `/cadastro`: opções carregadas corretamente para cachorro, gato, galinha, cavalo e bovino; 5 opções em cada espécie. `/editar/thor` manteve “Corgi” como opção selecionada apesar da redução.
 - Console do navegador: nenhum erro observado durante esse reteste. Evidências: `breed-form-375x812.png` e `breed-form-1366x768.png`.
-- A cobertura atual contém 14 raças com par de imagens próprio já existente; **75 raças ainda precisam de um par próprio (150 imagens)**. Fila e prompts atualizados em `image-generation-queue.csv`. Nenhuma imagem nova foi gerada nesta etapa.
-- Preflight do gerador: 0,25 crédito por imagem; a fila atual estima 37,5 créditos. A geração permanece pendente de disponibilidade/autorização de créditos.
+- O catálogo reduzido ainda tem raças sem arte individual. A fila `image-generation-queue.csv` foi atualizada à medida que novos pares são gerados pelo ChatGPT no estilo dos mascotes do CuidaPet.
+- A geração é feita pelo ChatGPT e as imagens finais são integradas diretamente em `cuidapet/assets/img/breeds/`.
 
 ## Atualização posterior — transições dos seletores
 
@@ -138,3 +138,12 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 - **Reteste real no Playwright CLI:** em 1366×768 e 375×812, “Cães adultos” atualizou a rota para `#/categoria/racoes/Adultos`, manteve o título “Rações”, marcou o chip correto, exibiu 1 produto e preservou os mesmos nós de cabeçalho, botão, filtros e lista. A transição dos resultados estava ativa. A troca para Petiscos atualizou o título, marcou “Todos”, exibiu 2 produtos e preservou o cabeçalho.
 - **Console:** 0 erros, 0 avisos.
 - **Evidências:** `category-filter-adultos-1366x768.png`, `category-filter-adultos-375x812.png`.
+
+### Atualização — mascotes de raças gerados pelo ChatGPT
+
+- Gerados seis mascotes machos individuais em PNG transparente: coelho Mini Lop, Angorá, Holandês e Lionhead; gato SRD; cachorro vira-lata caramelo.
+- As versões fêmeas correspondentes foram derivadas dos mesmos mascotes pelo fluxo rosa do CuidaPet, mantendo cada raça/tipo e mudando apenas os acessórios para rosa.
+- Todas as imagens foram integradas em `cuidapet/assets/img/breeds/` como PNG 800×800 e ligadas ao seletor de raça. “Vira-lata caramelo” deixou de reutilizar a imagem SRD. O par de gato SRD também ganhou arquivo próprio em vez do mascote genérico da espécie.
+- `tools/rosa.ps1` agora aceita `-Only <nome>` para gerar uma versão feminina isolada sem reprocessar todos os mascotes.
+- As dez entradas concluídas foram removidas de image-generation-queue.csv; restam 140 arquivos de imagem (70 tipos × macho/fêmea) na fila.
+- Reteste no navegador via Playwright CLI: os 12 arquivos carregaram e decodificaram em 800×800, incluindo as duas variantes de sexo de cada tipo. Console sem erros ou avisos; ver generated-breed-check.cjs.

@@ -164,13 +164,15 @@
   const B = (f) => IMG + 'breeds/' + f + '.png';
   const breedImages = {
     cachorro: {
-      'Sem raça definida (SRD)': B('dog-srd'), 'Vira-lata caramelo': B('dog-srd'), 'Golden Retriever': B('dog-golden'), Labrador: B('dog-labrador'), 'Shih Tzu': B('dog-shihtzu'),
+      'Sem raça definida (SRD)': B('dog-srd'), 'Vira-lata caramelo': B('dog-caramelo'), 'Golden Retriever': B('dog-golden'), Labrador: B('dog-labrador'), 'Shih Tzu': B('dog-shihtzu'),
       Poodle: B('dog-poodle'), 'Bulldog Francês': B('dog-bulldog'), 'Spitz Alemão': B('dog-spitz'), 'Border Collie': B('dog-border'),
     },
     gato: {
+      'Sem raça definida (SRD)': B('cat-srd'),
       'Siamês': B('cat-siames'), Persa: B('cat-persa'), Himalaio: B('cat-persa'), 'Maine Coon': B('cat-mainecoon'), 'Norueguês da Floresta': B('cat-mainecoon'), Ragdoll: B('cat-ragdoll'),
       'Birmanês (Sagrado da Birmânia)': B('cat-ragdoll'), Sphynx: B('cat-sphynx'), Bengal: B('cat-bengal'), Savannah: B('cat-bengal'), 'Angorá': B('cat-angora'),
     },
+    coelho: { 'Mini Lop': B('coelho-mini-lop'), 'Angorá': B('coelho-angora'), 'Holandês': B('coelho-holandes'), Lionhead: B('coelho-lionhead') },
     passaro: {
       'Canário-belga': B('bird-canario'), Calopsita: B('bird-calopsita'), 'Periquito-australiano': B('bird-periquito'), Papagaio: B('bird-papagaio'), Agapornis: B('bird-agapornis'),
     },

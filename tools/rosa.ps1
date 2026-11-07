@@ -3,6 +3,8 @@
 # Cria <nome>-f.png ao lado de cada PNG em cuidapet/assets/img e cuidapet/assets/img/breeds.
 # Para mascotes que têm azul no próprio corpo (ex.: betta), $regions limita a troca à área dos acessórios.
 
+param([string[]]$Only = @())
+
 Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @'
 using System;
 using System.Drawing;
@@ -127,6 +129,7 @@ $keep = @{
 $regions = @{}
 
 $files = Get-ChildItem -Path $root, (Join-Path $root 'breeds') -Filter *.png | Where-Object { $_.BaseName -notlike '*-f' }
+if ($Only.Count) { $files = $files | Where-Object { $Only -contains $_.BaseName } }
 foreach ($f in $files) {
   $dst = Join-Path $f.DirectoryName ($f.BaseName + '-f.png')
   $s = if ($seeds.ContainsKey($f.BaseName)) { , [double[][]]$seeds[$f.BaseName] } else { $null }
