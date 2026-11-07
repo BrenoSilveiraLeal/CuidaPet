@@ -107,16 +107,16 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 - **Gravidade:** alta.
 - **Local:** todas as opções de raça/tipo no cadastro.
 - **Causa provável:** `breedImages` cobre apenas parte do catálogo e as demais opções recaem na imagem geral da espécie.
-- **Correção nesta rodada:** mascotes específicos adicionados para galo/galinha e canário, sem mascarar a cobertura restante.
-- **Reteste/medição inicial:** no navegador, o catálogo anterior continha 314 opções de raça/tipo; 31 tinham mapeamento nominal e essas referências usavam 25 assets distintos. Após a redução documentada acima, há 112 opções ativas; 14 raças/tipos (sem contar “Outra”) possuem par de imagens próprio e exclusivo já disponível.
+- **Correção nesta rodada:** a fila priorizada recebeu mascotes próprios para coelho, gato, cão, hamster, roedores, chinchila, porquinho-da-índia, furão, aves, jabuti e tartaruga. O catálogo possui 112 opções ativas; esta entrega ainda não cobre todas.
+- **Reteste/medição:** o checker real do Playwright percorreu 42 combinações de tipo/raça, em macho e fêmea; 84/84 imagens decodificaram, com 84 arquivos distintos. Os 82 arquivos gerados nesta rodada são PNG 800×800, e a folha de contato foi capturada no navegador.
 - **Resultado:** esta exigência permanece incompleta. As capturas permitem revisar os fluxos, mas não aprovam como “personalizadas” as raças que ainda usam fallback.
-- **Lista acionável atual:** `breed-image-coverage.csv` enumera as 224 combinações opção × sexo; `image-generation-queue.csv` contém os 150 arquivos necessários para completar as 75 raças/tipos sem par de imagens exclusivo.
+- **Lista acionável atual:** `breed-image-coverage.csv` enumera as 224 combinações opção × sexo; `image-generation-queue.csv` contém 66 imagens ainda pendentes (33 pares).
 
 ## Diferenças macho/fêmea ainda incompletas
 
 - **Corrigido:** galinha → galo/galinha; pássaro padrão → canário adulto.
 - **Já havia arquivos separados no código:** boi/vaca e bode/cabra.
-- **Ainda requer arte própria:** cavalo/égua, ovelha/carneiro e outras raças sem pares próprios ainda não foram individualizados. A redução do catálogo não equivale à criação dessas imagens; esses casos continuam abertos.
+- **Ainda requer arte própria:** ovelha/carneiro, raças de bovinos e caprinos, entre outras opções que seguem na fila. O catálogo ainda tem opções com fallback; esses casos continuam abertos.
 
 ## Limitações e fluxos não executados
 
@@ -127,7 +127,7 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 
 ## Resultado geral
 
-**Parcial — interface e catálogo reduzido retestados no navegador, com pendência de 150 imagens.** Transições, registro do pet, opções reduzidas e compatibilidade com a edição de um pet salvo foram observados. As imagens próprias das 75 raças/tipos ainda pendentes não foram geradas; o catálogo visual segue incompleto.
+**Parcial — interface, catálogo reduzido e 84 variantes geradas pelo ChatGPT retestados no navegador; restam 66 imagens (33 pares) na fila de raças.
 
 ### QA-09 — filtros da categoria recarregavam a tela inteira
 
@@ -141,9 +141,9 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 
 ### Atualização — mascotes de raças gerados pelo ChatGPT
 
-- Gerados seis mascotes machos individuais em PNG transparente: coelho Mini Lop, Angorá, Holandês e Lionhead; gato SRD; cachorro vira-lata caramelo.
-- As versões fêmeas correspondentes foram derivadas dos mesmos mascotes pelo fluxo rosa do CuidaPet, mantendo cada raça/tipo e mudando apenas os acessórios para rosa.
-- Todas as imagens foram integradas em `cuidapet/assets/img/breeds/` como PNG 800×800 e ligadas ao seletor de raça. “Vira-lata caramelo” deixou de reutilizar a imagem SRD. O par de gato SRD também ganhou arquivo próprio em vez do mascote genérico da espécie.
+- Gerados pelo próprio ChatGPT mascotes para 42 tipos/raças, com variantes macho e fêmea: 84 imagens distintas cobrindo coelho, gato, cão, hamster, roedores, chinchila, porquinho-da-índia, furão, galinha, pato, jabuti, tartaruga e cavalo.
+- As fêmeas usam os acessórios rosa do padrão visual do app; pato e galinha têm ilustrações de sexo geradas individualmente. A fila pendente mantém apenas as opções ainda não produzidas.
+- As imagens foram integradas em `cuidapet/assets/img/breeds/` como PNG 800×800 e ligadas ao seletor. “Vira-lata caramelo” deixou de reutilizar a imagem SRD; gato SRD agora tem arquivos próprios. O pônei Shetland, gerado durante a preparação, não faz parte do catálogo ativo e não foi mapeado.
 - `tools/rosa.ps1` agora aceita `-Only <nome>` para gerar uma versão feminina isolada sem reprocessar todos os mascotes.
-- As dez entradas concluídas foram removidas de image-generation-queue.csv; restam 140 arquivos de imagem (70 tipos × macho/fêmea) na fila.
-- Reteste no navegador via Playwright CLI: os 12 arquivos carregaram e decodificaram em 800×800, incluindo as duas variantes de sexo de cada tipo. Console sem erros ou avisos; ver generated-breed-check.cjs.
+- As entradas concluídas foram removidas de `image-generation-queue.csv`; restam 66 arquivos de imagem (33 tipos × macho/fêmea).
+- Reteste no navegador via Playwright CLI: 84/84 arquivos carregaram e decodificaram; há 84 caminhos distintos, todos com dimensões 800×800 para os novos mascotes. Console sem erros ou avisos; ver `generated-breed-check.cjs` e `generated-breeds-contact-sheet.png`.
