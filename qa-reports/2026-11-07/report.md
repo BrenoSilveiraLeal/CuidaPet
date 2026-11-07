@@ -18,6 +18,16 @@
 - A cobertura atual contém 14 raças com par de imagens próprio já existente; **75 raças ainda precisam de um par próprio (150 imagens)**. Fila e prompts atualizados em `image-generation-queue.csv`. Nenhuma imagem nova foi gerada nesta etapa.
 - Preflight do gerador: 0,25 crédito por imagem; a fila atual estima 37,5 créditos. A geração permanece pendente de disponibilidade/autorização de créditos.
 
+## Atualização posterior — transições dos seletores
+
+### QA-07 — rótulos piscavam durante a troca de abas (gravidade média)
+
+- **Local:** abas da carteira, perfil do pet, lembretes e agenda; seletores de sexo e antecedência dos lembretes.
+- **Causa provável:** `document.startViewTransition()` capturava a tela inteira antes/depois do rerender e fazia a palavra selecionada cruzar capturas com cores/fundos diferentes.
+- **Correção:** removida a transição de página dessas trocas. O indicador deslizante agora usa transformação horizontal própria em todos os controles segmentados; o rótulo ativo conserva texto branco com contorno azul durante o movimento. A preferência `prefers-reduced-motion` desativa o movimento.
+- **Reteste:** Playwright CLI trocou opções nos seis controles e confirmou que, a 100 ms, todos continuavam em movimento, com o rótulo presente, branco e contornado. Com movimento reduzido, o seletor aplicou a mudança sem animação (`transition-duration: 0s`). Console sem erros.
+- **Evidências:** `transition-vaccine-375x812.png` e `transition-sex-1366x768.png` registram o estado durante a transição.
+
 ## Inventário e cobertura de navegador
 
 Rotas carregadas e capturadas: `home`, `cadastro`, `editar-pet`, `pet`, `vacinas`, `vacina-item`, `lembretes`, `agenda`, `agendar`, `notificacoes`, `loja`, `categoria`, `produto`, `carrinho`, `checkout`, `parceiros`, `mais`, `pets`, `pedidos`, `favoritos`, `dicas`, `perfil`, `enderecos`, `pagamentos`, `config` e `ajuda`.

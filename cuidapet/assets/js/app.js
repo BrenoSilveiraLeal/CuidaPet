@@ -365,7 +365,7 @@
         <form data-form="pet" data-edit="${editId || ''}" novalidate>
           ${field('Nome', `<input data-model="name" value="${esc(np.name)}" placeholder="Como ele se chama?" autocomplete="off">`, '" id="nameField')}
           <div class="field"><span>Sexo</span>
-            <div class="seg" style="margin:0">${['Macho', 'Fêmea'].map((x) => `<button type="button" class="${np.sex === x ? 'on' : ''}" data-act="pickSex" data-arg="${x}">${x}</button>`).join('')}</div>
+            <div class="seg seg-sex" style="margin:0">${['Macho', 'Fêmea'].map((x, i) => `<button type="button" class="${np.sex === x ? 'on' : ''}" data-tab-index="${i}" data-act="pickSex" data-arg="${x}">${x}</button>`).join('')}</div>
           </div>
           ${field('Raça / tipo', `<select data-model="breed">${[...new Set([...s.breeds, ...(np.breed && !s.breeds.includes(np.breed) ? [np.breed] : [])])].map((b) => `<option ${b === np.breed ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>${icon('down', 18)}`)}
           <div class="field-row">
@@ -553,7 +553,7 @@
           <button class="btn sm" data-act="bookFor" data-arg="${p.id}|consulta">${icon('calendar', 16)} Agendar consulta</button>
           <button class="btn sm ghost" data-act="petTab" data-arg="produtos">${icon('bag', 16)} Itens para ${esc(p.name)}</button>
         </div>
-        <div class="seg tabs4 pet-tabs" role="tablist" aria-label="Seções do perfil do pet">
+          <div class="seg tabs4 pet-tabs" role="tablist" aria-label="Seções do perfil do pet">
           ${[['carteira', 'Carteira'], ['cuidados', 'Cuidados'], ['produtos', 'Produtos'], ['dados', 'Dados']].map(([k, l], i) => `<button class="${tab === k ? 'on' : ''}" data-tab-index="${i}" data-act="petTab" data-arg="${k}" role="tab" aria-selected="${tab === k}">${l}</button>`).join('')}
         </div>
         ${body}
@@ -1200,7 +1200,7 @@
         ${sw('lembretes', 'Lembretes', 'Vermífugo, limpeza, unhas e outros')}
         ${sw('ofertas', 'Ofertas e cupons', 'Promoções para os seus pets')}
         <div class="field" style="margin-top:16px"><span>Avisar com antecedência de</span>
-          <div class="seg" style="margin:0">${[1, 3, 7, 15].map((d) => `<button class="${Number(S.settings.antecedencia) === d ? 'on' : ''}" data-act="ahead" data-arg="${d}">${d} ${d > 1 ? 'dias' : 'dia'}</button>`).join('')}</div>
+          <div class="seg seg-lead" style="margin:0">${[1, 3, 7, 15].map((d, i) => `<button class="${Number(S.settings.antecedencia) === d ? 'on' : ''}" data-tab-index="${i}" data-act="ahead" data-arg="${d}">${d} ${d > 1 ? 'dias' : 'dia'}</button>`).join('')}</div>
         </div>
         <div class="sec-title"><h2>Dados do protótipo</h2></div>
         <div class="card menu">
@@ -1345,11 +1345,46 @@
   };
 
   const renderTabChange = () => {
-    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.startViewTransition(() => render(true));
-    } else {
-      render(true);
-    }
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const activeIndexes = new Map([...device.querySelectorAll('.seg')].map((seg) => {
+      const key = [...seg.classList].sort().join('.');
+      const buttons = [...seg.querySelectorAll(':scope > button')];
+      return [key, buttons.findIndex((button) => button.classList.contains('on'))];
+    }));
+
+    render(true);
+    if (reduceMotion) return;
+
+    device.querySelectorAll('.seg').forEach((seg) => {
+      const key = [...seg.classList].sort().join('.');
+      const oldIndex = activeIndexes.get(key);
+      const buttons = [...seg.querySelectorAll(':scope > button')];
+      const newIndex = buttons.findIndex((button) => button.classList.contains('on'));
+      if (oldIndex == null || oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return;
+
+      const firstLeft = buttons[0].offsetLeft;
+      const startX = buttons[oldIndex].offsetLeft - firstLeft;
+      const endX = buttons[newIndex].offsetLeft - firstLeft;
+      seg.classList.add('is-sliding');
+      seg.style.setProperty('--seg-slider-transform', `translateX(${startX}px)`);
+      void getComputedStyle(seg, '::before').transform;
+      requestAnimationFrame(() => seg.style.setProperty('--seg-slider-transform', `translateX(${endX}px)`));
+
+      let cleaned = false;
+      let onTransitionEnd;
+      const cleanup = () => {
+        if (cleaned) return;
+        cleaned = true;
+        seg.removeEventListener('transitionend', onTransitionEnd);
+        seg.classList.remove('is-sliding');
+        seg.style.removeProperty('--seg-slider-transform');
+      };
+      onTransitionEnd = (event) => {
+        if (event.pseudoElement === '::before' && event.propertyName === 'transform') cleanup();
+      };
+      seg.addEventListener('transitionend', onTransitionEnd);
+      setTimeout(cleanup, 360);
+    });
   };
 
   const go = (hash) => {
@@ -1448,7 +1483,7 @@
       np.breed = species[id].breeds[0];
       render(true);
     },
-    pickSex(x) { ui.newPet.sex = x; render(true); },
+    pickSex(x) { ui.newPet.sex = x; renderTabChange(); },
     newPet() { closeSheet(); ui.newPet = null; ui.spQuery = ''; go('#/cadastro'); },
     setPet(id) {
       const changed = id !== S.active;
@@ -1625,7 +1660,7 @@
     mainPay(id) { setMain(S.payments, id); save(); render(true); toast('Forma de pagamento principal atualizada'); },
     removePay(id) { removeById(S.payments, id); save(); render(true); toast('Cartão removido'); },
     addBoleto() { S.payments.push({ id: 'p' + Date.now().toString(36), kind: 'boleto', brand: 'Boleto', main: false }); save(); render(true); },
-    ahead(d) { S.settings.antecedencia = Number(d); save(); render(true); },
+    ahead(d) { S.settings.antecedencia = Number(d); save(); renderTabChange(); },
     askWipe() {
       openSheet(`
         <h3>Começar do zero?</h3>
