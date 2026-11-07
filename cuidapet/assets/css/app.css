@@ -233,6 +233,17 @@ body.is-auth .sidebar, body.is-auth .desk-top, body.is-auth .tabbar { display: n
 .chip:active { transform: scale(0.96); }
 .chip.on { background: var(--primary-blue); border-color: var(--primary-blue); color: #fff; }
 
+.category-title-refresh { animation: category-title-refresh 220ms var(--ease-out) both; }
+.category-results.is-updating { animation: category-results-refresh 240ms var(--ease-out) both; }
+@keyframes category-title-refresh {
+  from { opacity: 0.62; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes category-results-refresh {
+  from { opacity: 0.72; transform: translateY(7px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .list { display: grid; gap: 10px; }
 .row {
   display: flex;
@@ -845,6 +856,7 @@ a.row { text-decoration: none; color: inherit; }
   .screen > .view, .splash-mascot img, .pet-hero .pet-img, .empty img, .sheet .success img { animation: none; }
   .sheet, .sheet-backdrop, .toast, .tabbar, .seg::before { transition: none; }
   .chip, .species-pick button, .sizes button, .opt, .slots button, .radio, .faq summary .ic, .faq details::details-content { transition: none !important; }
+  .category-title-refresh, .category-results.is-updating { animation: none !important; }
 }
 
 /* --------------------------------------------------------------------------

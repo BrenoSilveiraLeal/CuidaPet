@@ -128,3 +128,13 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 ## Resultado geral
 
 **Parcial — interface e catálogo reduzido retestados no navegador, com pendência de 150 imagens.** Transições, registro do pet, opções reduzidas e compatibilidade com a edição de um pet salvo foram observados. As imagens próprias das 75 raças/tipos ainda pendentes não foram geradas; o catálogo visual segue incompleto.
+
+### QA-09 — filtros da categoria recarregavam a tela inteira
+
+- **Gravidade:** média.
+- **Local:** `#/categoria/:categoria` e chips de filtro por espécie/porte.
+- **Causa provável:** cada alteração de hash chamava o renderizador geral, substituindo o cabeçalho, o botão voltar, o carrinho e a faixa de filtros.
+- **Correção:** a troca entre filtros da loja atualiza o título, o chip ativo e os resultados no lugar. O cabeçalho e os controles persistem no DOM; a lista de resultados anuncia mudanças com `aria-live` e recebe uma entrada sutil que respeita `prefers-reduced-motion`. A posição horizontal dos filtros é preservada.
+- **Reteste real no Playwright CLI:** em 1366×768 e 375×812, “Cães adultos” atualizou a rota para `#/categoria/racoes/Adultos`, manteve o título “Rações”, marcou o chip correto, exibiu 1 produto e preservou os mesmos nós de cabeçalho, botão, filtros e lista. A transição dos resultados estava ativa. A troca para Petiscos atualizou o título, marcou “Todos”, exibiu 2 produtos e preservou o cabeçalho.
+- **Console:** 0 erros, 0 avisos.
+- **Evidências:** `category-filter-adultos-1366x768.png`, `category-filter-adultos-375x812.png`.

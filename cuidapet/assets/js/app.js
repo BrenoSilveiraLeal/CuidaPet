@@ -931,7 +931,7 @@
       <div class="view">
         ${topbar(c ? c.label : `Para ${spOf(p).plural.toLowerCase()}`, cartBtn())}
         <div class="chips">${chips}</div>
-        <div class="list">${list.length ? list.map(prow).join('') : emptyState('Em breve', 'Estamos trazendo novidades para esta categoria.')}</div>
+        <div class="list category-results" aria-live="polite">${list.length ? list.map(prow).join('') : emptyState('Em breve', 'Estamos trazendo novidades para esta categoria.')}</div>
       </div>`,
     };
   };
@@ -1294,6 +1294,7 @@
   const tabbar = $('#tabbar');
   const sidebar = $('#sidebar');
   const deskTop = $('#deskTop');
+  let renderedRoute = null;
 
   const renderChrome = (name) => {
     const active = SIDE_OF[name] || 'home';
@@ -1363,6 +1364,7 @@
     let { name, args } = parse();
     if (!V[name]) name = 'home';
     if (!S.pets.length && NEEDS_PET.has(name)) name = 'semPet';
+    renderedRoute = { name, args: [...args] };
     const view = V[name](...args);
     const isAuth = /\bauth\b/.test(view.cls || '');
     document.body.classList.toggle('is-auth', isAuth);
@@ -1380,6 +1382,49 @@
     device.classList.toggle('on-dark', !!view.dark);
     renderTabbar(TAB_OF[name], /no-tabbar/.test(view.cls || ''));
     if (view.after) view.after();
+  };
+
+  const updateCategoryView = () => {
+    const next = parse();
+    if (next.name !== 'categoria' || renderedRoute?.name !== 'categoria') return false;
+
+    const [cat = 'todos', tag = ''] = next.args;
+    const nextViewTemplate = document.createElement('template');
+    nextViewTemplate.innerHTML = V.categoria(cat, tag).html.trim();
+    const nextView = nextViewTemplate.content.querySelector('.view');
+    const currentView = screen.querySelector('.view');
+    if (!nextView || !currentView) return false;
+
+    const title = currentView.querySelector('.topbar h1');
+    const nextTitle = nextView.querySelector('.topbar h1');
+    const chips = currentView.querySelector('.chips');
+    const nextChips = nextView.querySelector('.chips');
+    const results = currentView.querySelector('.category-results');
+    const nextResults = nextView.querySelector('.category-results');
+    if (!title || !nextTitle || !chips || !nextChips || !results || !nextResults) return false;
+
+    title.textContent = nextTitle.textContent;
+    title.classList.remove('category-title-refresh');
+    void title.offsetWidth;
+    title.classList.add('category-title-refresh');
+
+    const oldChips = [...chips.children];
+    const freshChips = [...nextChips.children];
+    if (renderedRoute.args[0] === cat && oldChips.length === freshChips.length) {
+      freshChips.forEach((chip, i) => { oldChips[i].className = chip.className; });
+    } else {
+      const horizontalPosition = chips.scrollLeft;
+      chips.innerHTML = nextChips.innerHTML;
+      chips.scrollLeft = horizontalPosition;
+      chips.querySelector('.chip.on')?.focus({ preventScroll: true });
+    }
+
+    results.classList.remove('is-updating');
+    results.innerHTML = nextResults.innerHTML;
+    void results.offsetWidth;
+    results.classList.add('is-updating');
+    renderedRoute = { name: next.name, args: [...next.args] };
+    return true;
   };
 
   const renderTabChange = () => {
@@ -1433,7 +1478,11 @@
   const replace = (hash) => { location.replace(hash); };
   const back = () => { location.hash = navStack.pop() || '#/home'; };
 
-  window.addEventListener('hashchange', () => { closeSheet(); render(); });
+  window.addEventListener('hashchange', () => {
+    if (updateCategoryView()) return;
+    closeSheet();
+    render();
+  });
 
   /* ------------------------------------------------------------ Ações */
   const addToCart = (id, size, qty = 1) => {
