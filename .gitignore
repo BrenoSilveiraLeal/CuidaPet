@@ -1,0 +1,3 @@
+# Artefatos locais de inspeção do navegador.
+/.playwright-cli/
+/output/playwright/
