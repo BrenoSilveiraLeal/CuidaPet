@@ -9,6 +9,15 @@
 - PWA: cache atualizado para `cuidapet-v34` para incluir os novos arquivos de mascote.
 - A skill exata “Ultimate Website Design” não está instalada. Para a direção visual e movimento foi usada a skill Impeccable, mantendo o desenho já estabelecido pelo CuidaPet.
 
+## Atualização posterior — catálogo de raças
+
+- O cadastro foi reduzido para até cinco opções por espécie (quatro raças/tipos representativos e “Outra”, quando cabível): 112 opções em 23 espécies. “Outra” não exige ilustração exclusiva.
+- O formulário de edição mantém selecionável a raça antiga de pets já salvos, mesmo quando ela saiu da lista de novos cadastros.
+- Reteste com Playwright CLI em `/cadastro`: opções carregadas corretamente para cachorro, gato, galinha, cavalo e bovino; 5 opções em cada espécie. `/editar/thor` manteve “Corgi” como opção selecionada apesar da redução.
+- Console do navegador: nenhum erro observado durante esse reteste. Evidências: `breed-form-375x812.png` e `breed-form-1366x768.png`.
+- A cobertura atual contém 14 raças com par de imagens próprio já existente; **75 raças ainda precisam de um par próprio (150 imagens)**. Fila e prompts atualizados em `image-generation-queue.csv`. Nenhuma imagem nova foi gerada nesta etapa.
+- Preflight do gerador: 0,25 crédito por imagem; a fila atual estima 37,5 créditos. A geração permanece pendente de disponibilidade/autorização de créditos.
+
 ## Inventário e cobertura de navegador
 
 Rotas carregadas e capturadas: `home`, `cadastro`, `editar-pet`, `pet`, `vacinas`, `vacina-item`, `lembretes`, `agenda`, `agendar`, `notificacoes`, `loja`, `categoria`, `produto`, `carrinho`, `checkout`, `parceiros`, `mais`, `pets`, `pedidos`, `favoritos`, `dicas`, `perfil`, `enderecos`, `pagamentos`, `config` e `ajuda`.
@@ -74,15 +83,15 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 - **Local:** todas as opções de raça/tipo no cadastro.
 - **Causa provável:** `breedImages` cobre apenas parte do catálogo e as demais opções recaem na imagem geral da espécie.
 - **Correção nesta rodada:** mascotes específicos adicionados para galo/galinha e canário, sem mascarar a cobertura restante.
-- **Reteste/medição:** no navegador, o catálogo contém 314 opções de raça/tipo; 31 têm mapeamento nominal e essas referências usam 25 assets distintos. **283 opções ainda não têm mapeamento de imagem próprio.** A imagem feminina é gerada por arquivo `-f.png` onde existe, mas isso não transforma uma imagem de espécie compartilhada numa imagem própria da raça.
+- **Reteste/medição inicial:** no navegador, o catálogo anterior continha 314 opções de raça/tipo; 31 tinham mapeamento nominal e essas referências usavam 25 assets distintos. Após a redução documentada acima, há 112 opções ativas; 14 raças/tipos (sem contar “Outra”) possuem par de imagens próprio e exclusivo já disponível.
 - **Resultado:** esta exigência permanece incompleta. As capturas permitem revisar os fluxos, mas não aprovam como “personalizadas” as raças que ainda usam fallback.
-- **Lista acionável:** `breed-image-coverage.csv` enumera as 628 combinações raça/tipo × sexo; 566 ainda precisam de arte dedicada por raça/sexo.
+- **Lista acionável atual:** `breed-image-coverage.csv` enumera as 224 combinações opção × sexo; `image-generation-queue.csv` contém os 150 arquivos necessários para completar as 75 raças/tipos sem par de imagens exclusivo.
 
 ## Diferenças macho/fêmea ainda incompletas
 
 - **Corrigido:** galinha → galo/galinha; pássaro padrão → canário adulto.
 - **Já havia arquivos separados no código:** boi/vaca e bode/cabra.
-- **Ainda requer arte própria:** cavalo/égua continuam com o mesmo corpo e acessórios por cor; ovelha continua sem carneiro adulto com chifres; outras espécies/raças com dimorfismo também não foram individualizadas. Não marquei esses casos como corrigidos.
+- **Ainda requer arte própria:** cavalo/égua, ovelha/carneiro e outras raças sem pares próprios ainda não foram individualizados. A redução do catálogo não equivale à criação dessas imagens; esses casos continuam abertos.
 
 ## Limitações e fluxos não executados
 
@@ -93,4 +102,4 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 
 ## Resultado geral
 
-**Parcial — correções verificadas no navegador, com pendência de arte significativa.** A interface, transições, registro do pet e os mascotes de galinha/pássaro foram retestados. O requisito de imagens próprias para todas as raças e alguns dimorfismos permanece aberto, portanto o catálogo visual não deve ser considerado aprovado.
+**Parcial — interface e catálogo reduzido retestados no navegador, com pendência de 150 imagens.** Transições, registro do pet, opções reduzidas e compatibilidade com a edição de um pet salvo foram observados. As imagens próprias das 75 raças/tipos ainda pendentes não foram geradas; o catálogo visual segue incompleto.

@@ -367,7 +367,7 @@
           <div class="field"><span>Sexo</span>
             <div class="seg" style="margin:0">${['Macho', 'Fêmea'].map((x) => `<button type="button" class="${np.sex === x ? 'on' : ''}" data-act="pickSex" data-arg="${x}">${x}</button>`).join('')}</div>
           </div>
-          ${field('Raça / tipo', `<select data-model="breed">${s.breeds.map((b) => `<option ${b === np.breed ? 'selected' : ''}>${b}</option>`).join('')}</select>${icon('down', 18)}`)}
+          ${field('Raça / tipo', `<select data-model="breed">${[...new Set([...s.breeds, ...(np.breed && !s.breeds.includes(np.breed) ? [np.breed] : [])])].map((b) => `<option ${b === np.breed ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>${icon('down', 18)}`)}
           <div class="field-row">
             ${field('Nascimento', `<input type="date" data-model="birth" value="${np.birth}" max="${iso(0)}">`)}
             ${field('Peso', `<input type="number" inputmode="decimal" min="0" step="0.1" data-model="weight" value="${np.weight ?? ''}" placeholder="0"><span class="suffix">${s.unit}</span>`)}

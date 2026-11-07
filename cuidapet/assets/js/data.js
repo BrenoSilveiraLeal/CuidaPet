@@ -52,7 +52,7 @@
       'Teddy', 'Sem raça definida (SRD)', 'Outra']),
     hamster: S('hamster', 'Hamster', 'Hamsters', 'hamster.png', 'pequenos', 'g', 'do seu', '2 a 3 anos', [
       'Sírio', 'Sírio de pelo longo (Angorá)', 'Anão Russo', 'Anão Campbell', 'Anão Chinês', 'Roborovski', 'Outra']),
-    roedor: S('roedor', 'Rato / gerbil', 'Ratos e gerbils', 'rat.png', 'pequenos', 'g', 'do seu', '2 a 5 anos', [
+    roedor: S('roedor', 'Rato / Gerbil', 'Ratos e gerbils', 'rat.png', 'pequenos', 'g', 'do seu', '2 a 5 anos', [
       'Rato twister', 'Rato dumbo', 'Rato rex', 'Camundongo', 'Gerbil (esquilo-da-mongólia)', 'Degu', 'Outra']),
     chinchila: S('chinchila', 'Chinchila', 'Chinchilas', 'chinchilla.png', 'pequenos', 'g', 'da sua', '10 a 20 anos', [
       'Padrão (cinza)', 'Bege', 'Branca (Wilson)', 'Ébano', 'Violeta', 'Safira', 'Veludo-preto', 'Outra']),
@@ -89,11 +89,42 @@
       'Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Piau', 'Outra']),
     cabra: S('cabra', 'Cabra / Bode', 'Cabras / Bodes', 'goat.png', 'fazenda', 'kg', 'da sua', '12 a 15 anos', [
       'Saanen', 'Anglo-nubiana', 'Boer', 'Canindé', 'Moxotó', 'Pigmeia', 'Toggenburg', 'Sem raça definida (SRD)', 'Outra']),
-    ovelha: S('ovelha', 'Ovelha', 'Ovelhas', 'sheep.png', 'fazenda', 'kg', 'da sua', '10 a 12 anos', [
+    ovelha: S('ovelha', 'Ovelha / Carneiro', 'Ovelhas', 'sheep.png', 'fazenda', 'kg', 'da sua', '10 a 12 anos', [
       'Santa Inês', 'Dorper', 'Lacaune', 'Merino', 'Morada Nova', 'Suffolk', 'Texel', 'Sem raça definida (SRD)', 'Outra']),
     bovino: S('bovino', 'Boi / Vaca', 'Bois / Vacas', 'cow.png', 'fazenda', 'kg', 'do seu', '15 a 20 anos', [
       'Nelore', 'Angus', 'Brahman', 'Gir', 'Girolando', 'Guzerá', 'Hereford', 'Holandesa', 'Jersey', 'Mini Jersey', 'Senepol', 'Tabapuã', 'Sem raça definida (SRD)', 'Outra']),
   };
+  // Sele??o enxuta de ra?as para manter o cadastro simples e a galeria visual vi?vel.
+  // Quatro ra?as representativas + "Outra" por esp?cie, quando dispon?veis.
+  const curatedBreeds = {
+    cachorro: ['Sem ra\u00e7a definida (SRD)', 'Vira-lata caramelo', 'Golden Retriever', 'Shih Tzu', 'Outra'],
+    gato: ['Sem ra\u00e7a definida (SRD)', 'Siam\u00eas', 'Persa', 'Maine Coon', 'Outra'],
+    coelho: ['Mini Lop', 'Angor\u00e1', 'Holand\u00eas', 'Lionhead', 'Outra'],
+    hamster: ['S\u00edrio', 'An\u00e3o Russo', 'Roborovski', 'S\u00edrio de pelo longo (Angor\u00e1)', 'Outra'],
+    roedor: ['Rato twister', 'Rato dumbo', 'Gerbil (esquilo-da-mong\u00f3lia)', 'Degu', 'Outra'],
+    chinchila: ['Padr\u00e3o (cinza)', 'Bege', 'Branca (Wilson)', '\u00c9bano', 'Outra'],
+    porquinho: ['Ingl\u00eas (pelo curto)', 'Abiss\u00ednio', 'Peruano', 'Rex', 'Outra'],
+    furao: ['Sable', 'Albino', 'Canela', 'Champagne', 'Outra'],
+    passaro: ['Can\u00e1rio-belga', 'Calopsita', 'Periquito-australiano', 'Papagaio', 'Outra'],
+    galinha: ['Caipira', 'Brahma', 'Garnis\u00e9', 'Rhode Island Red', 'Outra'],
+    pato: ['Pato-de-pequim', 'Pato-real (Mallard)', 'Pato-corredor-indiano', 'Marreco', 'Outra'],
+    jabuti: ['Jabuti-piranga', 'Jabuti-tinga', 'Outra'],
+    tartaruga: ['Tigre-d\u0027\u00e1gua', 'C\u00e1gado-de-barbicha', 'Mu\u00e7u\u00e3', 'Outra'],
+    cobra: ['P\u00edton-real (Ball python)', 'Corn snake', 'Jiboia', 'King snake', 'Outra'],
+    iguana: ['Iguana-verde', 'Pogona (Drag\u00e3o-barbudo)', 'Gecko-leopardo', 'Tei\u00fa', 'Outra'],
+    anfibio: ['Axolote', 'Sapo-boi (Pacman)', 'Perereca-de-olhos-vermelhos', 'R\u00e3-touro', 'Outra'],
+    aranha: ['Caranguejeira-brasileira', 'Tar\u00e2ntula Chilean Rose', 'Tar\u00e2ntula Red Knee', 'Tar\u00e2ntula Pink Toe', 'Outra'],
+    peixe: ['Kinguio', 'Betta', 'Guppy', 'Peixe-palha\u00e7o (marinho)', 'Outra'],
+    cavalo: ['Mangalarga Marchador', '\u00c1rabe', 'Crioulo', 'Quarto de Milha', 'Outra'],
+    porco: ['Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Outra'],
+    cabra: ['Saanen', 'Anglo-nubiana', 'Boer', 'Moxot\u00f3', 'Outra'],
+    ovelha: ['Santa In\u00eas', 'Dorper', 'Merino', 'Suffolk', 'Outra'],
+    bovino: ['Nelore', 'Angus', 'Girolando', 'Holandesa', 'Outra'],
+  };
+  Object.entries(curatedBreeds).forEach(([id, breeds]) => {
+    species[id].breeds = breeds.filter((breed) => species[id].breeds.includes(breed));
+  });
+
   const speciesOrder = ['cachorro', 'gato', 'coelho', 'hamster', 'roedor', 'chinchila', 'porquinho', 'furao', 'passaro', 'galinha', 'pato', 'jabuti', 'tartaruga', 'cobra', 'iguana',
     'anfibio', 'aranha', 'peixe', 'cavalo', 'porco', 'cabra', 'ovelha', 'bovino'];
 
