@@ -197,8 +197,8 @@
     cobra: { 'Píton-real (Ball python)': { male: B('cobra-piton-real-ball-python'), female: B('cobra-piton-real-ball-python-f') }, Jiboia: { male: B('cobra-jiboia'), female: B('cobra-jiboia-f') }, 'King snake': { male: B('cobra-king-snake'), female: B('cobra-king-snake-f') }, 'Corn snake': B('snake-corn') },
   };
   // Mascote do pet: raça + sexo (fêmeas usam a versão com óculos e coleira rosa)
-  const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png', galinha: IMG + 'galo.png' };
-  const femaleSpeciesImages = { galinha: IMG + 'galinha-f.png' };
+  const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png', galinha: IMG + 'galo.png', ovelha: IMG + 'carneiro.png' };
+  const femaleSpeciesImages = { galinha: IMG + 'galinha-f.png', ovelha: IMG + 'sheep-f.png' };
   const breedImg = (sp, breed, sex) => {
     const mapped = breedImages[sp] && breedImages[sp][breed];
     if (female(sex)) {
