@@ -289,6 +289,10 @@ button.row:active { transform: scale(0.98); }
 /* Formulários */
 .field { display: grid; min-width: 0; gap: 6px; margin-bottom: 14px; }
 .field > span { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
+.field-hint { color: var(--text-muted); font-size: 0.74rem; line-height: 1.45; }
+.field .input:has(textarea) { height: auto; padding: 0; border: 0; background: transparent; }
+.field textarea, .lost-copy-text { width: 100%; min-height: 90px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: #fff; color: var(--text-dark); font: inherit; font-size: 1rem; line-height: 1.45; resize: vertical; }
+.field textarea:focus, .lost-copy-text:focus { outline: 3px solid var(--primary-blue-light); outline-offset: 2px; }
 .input {
   position: relative;
   min-width: 0;
@@ -785,6 +789,31 @@ button.avatar { border: 0; cursor: pointer; }
 .stats > div { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 12px 6px; border-radius: 18px; background: #fff; border: 1px solid var(--line); color: var(--primary-blue); text-align: center; }
 .stats strong { color: var(--text-dark); font-size: 0.86rem; }
 .stats small { color: var(--text-muted); font-size: 0.7rem; font-weight: 600; }
+.lost-entry, .lost-alert { margin: 0 0 16px; padding: 14px; border: 1px solid #fed7aa; border-radius: 20px; background: #fffaf2; }
+.lost-entry { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lost-entry > .r-ic { width: 42px; height: 42px; flex: 0 0 42px; display: grid; place-items: center; border-radius: 14px; background: #ffedd5; color: #b45309; }
+.lost-entry-copy { display: grid; flex: 1 1 170px; min-width: 0; gap: 3px; }
+.lost-entry-copy strong { color: #7c2d12; font-size: .9rem; }
+.lost-entry-copy small { color: #7c5c4c; font-size: .75rem; line-height: 1.4; }
+.lost-trigger { flex: 0 0 auto; background: #b45309; }
+.lost-alert { border-color: #fecaca; background: #fff7f5; }
+.lost-alert-head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.lost-alert-head > img, .lost-sheet-pet img { width: 64px; height: 64px; flex: 0 0 64px; object-fit: contain; border-radius: 16px; background: #fff; }
+.lost-alert-head > div { display: grid; gap: 4px; min-width: 0; }
+.lost-alert-head h3 { color: #991b1b; font-size: .98rem; line-height: 1.25; }
+.lost-alert-head small { color: var(--text-muted); overflow-wrap: anywhere; }
+.lost-alert > p { margin: 12px 0 0; color: var(--text-dark); font-size: .86rem; line-height: 1.45; overflow-wrap: anywhere; }
+.lost-alert-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.lost-alert-actions .link-btn { padding: 8px 2px; }
+.lost-message { margin-top: 12px; color: var(--primary-blue-dark); font-size: .8rem; }
+.lost-message summary { width: fit-content; cursor: pointer; font-weight: 700; }
+.lost-message pre { max-height: 240px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0 0; padding: 12px; border-radius: 12px; background: #fff; color: var(--text-dark); font: .78rem/1.5 var(--font-sans); }
+.lost-local-note, .lost-privacy-note { display: block; margin-top: 12px; color: var(--text-muted); font-size: .74rem; line-height: 1.45; }
+.lost-sheet-pet { display: flex; align-items: center; gap: 12px; margin: 10px 0 18px; }
+.lost-sheet-pet span { display: grid; min-width: 0; gap: 3px; }
+.lost-sheet-pet strong { color: var(--text-dark); }
+.lost-sheet-pet small { color: var(--text-muted); font-size: .78rem; }
+.sheet form[data-form="lost"] > .btn + .btn { margin-top: 10px; }
 .seg.tabs4 button { font-size: 0.76rem; padding: 0 4px; }
 
 .facts { padding: 6px 14px; }

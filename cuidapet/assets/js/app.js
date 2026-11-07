@@ -16,7 +16,7 @@
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const fresh = (demo = true) => ({
     version: STATE_VERSION,
-    profile: { name: 'Tutor', email: '', photo: null, phone: '', city: 'São Paulo – SP', cep: '04567-010' },
+    profile: { name: 'Tutor', cpf: '', email: '', photo: null, phone: '', city: 'São Paulo – SP', cep: '04567-010' },
     pets: demo ? clone(C.seedPets) : [],
     active: demo ? 'thor' : null,
     reminders: demo ? clone(C.seedReminders) : [],
@@ -69,6 +69,36 @@
 
   // Mascote do pet conforme a raça e o sexo (macho: óculos e coleira azuis; fêmea: rosa)
   const petImg = (p) => C.breedImg(p.species, p.breed, p.sex);
+  const lostMessage = (p) => {
+    const report = p.lost || {};
+    const seenAt = report.when ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(report.when)) : 'horário não informado';
+    return [
+      `🚨 PET PERDIDO — ${p.name}`,
+      `Espécie: ${spOf(p).label} · Raça/tipo: ${p.breed || 'não informado'} · Sexo: ${p.sex || 'não informado'}`,
+      `Visto pela última vez: ${report.lastSeen}, ${report.city} · ${seenAt}`,
+      report.details ? `Informações: ${report.details}` : '',
+      `Contato: ${report.phone}`,
+      'Se encontrar, entre em contato. Compartilhe com grupos de proteção animal da região.',
+    ].filter(Boolean).join('\n');
+  };
+  const lostPetCard = (p) => {
+    if (!p.lost?.active) return `
+      <section class="lost-entry" aria-labelledby="lostEntryTitle">
+        <span class="r-ic">${icon('search', 20)}</span>
+        <div class="lost-entry-copy"><strong id="lostEntryTitle">Ajude a encontrar seu pet</strong><small>Se ele se perder, gere um alerta com foto, local e contato.</small></div>
+        <button class="btn sm lost-trigger" data-act="lostPet" data-arg="${p.id}">Avisar que se perdeu</button>
+      </section>`;
+    const message = lostMessage(p);
+    return `
+      <section class="lost-alert" aria-labelledby="lostAlertTitle">
+        <div class="lost-alert-head"><img src="${p.photo ? esc(p.photo) : petImg(p)}" alt="Foto de ${esc(p.name)}"><div><span class="status late">Pet perdido</span><h3 id="lostAlertTitle">Ajude a encontrar ${esc(p.name)}</h3><small>${esc(p.lost.lastSeen)} · ${esc(p.lost.city)}</small></div></div>
+        ${p.lost.details ? `<p>${esc(p.lost.details)}</p>` : ''}
+        <div class="lost-alert-actions"><button class="btn sm" data-act="shareLost" data-arg="${p.id}">${icon('arrow', 15)} Compartilhar alerta</button><button class="btn sm ghost" data-act="whatsappLost" data-arg="${p.id}">WhatsApp</button><button class="link-btn" data-act="markFound" data-arg="${p.id}">Marcar como encontrado</button></div>
+        <details class="lost-message"><summary>Ver texto do alerta</summary><pre>${esc(message)}</pre></details>
+        <small class="lost-local-note">O aviso fica salvo neste aparelho. Ele só é compartilhado quando você escolher um destino.</small>
+      </section>`;
+  };
+  const localDateTimeValue = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   const avatar = (p, size) => {
     const st = size ? ` style="width:${size}px;height:${size}px"` : '';
     return p.photo
@@ -587,6 +617,7 @@
           <div>${icon('weight', 18)}<strong>${weightText(p)}</strong><small>Peso</small></div>
           <div>${paw(18)}<strong>${p.sex || '—'}</strong><small>Sexo</small></div>
         </div>
+        ${lostPetCard(p)}
         <div class="pet-actions">
           <button class="btn sm" data-act="bookFor" data-arg="${p.id}|consulta">${icon('calendar', 16)} Agendar consulta</button>
           <button class="btn sm ghost" data-act="petTab" data-arg="produtos">${icon('bag', 16)} Itens para ${esc(p.name)}</button>
@@ -1175,6 +1206,7 @@
       <div class="sec-title"><h2>Dados pessoais</h2></div>
       <form data-form="perfil">
         ${field('Nome completo', `<input name="name" value="${esc(S.profile.name)}" autocomplete="name">`)}
+        <div class="field"><span>CPF do tutor (opcional)</span><label class="input"><input name="cpf" value="${esc(fmtCpf(S.profile.cpf || ''))}" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" aria-describedby="cpfHint"></label><small class="field-hint" id="cpfHint">Fica salvo neste aparelho e não aparece no alerta de pet perdido.</small></div>
         ${field('E-mail', `<input name="email" type="email" value="${esc(S.profile.email)}" autocomplete="email" placeholder="opcional">`)}
         ${field('Celular', `<input name="phone" type="tel" value="${esc(S.profile.phone)}" autocomplete="tel">`)}
         <div class="field-row">
@@ -1588,6 +1620,72 @@
     remTab(t) { ui.remTab = t; renderTabChange(); },
     share() { toast(`Ficha de ${pet().name} pronta para enviar ao veterinário`); },
     chat() { toast('Um veterinário vai responder em instantes'); },
+    lostPet(id) {
+      const p = petById(id);
+      if (!p) return;
+      openSheet(`
+        <h3>${p.lost?.active ? 'Atualizar alerta de desaparecimento' : `${esc(p.name)} se perdeu?`}</h3>
+        <p class="muted">Informe onde foi visto e como entrar em contato. O CPF do tutor não entra no aviso.</p>
+        <div class="lost-sheet-pet">${p.photo ? `<img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}">` : `<img src="${petImg(p)}" alt="Mascote de ${esc(p.name)}">`}<span><strong>${esc(p.name)}</strong><small>${esc(spOf(p).label)} · ${esc(p.breed || 'Tipo não informado')}</small></span></div>
+        <form data-form="lost" data-pet="${p.id}">
+          ${field('Local onde foi visto', `<input name="lastSeen" maxlength="160" value="${esc(p.lost?.lastSeen || '')}" placeholder="Rua, bairro ou ponto de referência" required>`)}
+          ${field('Data e horário aproximados', `<input name="when" type="datetime-local" value="${esc(p.lost?.when || localDateTimeValue())}" required>`)}
+          ${field('Cidade – UF', `<input name="city" maxlength="100" value="${esc(p.lost?.city || S.profile.city || '')}" placeholder="Ex.: São Paulo – SP" required>`)}
+          ${field('Telefone para contato', `<input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" value="${esc(p.lost?.phone || S.profile.phone || '')}" placeholder="(11) 99999-9999" required>`)}
+          ${field('Detalhes para ajudar a reconhecer (opcional)', `<textarea name="details" maxlength="500" rows="3" placeholder="Coleira, marcas e comportamento. Não inclua endereço residencial.">${esc(p.lost?.details || '')}</textarea>`)}
+          <p class="lost-privacy-note">O alerta ficará salvo neste navegador. Nada será publicado sozinho: você revisa e escolhe onde compartilhar.</p>
+          <button class="btn" type="submit">${p.lost?.active ? 'Salvar alterações do alerta' : 'Ativar alerta neste aparelho'}</button>
+          <button class="btn ghost" type="button" data-act="closeSheet">Cancelar</button>
+        </form>`);
+    },
+    async shareLost(id) {
+      const p = petById(id);
+      if (!p?.lost?.active) return;
+      const text = lostMessage(p);
+      try {
+        if (navigator.share) {
+          let file;
+          const match = /^data:([^;,]+);base64,([\s\S]+)$/.exec(p.photo || '');
+          if (match && typeof File === 'function') {
+            const binary = atob(match[2]);
+            const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+            file = new File([bytes], `${p.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-foto.png`, { type: match[1] });
+          }
+          const files = file && navigator.canShare?.({ files: [file] }) ? [file] : undefined;
+          await navigator.share({ title: `Pet perdido: ${p.name}`, text, ...(files ? { files } : {}) });
+          return;
+        }
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          toast('Texto do alerta copiado. Agora escolha onde compartilhar.');
+          return;
+        }
+      } catch (error) {
+        if (error?.name === 'AbortError') return;
+        console.warn('Não foi possível abrir o compartilhamento nativo', error);
+      }
+      openSheet(`<h3>Texto do alerta</h3><p class="muted">Selecione e copie o aviso para compartilhar.</p><textarea class="lost-copy-text" readonly rows="10">${esc(text)}</textarea><button class="btn" data-act="closeSheet">Concluir</button>`);
+    },
+    whatsappLost(id) {
+      const p = petById(id);
+      if (!p?.lost?.active) return;
+      window.open(`https://wa.me/?text=${encodeURIComponent(lostMessage(p))}`, '_blank', 'noopener,noreferrer');
+    },
+    markFound(id) {
+      const p = petById(id);
+      if (!p?.lost?.active) return;
+      openSheet(`<h3>${esc(p.name)} foi encontrado?</h3><p class="muted">Isso vai encerrar o alerta salvo neste aparelho.</p><div class="list"><button class="btn" data-act="confirmFound" data-arg="${p.id}">Sim, encerrar alerta</button><button class="btn ghost" data-act="closeSheet">Continuar procurando</button></div>`);
+    },
+    confirmFound(id) {
+      const p = petById(id);
+      if (!p?.lost) return;
+      p.lost.active = false;
+      p.lost.foundAt = new Date().toISOString();
+      save();
+      closeSheet();
+      render(true);
+      toast(`${p.name} foi marcado como encontrado`);
+    },
     addCart(id) {
       const p = product(id);
       const size = p.sizes ? (p.sizes.find((s) => s[1] === p.price) || p.sizes[0])[0] : null;
@@ -1777,8 +1875,23 @@
 
   /* ------------------------------------------------------------ Formulários */
   const fmtCep = (v) => v.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
+  const fmtCpf = (v) => v.replace(/\D/g, '').slice(0, 11).replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
 
   const F = {
+    lost(form) {
+      const p = petById(form.dataset.pet);
+      if (!p) { closeSheet(); return; }
+      const e = form.elements;
+      const lastSeen = e.lastSeen.value.trim();
+      const city = e.city.value.trim();
+      const phone = e.phone.value.trim();
+      if (!lastSeen || !city || !phone || !e.when.value) { toast('Informe local, horário, cidade e telefone para ativar o alerta'); return; }
+      p.lost = { active: true, lastSeen: lastSeen.slice(0, 160), when: e.when.value, city: city.slice(0, 100), phone: phone.slice(0, 24), details: e.details.value.trim().slice(0, 500), updatedAt: new Date().toISOString() };
+      save();
+      closeSheet();
+      render(true);
+      toast('Alerta pronto. Escolha onde compartilhar.');
+    },
     pet(form) {
       const np = ui.newPet;
       if (!np.name.trim()) {
@@ -1873,7 +1986,7 @@
     },
     perfil(form) {
       const e = form.elements;
-      Object.assign(S.profile, { name: e.name.value.trim() || S.profile.name, email: e.email.value.trim() || S.profile.email, phone: e.phone.value.trim(), cep: fmtCep(e.cep.value), city: e.city.value.trim() });
+      Object.assign(S.profile, { name: e.name.value.trim() || S.profile.name, cpf: (e.cpf?.value || '').replace(/\D/g, '').slice(0, 11), email: e.email.value.trim() || S.profile.email, phone: e.phone.value.trim(), cep: fmtCep(e.cep.value), city: e.city.value.trim() });
       save();
       render(true);
       toast('Perfil atualizado');
@@ -1984,6 +2097,7 @@
         setTimeout(() => { const g = $('[data-globalsearch]'); if (g) { g.focus(); g.value = ui.query; } }, 30);
       }
     }
+    if (el.name === 'cpf') el.value = fmtCpf(el.value);
     if (el.name === 'cep' || el.name === 'number' || el.name === 'exp') {
       if (el.name === 'cep') el.value = fmtCep(el.value);
       if (el.name === 'number') el.value = el.value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -2039,6 +2153,8 @@
     }
     const saved = Store.load();
     S = saved && saved.version === STATE_VERSION ? saved : fresh(true);
+    S.profile = S.profile || fresh(false).profile;
+    S.profile.cpf = S.profile.cpf || '';
     if (!S.pets.some((p) => p.id === S.active)) S.active = S.pets[0] ? S.pets[0].id : null;
     save();
     const splashRemaining = 1000 - (performance.now() - splashStartedAt);
