@@ -36,6 +36,13 @@
 - **Reteste:** Playwright CLI clicou em um botão de produto atrás do modal aberto e durante a saída: o modal/lock permaneceram ativos e o carrinho não mudou. Após a animação, o backdrop voltou a `pointer-events: none`, a área principal deixou de ser `inert` e `aria-hidden` passou a `true`. Console sem erros; carrinho de teste restaurado.
 - **Evidências:** capturas de entrada/saída em `cart-confirmation-open-1366x768.png`, `cart-confirmation-closing-1366x768.png`, `cart-confirmation-open-375x812.png` e `cart-confirmation-closing-375x812.png`.
 
+### QA-09 — seleções e expansões sem resposta de movimento (gravidade baixa)
+
+- **Local:** seleção de espécie, sexo, tamanho de produto, serviço/agendamento, pagamento/entrega; perguntas expansíveis da central de ajuda.
+- **Correção:** opções selecionadas recebem um pulso curto com brilho azul; estados pressionados e seleções em cartões recebem transições de cor/escala; respostas da FAQ abrem e fecham com expansão suave e rotação do ícone. `prefers-reduced-motion` remove as animações.
+- **Reteste:** no Playwright CLI, as escolhas de espécie, tamanho e serviço iniciaram animação (`getAnimations().length = 1`); FAQ passou de altura 0 para expandida e fechou suavemente. Com movimento reduzido, a seleção teve 0 animações e duração de transição 0s. Console sem erros.
+- **Evidências:** `selection-pulse-1366x768.png` e `faq-expansion-375x812.png`.
+
 ## Inventário e cobertura de navegador
 
 Rotas carregadas e capturadas: `home`, `cadastro`, `editar-pet`, `pet`, `vacinas`, `vacina-item`, `lembretes`, `agenda`, `agendar`, `notificacoes`, `loja`, `categoria`, `produto`, `carrinho`, `checkout`, `parceiros`, `mais`, `pets`, `pedidos`, `favoritos`, `dicas`, `perfil`, `enderecos`, `pagamentos`, `config` e `ajuda`.

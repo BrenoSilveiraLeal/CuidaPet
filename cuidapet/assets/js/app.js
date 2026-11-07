@@ -1852,6 +1852,22 @@
   };
 
   /* ------------------------------------------------------------ Eventos */
+  const SELECT_ACTIONS = new Set(['ahead', 'bk', 'fav', 'pickAddr', 'pickDelivery', 'pickPay', 'pickSex', 'pickSpecies', 'setPet', 'size']);
+  const animateChoice = (action, arg) => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || typeof Element.prototype.animate !== 'function') return;
+    requestAnimationFrame(() => {
+      const matching = [...device.querySelectorAll('[data-act]')].filter((node) => node.dataset.act === action && node.dataset.arg === arg);
+      const selected = matching.find((node) => node.classList.contains('on')
+        || node.getAttribute('aria-checked') === 'true'
+        || node.querySelector('.radio.on'));
+      if (!selected) return;
+      selected.animate([
+        { transform: 'scale(0.975)', boxShadow: '0 0 0 0 rgba(56, 189, 248, 0)' },
+        { transform: 'scale(1.018)', boxShadow: '0 0 0 4px rgba(56, 189, 248, 0.2)', offset: 0.58 },
+        { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(56, 189, 248, 0)' },
+      ], { duration: 300, easing: 'cubic-bezier(.16, 1, .3, 1)' });
+    });
+  };
   device.addEventListener('click', (e) => {
     const t = e.target.closest('[data-act],[data-go],[data-tab],[data-back],[data-replace]');
     if (!t || !device.contains(t)) return;
@@ -1860,8 +1876,12 @@
       e.stopPropagation();
       if (t.tagName === 'BUTTON' || t.getAttribute('role') === 'button') e.preventDefault();
       if (t.type === 'checkbox') { /* deixa o checkbox alternar */ }
-      const fn = A[t.dataset.act];
-      if (fn) fn(t.dataset.arg, t, e);
+      const action = t.dataset.act;
+      const arg = t.dataset.arg || '';
+      const wasSelected = t.classList.contains('on') || t.getAttribute('aria-checked') === 'true' || !!t.querySelector('.radio.on');
+      const fn = A[action];
+      if (fn) fn(arg, t, e);
+      if (fn && SELECT_ACTIONS.has(action) && !wasSelected) animateChoice(action, arg);
       return;
     }
     if (t.dataset.tab) { navStack = []; closeSheet(); if (location.hash === t.dataset.tab) render(); else location.hash = t.dataset.tab; return; }
