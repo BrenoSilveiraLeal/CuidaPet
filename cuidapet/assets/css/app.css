@@ -1017,14 +1017,14 @@ a.row { text-decoration: none; color: inherit; }
   .tabbar { display: none; }
   .screen, .screen.no-tabbar { padding: 28px clamp(20px, 2.6vw, 36px) 56px; }
   .screen.flush { padding: 0; }
-  .screen > .view { max-width: 1080px; margin: 0 auto; }
+  .screen > .view { width: min(100%, 78vw); max-width: 2400px; margin: 0 auto; }
   .screen > .view.narrow { max-width: 600px; }
 
   .hello { display: none; }
   .topbar.left h1 { font-size: 2rem; }
 
   .pgrid { gap: 16px; }
-  .hscroll .pcard { width: 190px; }
+  .hscroll .pcard { width: clamp(190px, 14vw, 320px); }
   .list { gap: 12px; }
   .brands { grid-template-columns: repeat(4, 1fr); }
   .species-pick { grid-template-columns: repeat(6, 1fr); max-height: none; }
@@ -1085,6 +1085,18 @@ a.row { text-decoration: none; color: inherit; }
 
 @media (min-width: 1280px) {
   .home-cols { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; }
+}
+
+/* Telas grandes e TVs: amplia o canvas com fluidez sem deixar o conteúdo
+   preso à largura de notebook nem esticar indefinidamente em 4K. */
+@media (min-width: 1600px) {
+  html { font-size: clamp(16px, calc(11.8px + 0.22vw), 20px); }
+}
+
+@media (min-width: 1920px) {
+  .sidebar { width: clamp(264px, 11vw, 420px); }
+  .desk-top { padding-inline: clamp(32px, calc(2.9167vw - 24px), 88px); }
+  .screen, .screen.no-tabbar { padding-inline: clamp(36px, calc(3.125vw - 24px), 96px); }
 }
 
 /* --------------------------------------------------------------------------
