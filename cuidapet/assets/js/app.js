@@ -204,18 +204,56 @@
 
   const sheet = $('#sheet');
   const backdrop = $('#sheetBackdrop');
-  const openSheet = (html) => {
+  let sheetCloseTimer;
+  let sheetFocusTimer;
+  let sheetDismissOnBackdrop = true;
+  let sheetReturnFocus = null;
+  const setSheetBackgroundInert = (inert) => {
+    device.querySelectorAll('.main, .sidebar').forEach((region) => { region.inert = inert; });
+  };
+  const transitionTime = (el) => {
+    const style = getComputedStyle(el);
+    const durations = style.transitionDuration.split(',').map((value) => value.trim().endsWith('ms')
+      ? parseFloat(value) : parseFloat(value) * 1000);
+    const delays = style.transitionDelay.split(',').map((value) => value.trim().endsWith('ms')
+      ? parseFloat(value) : parseFloat(value) * 1000);
+    return Math.max(0, ...durations.map((duration, i) => duration + (delays[i % delays.length] || 0)));
+  };
+  const openSheet = (html, { dismissOnBackdrop = true } = {}) => {
+    clearTimeout(sheetCloseTimer);
+    clearTimeout(sheetFocusTimer);
+    sheet.classList.remove('closing');
+    backdrop.classList.remove('closing');
     sheet.innerHTML = html;
+    sheetDismissOnBackdrop = dismissOnBackdrop;
+    sheetReturnFocus = screen.querySelector('[data-act="addDetail"]') || screen.querySelector('button') || screen;
     sheet.classList.add('open');
     backdrop.classList.add('open');
     sheet.setAttribute('aria-hidden', 'false');
+    setSheetBackgroundInert(true);
     const f = sheet.querySelector('input, select, button');
-    if (f) setTimeout(() => f.focus({ preventScroll: true }), 350);
+    if (f) sheetFocusTimer = setTimeout(() => {
+      if (sheet.classList.contains('open')) f.focus({ preventScroll: true });
+    }, 350);
   };
   const closeSheet = () => {
+    if (!sheet.classList.contains('open')) return;
+    clearTimeout(sheetFocusTimer);
     sheet.classList.remove('open');
+    sheet.classList.add('closing');
     backdrop.classList.remove('open');
-    sheet.setAttribute('aria-hidden', 'true');
+    backdrop.classList.add('closing');
+    const delay = Math.max(transitionTime(sheet), transitionTime(backdrop)) + 32;
+    clearTimeout(sheetCloseTimer);
+    sheetCloseTimer = setTimeout(() => {
+      sheet.classList.remove('closing');
+      backdrop.classList.remove('closing');
+      sheet.setAttribute('aria-hidden', 'true');
+      setSheetBackgroundInert(false);
+      const target = sheetReturnFocus?.isConnected ? sheetReturnFocus : screen;
+      target.focus({ preventScroll: true });
+      sheetReturnFocus = null;
+    }, delay);
   };
 
   /* ------------------------------------------------------------ Componentes */
@@ -1524,7 +1562,7 @@
       render(true);
       openSheet(`
         <div class="success"><img src="${species[p.sp].img}" alt=""><h3>Adicionado!</h3><p class="muted">${p.name}</p></div>
-        <div class="list"><button class="btn" data-go="#/carrinho">Ver carrinho (${cartCount()})</button><button class="btn ghost" data-act="closeSheet">Continuar comprando</button></div>`);
+        <div class="list"><button class="btn" data-go="#/carrinho">Ver carrinho (${cartCount()})</button><button class="btn ghost" data-act="closeSheet">Continuar comprando</button></div>`, { dismissOnBackdrop: false });
     },
     closeSheet,
     cartQty(arg) {
@@ -1913,7 +1951,7 @@
     }
   });
 
-  backdrop.addEventListener('click', closeSheet);
+  backdrop.addEventListener('click', () => { if (sheetDismissOnBackdrop) closeSheet(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet(); });
 
   /* ------------------------------------------------------------ Início */

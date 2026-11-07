@@ -324,6 +324,7 @@ button.row:active { transform: scale(0.98); }
   transition: opacity 0.3s;
 }
 .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
+.sheet-backdrop.closing { opacity: 0; pointer-events: auto; }
 .sheet {
   position: absolute; left: 0; right: 0; bottom: 0; z-index: 51;
   max-height: 88%;
@@ -335,6 +336,7 @@ button.row:active { transform: scale(0.98); }
   transition: transform 0.42s var(--ease-out);
 }
 .sheet.open { transform: none; }
+.sheet.closing { pointer-events: none; }
 .sheet::before { content: ''; display: block; width: 44px; height: 5px; border-radius: 3px; background: #cbd5e1; margin: 0 auto 16px; }
 .sheet h3 { font-family: var(--font-logo); font-weight: 600; font-size: 1.45rem; color: var(--primary-blue-deep); margin-bottom: 6px; }
 .sheet p.muted { color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 16px; }
@@ -825,8 +827,8 @@ a.row { text-decoration: none; color: inherit; }
 .device button:focus-visible, .device a:focus-visible { outline: 3px solid var(--primary-blue-light); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .screen > .view, .splash-mascot img, .pet-hero .pet-img, .empty img { animation: none; }
-  .sheet, .toast, .tabbar, .seg::before { transition: none; }
+  .screen > .view, .splash-mascot img, .pet-hero .pet-img, .empty img, .sheet .success img { animation: none; }
+  .sheet, .sheet-backdrop, .toast, .tabbar, .seg::before { transition: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -1003,6 +1005,7 @@ a.row { text-decoration: none; color: inherit; }
     transition: transform 0.3s var(--ease-out), opacity 0.25s;
   }
   .sheet.open { transform: translate(-50%, -50%); opacity: 1; pointer-events: auto; }
+  .sheet.closing { opacity: 0; pointer-events: none; }
   .sheet::before { display: none; }
   .toast { bottom: 32px; }
 

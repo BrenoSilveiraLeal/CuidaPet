@@ -28,6 +28,14 @@
 - **Reteste:** Playwright CLI trocou opções nos seis controles e confirmou que, a 100 ms, todos continuavam em movimento, com o rótulo presente, branco e contornado. Com movimento reduzido, o seletor aplicou a mudança sem animação (`transition-duration: 0s`). Console sem erros.
 - **Evidências:** `transition-vaccine-375x812.png` e `transition-sex-1366x768.png` registram o estado durante a transição.
 
+### QA-08 — confirmação de compra permitia interação com o fundo (gravidade média)
+
+- **Local:** modal “Adicionado!” na tela de detalhes do produto.
+- **Causa provável:** ao fechar, as classes que interceptavam ponteiro eram removidas antes da animação de saída; tocar no backdrop também dispensava a confirmação.
+- **Correção:** o backdrop continua interceptando cliques durante a saída, e a área principal/menu ficam `inert` enquanto o modal abre, permanece aberto ou fecha. A confirmação de compra não fecha ao clicar fora; apenas “Ver carrinho” e “Continuar comprando” encerram o modal.
+- **Reteste:** Playwright CLI clicou em um botão de produto atrás do modal aberto e durante a saída: o modal/lock permaneceram ativos e o carrinho não mudou. Após a animação, o backdrop voltou a `pointer-events: none`, a área principal deixou de ser `inert` e `aria-hidden` passou a `true`. Console sem erros; carrinho de teste restaurado.
+- **Evidências:** capturas de entrada/saída em `cart-confirmation-open-1366x768.png`, `cart-confirmation-closing-1366x768.png`, `cart-confirmation-open-375x812.png` e `cart-confirmation-closing-375x812.png`.
+
 ## Inventário e cobertura de navegador
 
 Rotas carregadas e capturadas: `home`, `cadastro`, `editar-pet`, `pet`, `vacinas`, `vacina-item`, `lembretes`, `agenda`, `agendar`, `notificacoes`, `loja`, `categoria`, `produto`, `carrinho`, `checkout`, `parceiros`, `mais`, `pets`, `pedidos`, `favoritos`, `dicas`, `perfil`, `enderecos`, `pagamentos`, `config` e `ajuda`.
