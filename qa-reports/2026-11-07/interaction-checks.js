@@ -1,0 +1,32 @@
+﻿async page => {
+ const base='http://localhost:5180',dir='qa-reports/2026-11-07';
+ const results={};
+ await page.setViewportSize({width:375,height:812});
+ await page.goto(base+'/#/vacinas');
+ const vt=await page.evaluate(()=>{window.__vtCalls=0;const native=document.startViewTransition?.bind(document);if(native)document.startViewTransition=(cb)=>{window.__vtCalls++;return native(cb)};return typeof native==='function'});
+ await page.getByRole('tab',{name:'Histórico'}).click(); await page.waitForTimeout(350);
+ results.history=await page.evaluate(()=>({selected:document.querySelector('.vac-tabs [aria-selected="true"]')?.textContent.trim(),indicator:getComputedStyle(document.querySelector('.vac-tabs'),'::before').transform,viewTransitionCalls:window.__vtCalls,overflow:document.documentElement.scrollWidth>innerWidth}));
+ await page.screenshot({path:`${dir}/vaccines-history-375x812.png`,fullPage:true});
+ await page.emulateMedia({reducedMotion:'reduce'}); await page.getByRole('tab',{name:'Visão geral'}).click();
+ results.reduced=await page.evaluate(()=>({selected:document.querySelector('.vac-tabs [aria-selected="true"]')?.textContent.trim(),calls:window.__vtCalls,reduced:matchMedia('(prefers-reduced-motion: reduce)').matches}));
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto(base+'/#/loja');
+ results.categories=await page.evaluate(()=>{const w=document.querySelector('.cats'),bs=[...w.querySelectorAll('button')],r=w.getBoundingClientRect(),xs=bs.map(b=>{const x=b.getBoundingClientRect();return x.left+x.width/2});return {count:bs.length,centerError:Math.round(Math.abs((Math.min(...xs)+Math.max(...xs))/2-(r.left+r.width/2))),labels:bs.map(b=>b.innerText.trim()),overflow:document.documentElement.scrollWidth>innerWidth}});
+ await page.screenshot({path:`${dir}/shop-categories-375x812.png`,fullPage:true});
+ await page.goto(base+'/#/pet/thor'); await page.getByRole('tab',{name:'Dados',exact:true}).click(); await page.waitForTimeout(320);
+ results.petData=await page.evaluate(()=>({selected:document.querySelector('.pet-tabs [aria-selected="true"]')?.textContent.trim(),hasRegistration:document.body.innerText.includes('CPF / registro'),overflow:document.documentElement.scrollWidth>innerWidth}));
+ await page.screenshot({path:`${dir}/pet-data-375x812.png`,fullPage:true});
+ const original=await page.evaluate(()=>localStorage.getItem('cuidapet-demo'));
+ await page.goto(base+'/#/cadastro'); await page.getByLabel('Buscar espécie').fill('galinha'); await page.getByRole('radio',{name:'Galinha'}).click();
+ const imgCheck=()=>page.evaluate(async()=>{const img=document.querySelector('.photo-pick img');await img.decode();return {src:img.getAttribute('src'),width:img.naturalWidth}});
+ results.roosterPreview=await imgCheck();
+ await page.screenshot({path:`${dir}/registration-rooster-375x812.png`,fullPage:true});
+ await page.getByRole('button',{name:'Fêmea',exact:true}).click(); results.henPreview=await imgCheck();
+ await page.getByPlaceholder('CPF, RGA ou outro número').fill('RGA-TESTE-001');
+ await page.getByPlaceholder('Como ele se chama?').fill('Mascote QA'); await page.getByRole('button',{name:'Adicionar pet'}).click(); await page.waitForTimeout(400);
+ results.savedRegistration=await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem('cuidapet-demo')||'null');const p=s?.pets?.find(x=>x.name==='Mascote QA');return p?{registration:p.registration,species:p.species,sex:p.sex}:null});
+ await page.evaluate(v=>{if(v===null)localStorage.removeItem('cuidapet-demo');else localStorage.setItem('cuidapet-demo',v)},original);
+ await page.reload(); await page.waitForTimeout(500);
+ results.browserRestored=true;
+ return {viewTransitionSupported:vt,...results};
+}

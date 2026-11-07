@@ -623,14 +623,31 @@ button.row:active { transform: scale(0.98); }
 .shop-for { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
 .shop-for small { color: var(--text-muted); font-weight: 600; font-size: 0.78rem; }
 
-.cats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 4px; margin: 0 0 16px; padding: 2px 0; }
+.cats { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 10px 8px; width: 100%; margin: 0 0 16px; padding: 2px 0; }
 /* categorias centralizadas; se não couberem, a rolagem continua começando pela primeira */
-.cats button:first-child { margin-left: auto; }
-.cats button:last-child { margin-right: auto; }
 @media (min-width: 900px) { .cats { gap: 10px; } }
-.cats button { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; border: 0; background: none; font-size: 0.72rem; font-weight: 700; text-align: center; }
+.cats button { display: flex; flex: 0 0 58px; flex-direction: column; align-items: center; gap: 6px; min-width: 0; border: 0; background: none; font-size: 0.72rem; font-weight: 700; text-align: center; }
 .cats .c-ic { width: min(56px, 100%); aspect-ratio: 1; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; background: #fff; border: 1px solid var(--line); color: var(--primary-blue-dark); transition: transform 0.25s var(--ease-bounce); }
 .cats button:active .c-ic { transform: scale(0.9); }
+.seg.vac-tabs, .seg.pet-tabs, .seg.rem-tabs, .seg.agenda-tabs { position: relative; isolation: isolate; }
+.seg.vac-tabs::before, .seg.pet-tabs::before, .seg.rem-tabs::before, .seg.agenda-tabs::before {
+  content: ''; position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px;
+  width: calc((100% - 8px) / 2); border-radius: 999px; background: var(--primary-blue);
+  pointer-events: none; view-transition-name: tab-indicator;
+}
+.seg.pet-tabs::before { width: calc((100% - 8px) / 4); view-transition-name: pet-tab-indicator; }
+.seg.rem-tabs::before { width: calc((100% - 8px) / 3); view-transition-name: reminder-tab-indicator; }
+.seg.agenda-tabs::before { view-transition-name: agenda-tab-indicator; }
+.seg.vac-tabs button, .seg.pet-tabs button, .seg.rem-tabs button, .seg.agenda-tabs button { position: relative; z-index: 1; background: transparent; }
+.seg.vac-tabs button.on, .seg.pet-tabs button.on, .seg.rem-tabs button.on, .seg.agenda-tabs button.on { background: transparent; color: #fff; }
+.seg.vac-tabs:has([data-tab-index="1"].on)::before,
+.seg.agenda-tabs:has([data-tab-index="1"].on)::before,
+.seg.pet-tabs:has([data-tab-index="1"].on)::before { transform: translateX(calc(100% + 4px)); }
+.seg.pet-tabs:has([data-tab-index="2"].on)::before { transform: translateX(calc(200% + 8px)); }
+.seg.pet-tabs:has([data-tab-index="3"].on)::before { transform: translateX(calc(300% + 12px)); }
+.seg.rem-tabs:has([data-tab-index="1"].on)::before { transform: translateX(calc(100% + 4px)); }
+.seg.rem-tabs:has([data-tab-index="2"].on)::before { transform: translateX(calc(200% + 8px)); }
+::view-transition-group(tab-indicator), ::view-transition-group(pet-tab-indicator), ::view-transition-group(reminder-tab-indicator), ::view-transition-group(agenda-tab-indicator) { animation-duration: 280ms; animation-timing-function: cubic-bezier(.16, 1, .3, 1); }
 .cats button:nth-child(5n+1) .c-ic { background: #fff7ed; color: #ea580c; }
 .cats button:nth-child(5n+2) .c-ic { background: #fef2f2; color: #dc2626; }
 .cats button:nth-child(5n+3) .c-ic { background: #eff6ff; color: #2563eb; }

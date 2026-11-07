@@ -60,7 +60,7 @@
       'Inglês (pelo curto)', 'Abissínio', 'Americano', 'Coronet', 'Crested', 'Peruano', 'Rex', 'Sheltie', 'Skinny (sem pelo)', 'Teddy', 'Texel', 'Sem raça definida (SRD)', 'Outra']),
     furao: S('furao', 'Furão', 'Furões', 'ferret.png', 'pequenos', 'kg', 'do seu', '6 a 10 anos', [
       'Sable', 'Black Sable', 'Albino', 'Canela', 'Champagne', 'Chocolate', 'Prata', 'Panda', 'Blaze', 'Outra']),
-    passaro: S('passaro', 'Pássaro', 'Aves', 'bird.png', 'aves', 'g', 'do seu', '5 a 30 anos', [
+    passaro: S('passaro', 'Pássaro', 'Aves', 'breeds/bird-canario.png', 'aves', 'g', 'do seu', '5 a 30 anos', [
       'Canário-belga', 'Agapornis', 'Arara', 'Cacatua', 'Calafate', 'Calopsita', 'Canário-da-terra', 'Curió', 'Diamante-de-gould', 'Mandarim', 'Manon', 'Papagaio',
       'Periquito-australiano', 'Ring-neck', 'Rosela', 'Sabiá', 'Trinca-ferro', 'Outra']),
     galinha: S('galinha', 'Galinha', 'Galinhas', 'breeds/bird-galinha.png', 'fazenda', 'kg', 'da sua', '8 a 10 anos', [
@@ -141,17 +141,19 @@
       'Birmanês (Sagrado da Birmânia)': B('cat-ragdoll'), Sphynx: B('cat-sphynx'), Bengal: B('cat-bengal'), Savannah: B('cat-bengal'), 'Angorá': B('cat-angora'),
     },
     passaro: {
-      Calopsita: B('bird-calopsita'), 'Periquito-australiano': B('bird-periquito'), Papagaio: B('bird-papagaio'), Agapornis: B('bird-agapornis'),
+      'Canário-belga': B('bird-canario'), Calopsita: B('bird-calopsita'), 'Periquito-australiano': B('bird-periquito'), Papagaio: B('bird-papagaio'), Agapornis: B('bird-agapornis'),
     },
+    galinha: { Caipira: B('galo') },
     iguana: { 'Pogona (Dragão-barbudo)': B('lizard-pogona'), 'Gecko-leopardo': B('lizard-gecko'), 'Gecko-de-crista': B('lizard-gecko') },
     peixe: { Betta: B('fish-betta') },
     cobra: { 'Corn snake': B('snake-corn') },
   };
   // Mascote do pet: raça + sexo (fêmeas usam a versão com óculos e coleira rosa)
-  const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png' };
+  const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png', galinha: IMG + 'galo.png' };
+  const femaleSpeciesImages = { galinha: IMG + 'galinha-f.png' };
   const breedImg = (sp, breed, sex) => {
     const src = (breedImages[sp] && breedImages[sp][breed]) || species[sp].img;
-    return female(sex) ? femaleImg(src) : (maleSpeciesImages[sp] || src);
+    return female(sex) ? (femaleSpeciesImages[sp] || femaleImg(src)) : (maleSpeciesImages[sp] || src);
   };
 
   const reminderTypes = {

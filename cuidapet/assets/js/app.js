@@ -324,7 +324,7 @@
   });
 
   /* Cadastro e edição usam o mesmo formulário */
-  const blankPet = () => ({ species: 'cachorro', name: '', sex: 'Macho', breed: '', birth: '', weight: '', neutered: false, chip: '', photo: null });
+  const blankPet = () => ({ species: 'cachorro', name: '', sex: 'Macho', breed: '', birth: '', weight: '', neutered: false, chip: '', registration: '', photo: null });
 
   const speciesGrid = (np) => {
     const q = ui.spQuery.trim().toLowerCase();
@@ -378,6 +378,7 @@
             <small>${recs.length ? recs.map((v) => esc(v.name.split(' (')[0].split(':')[0])).join(' · ') : 'Informe o nascimento para ver as vacinas e datas que o app vai calcular.'}</small></div>
           </div>
           ${field('Microchip (opcional)', `<input data-model="chip" value="${esc(np.chip || '')}" inputmode="numeric" placeholder="000 000 000 000 000">`)}
+          ${field('CPF / registro do pet (opcional)', `<input data-model="registration" value="${esc(np.registration || '')}" inputmode="text" maxlength="32" placeholder="CPF, RGA ou outro número">`)}
           <label class="card v-remind" style="margin:0 0 16px">
             <span class="t">${icon('shield', 20)} Castrado(a)</span>
             <span class="switch"><input type="checkbox" data-model-check="neutered" ${np.neutered ? 'checked' : ''} aria-label="Castrado"><span></span></span>
@@ -523,7 +524,7 @@
     } else {
       const rows = [
         ['Espécie', s.label], ['Raça / tipo', esc(p.breed)], ['Sexo', p.sex || '—'], ['Nascimento', p.birth ? `${fmtDate(p.birth)} (${ageText(p.birth)})` : '—'],
-        ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', esc(p.chip) || '—'],
+        ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', esc(p.chip) || '—'], ['CPF / registro', esc(p.registration) || '—'],
       ];
       body = `
         <div class="card kv-list">${rows.map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>
@@ -552,8 +553,8 @@
           <button class="btn sm" data-act="bookFor" data-arg="${p.id}|consulta">${icon('calendar', 16)} Agendar consulta</button>
           <button class="btn sm ghost" data-act="petTab" data-arg="produtos">${icon('bag', 16)} Itens para ${esc(p.name)}</button>
         </div>
-        <div class="seg tabs4" role="tablist">
-          ${[['carteira', 'Carteira'], ['cuidados', 'Cuidados'], ['produtos', 'Produtos'], ['dados', 'Dados']].map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-act="petTab" data-arg="${k}" role="tab">${l}</button>`).join('')}
+        <div class="seg tabs4 pet-tabs" role="tablist" aria-label="Seções do perfil do pet">
+          ${[['carteira', 'Carteira'], ['cuidados', 'Cuidados'], ['produtos', 'Produtos'], ['dados', 'Dados']].map(([k, l], i) => `<button class="${tab === k ? 'on' : ''}" data-tab-index="${i}" data-act="petTab" data-arg="${k}" role="tab" aria-selected="${tab === k}">${l}</button>`).join('')}
         </div>
         ${body}
       </div>`,
@@ -601,9 +602,9 @@
       <div class="view">
         <div class="topbar left"><h1>${hasVaccine(p.species) ? 'Vacinas' : 'Saúde'}</h1><button class="icon-btn" data-act="share" aria-label="Compartilhar carteira">${icon('file')}</button></div>
         <div class="shop-for"><small>${walletName(p.species)} de</small>${petChip()}</div>
-        <div class="seg" role="tablist">
-          <button class="${ui.vacTab === 'geral' ? 'on' : ''}" data-act="vacTab" data-arg="geral" role="tab">Visão geral</button>
-          <button class="${ui.vacTab === 'hist' ? 'on' : ''}" data-act="vacTab" data-arg="hist" role="tab">Histórico</button>
+        <div class="seg vac-tabs" role="tablist" aria-label="Seções da carteira">
+          <button class="${ui.vacTab === 'geral' ? 'on' : ''}" data-tab-index="0" data-act="vacTab" data-arg="geral" role="tab" aria-selected="${ui.vacTab === 'geral'}">Visão geral</button>
+          <button class="${ui.vacTab === 'hist' ? 'on' : ''}" data-tab-index="1" data-act="vacTab" data-arg="hist" role="tab" aria-selected="${ui.vacTab === 'hist'}">Histórico</button>
         </div>
         ${body}
       </div>`,
@@ -705,8 +706,8 @@
       <div class="view">
         ${topbar('Lembretes')}
         <div class="shop-for"><small>Lembretes de</small>${petChip()}</div>
-        <div class="seg" role="tablist">
-          ${[['vacinas', 'Vacinas'], ['vermifugos', 'Vermífugos'], ['outros', 'Outros']].map(([k, l]) => `<button class="${tab === k ? 'on' : ''}" data-act="remTab" data-arg="${k}" role="tab">${l}</button>`).join('')}
+        <div class="seg rem-tabs" role="tablist" aria-label="Categorias de lembretes">
+          ${[['vacinas', 'Vacinas'], ['vermifugos', 'Vermífugos'], ['outros', 'Outros']].map(([k, l], i) => `<button class="${tab === k ? 'on' : ''}" data-tab-index="${i}" data-act="remTab" data-arg="${k}" role="tab" aria-selected="${tab === k}">${l}</button>`).join('')}
         </div>
         <div class="list">${list}</div>
         <button class="btn" style="margin-top:22px" data-act="openReminder">${icon('plus', 20)} Adicionar lembrete</button>
@@ -755,9 +756,9 @@
       html: `
       <div class="view">
         ${topbar('Agenda de consultas', `<button class="icon-btn" data-go="#/agendar" aria-label="Nova consulta">${icon('plus')}</button>`)}
-        <div class="seg" role="tablist">
-          <button class="${tab === 'proximas' ? 'on' : ''}" data-act="agTab" data-arg="proximas" role="tab">Próximas</button>
-          <button class="${tab === 'hist' ? 'on' : ''}" data-act="agTab" data-arg="hist" role="tab">Histórico</button>
+        <div class="seg agenda-tabs" role="tablist" aria-label="Seções da agenda">
+          <button class="${tab === 'proximas' ? 'on' : ''}" data-tab-index="0" data-act="agTab" data-arg="proximas" role="tab" aria-selected="${tab === 'proximas'}">Próximas</button>
+          <button class="${tab === 'hist' ? 'on' : ''}" data-tab-index="1" data-act="agTab" data-arg="hist" role="tab" aria-selected="${tab === 'hist'}">Histórico</button>
         </div>
         <div class="list">${list.length ? list.map((a) => {
           const p = petById(a.petId);
@@ -1343,6 +1344,14 @@
     if (view.after) view.after();
   };
 
+  const renderTabChange = () => {
+    if (document.startViewTransition && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.startViewTransition(() => render(true));
+    } else {
+      render(true);
+    }
+  };
+
   const go = (hash) => {
     if (hash === location.hash) return render();
     navStack.push(location.hash || '#/home');
@@ -1396,7 +1405,7 @@
       ui.booking = { petId, service, clinic: 'centro', date: iso(1), time: null, notes };
       go('#/agendar');
     },
-    agTab(t) { ui.agTab = t; render(true); },
+    agTab(t) { ui.agTab = t; renderTabChange(); },
     bk(arg) {
       const i = arg.indexOf(':');
       const k = arg.slice(0, i);
@@ -1452,9 +1461,9 @@
     },
     openNotif(id, el) { S.active = id; save(); go(el.dataset.then); },
     petSheet,
-    petTab(t) { ui.petTab = t; render(true); },
-    vacTab(t) { ui.vacTab = t; render(true); },
-    remTab(t) { ui.remTab = t; render(true); },
+    petTab(t) { ui.petTab = t; renderTabChange(); },
+    vacTab(t) { ui.vacTab = t; renderTabChange(); },
+    remTab(t) { ui.remTab = t; renderTabChange(); },
     share() { toast(`Ficha de ${pet().name} pronta para enviar ao veterinário`); },
     chat() { toast('Um veterinário vai responder em instantes'); },
     addCart(id) {
@@ -1665,6 +1674,7 @@
         weight: np.weight ? Number(np.weight) : null,
         neutered: !!np.neutered,
         chip: (np.chip || '').trim(),
+        registration: (np.registration || '').trim(),
         photo: np.photo || null,
       };
       const editId = form.dataset.edit;
