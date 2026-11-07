@@ -179,16 +179,22 @@
     porquinho: { 'Inglês (pelo curto)': B('porquinho-ingles-pelo-curto'), Abissínio: B('porquinho-abissinio'), Peruano: B('porquinho-peruano'), Rex: B('porquinho-rex') },
     furao: { Sable: B('furao-sable'), Albino: B('furao-albino'), Canela: B('furao-canela'), Champagne: B('furao-champagne') },
     pato: { 'Pato-de-pequim': { male: B('pato-pequim'), female: B('pato-pequim-f') }, 'Pato-real (Mallard)': { male: B('pato-mallard'), female: B('pato-mallard-f') }, 'Pato-corredor-indiano': { male: B('pato-corredor-indiano'), female: B('pato-corredor-indiano-f') }, Marreco: { male: B('pato-marreco'), female: B('pato-marreco-f') } },
+    anfibio: { Axolote: { male: B('anfibio-axolote'), female: B('anfibio-axolote-f') }, 'Sapo-boi (Pacman)': { male: B('anfibio-sapo-pacman'), female: B('anfibio-sapo-pacman-f') }, 'Perereca-de-olhos-vermelhos': { male: B('anfibio-perereca-olhos-vermelhos'), female: B('anfibio-perereca-olhos-vermelhos-f') }, 'Rã-touro': { male: B('anfibio-ra-touro'), female: B('anfibio-ra-touro-f') } },
+    aranha: { 'Caranguejeira-brasileira': { male: B('aranha-caranguejeira-brasileira'), female: B('aranha-caranguejeira-brasileira-f') }, 'Tarântula Chilean Rose': { male: B('aranha-chilean-rose'), female: B('aranha-chilean-rose-f') }, 'Tarântula Red Knee': { male: B('aranha-red-knee'), female: B('aranha-red-knee-f') }, 'Tarântula Pink Toe': { male: B('aranha-pink-toe'), female: B('aranha-pink-toe-f') } },
+    bovino: { Nelore: { male: B('bovino-nelore'), female: B('bovino-nelore-f') }, Angus: { male: B('bovino-angus'), female: B('bovino-angus-f') }, Girolando: { male: B('bovino-girolando'), female: B('bovino-girolando-f') }, Holandesa: { male: B('bovino-holandesa'), female: B('bovino-holandesa-f') } },
+    ovelha: { 'Santa Inês': { male: B('ovelha-santa-ines'), female: B('ovelha-santa-ines-f') }, Dorper: { male: B('ovelha-dorper'), female: B('ovelha-dorper-f') }, Merino: { male: B('ovelha-merino'), female: B('ovelha-merino-f') }, Suffolk: { male: B('ovelha-suffolk'), female: B('ovelha-suffolk-f') } },
+    cabra: { Saanen: { male: B('cabra-saanen'), female: B('cabra-saanen-f') }, 'Anglo-nubiana': { male: B('cabra-anglo-nubiana'), female: B('cabra-anglo-nubiana-f') }, Boer: { male: B('cabra-boer'), female: B('cabra-boer-f') }, Moxotó: { male: B('cabra-moxoto'), female: B('cabra-moxoto-f') } },
     cavalo: { 'Mangalarga Marchador': B('cavalo-mangalarga-marchador'), 'Árabe': B('cavalo-arabe'), 'Crioulo': B('cavalo-crioulo'), 'Quarto de Milha': B('cavalo-quarto-de-milha') },
     jabuti: { 'Jabuti-piranga': B('jabuti-piranga'), 'Jabuti-tinga': B('jabuti-tinga') },
-    tartaruga: { 'Tigre-d\'água': B('tartaruga-tigre-dagua'), 'Cágado-de-barbicha': B('jabuti-cagado-barbicha') },
+    tartaruga: { 'Tigre-d\'água': B('tartaruga-tigre-dagua'), 'Cágado-de-barbicha': B('jabuti-cagado-barbicha'), 'Muçuã': { male: B('tartaruga-mucua'), female: B('tartaruga-mucua-f') } },
     passaro: {
       'Canário-belga': B('bird-canario'), Calopsita: B('bird-calopsita'), 'Periquito-australiano': B('bird-periquito'), Papagaio: B('bird-papagaio'), Agapornis: B('bird-agapornis'),
     },
     galinha: { Caipira: { male: IMG + 'galo.png', female: IMG + 'galinha-f.png' }, Brahma: { male: B('galinha-brahma'), female: B('galinha-brahma-f') }, 'Garnisé': { male: B('galinha-garnise'), female: B('galinha-garnise-f') }, 'Rhode Island Red': { male: B('galinha-rhode-island-red'), female: B('galinha-rhode-island-red-f') } },
-    iguana: { 'Pogona (Dragão-barbudo)': B('lizard-pogona'), 'Gecko-leopardo': B('lizard-gecko'), 'Gecko-de-crista': B('lizard-gecko') },
-    peixe: { Betta: B('fish-betta') },
-    cobra: { 'Corn snake': B('snake-corn') },
+    iguana: { 'Iguana-verde': { male: B('iguana-iguana-verde'), female: B('iguana-iguana-verde-f') }, 'Pogona (Dragão-barbudo)': B('lizard-pogona'), 'Gecko-leopardo': B('lizard-gecko'), 'Gecko-de-crista': B('lizard-gecko'), 'Teiú': { male: B('iguana-teiu'), female: B('iguana-teiu-f') } },
+    peixe: { Betta: B('fish-betta'), Kinguio: { male: B('peixe-kinguio'), female: B('peixe-kinguio-f') }, Guppy: { male: B('peixe-guppy'), female: B('peixe-guppy-f') }, 'Peixe-palhaço (marinho)': { male: B('peixe-palhaco'), female: B('peixe-palhaco-f') } },
+    porco: { 'Mini pig': { male: B('porco-mini-pig'), female: B('porco-mini-pig-f') }, Vietnamita: { male: B('porco-vietnamita'), female: B('porco-vietnamita-f') }, Kunekune: { male: B('porco-kunekune'), female: B('porco-kunekune-f') }, Juliana: { male: B('porco-juliana'), female: B('porco-juliana-f') } },
+    cobra: { 'Píton-real (Ball python)': { male: B('cobra-piton-real-ball-python'), female: B('cobra-piton-real-ball-python-f') }, Jiboia: { male: B('cobra-jiboia'), female: B('cobra-jiboia-f') }, 'King snake': { male: B('cobra-king-snake'), female: B('cobra-king-snake-f') }, 'Corn snake': B('snake-corn') },
   };
   // Mascote do pet: raça + sexo (fêmeas usam a versão com óculos e coleira rosa)
   const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png', galinha: IMG + 'galo.png' };

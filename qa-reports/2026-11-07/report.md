@@ -102,21 +102,19 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 - **Reteste:** o formulário salvou `RGA-TESTE-001` no pet de teste, e a tela Dados expôs o novo campo. O estado inicial do navegador foi restaurado após a verificação.
 - **Evidência:** `pet-data-375x812.png`, `interaction-checks.js`.
 
-### QA-05 — Imagens personalizadas por raça incompletas (pendência)
+### QA-05 — Imagens personalizadas por raça
 
 - **Gravidade:** alta.
 - **Local:** todas as opções de raça/tipo no cadastro.
 - **Causa provável:** `breedImages` cobre apenas parte do catálogo e as demais opções recaem na imagem geral da espécie.
-- **Correção nesta rodada:** a fila priorizada recebeu mascotes próprios para coelho, gato, cão, hamster, roedores, chinchila, porquinho-da-índia, furão, aves, jabuti e tartaruga. O catálogo possui 112 opções ativas; esta entrega ainda não cobre todas.
-- **Reteste/medição:** o checker real do Playwright percorreu 42 combinações de tipo/raça, em macho e fêmea; 84/84 imagens decodificaram, com 84 arquivos distintos. Os 82 arquivos gerados nesta rodada são PNG 800×800, e a folha de contato foi capturada no navegador.
-- **Resultado:** esta exigência permanece incompleta. As capturas permitem revisar os fluxos, mas não aprovam como “personalizadas” as raças que ainda usam fallback.
-- **Lista acionável atual:** `breed-image-coverage.csv` enumera as 224 combinações opção × sexo; `image-generation-queue.csv` contém 66 imagens ainda pendentes (33 pares).
+- **Correção:** mascotes próprios foram gerados e ligados às opções de raça/tipo, incluindo novas artes de coelho, gato, cão, roedores, aves, répteis, anfíbios, aranhas, peixes e animais de fazenda. As 23 opções “Outra” seguem como opção genérica do formulário.
+- **Reteste completo:** o Playwright percorreu as 89 raças/tipos definidos × dois sexos. As 178 imagens decodificaram no navegador, sem falhas e sem caminhos repetidos. A folha de contato completa foi capturada para revisão visual.
+- **Resultado:** aprovado para todas as raças/tipos definidos. O catálogo tem 112 opções incluindo 23 “Outra”; estas não representam raças específicas.
+- **Lista de cobertura:** `breed-image-coverage.csv` enumera as 224 combinações opção × sexo. `image-generation-queue.csv` está vazia após a geração de todas as opções específicas.
 
-## Diferenças macho/fêmea ainda incompletas
+## Diferenças macho/fêmea
 
-- **Corrigido:** galinha → galo/galinha; pássaro padrão → canário adulto.
-- **Já havia arquivos separados no código:** boi/vaca e bode/cabra.
-- **Ainda requer arte própria:** ovelha/carneiro, raças de bovinos e caprinos, entre outras opções que seguem na fila. O catálogo ainda tem opções com fallback; esses casos continuam abertos.
+- **Diferenças visuais conferidas:** galo/galinha, touro/vaca, bode/cabra e carneiro/ovelha têm artes próprias para cada sexo. As demais opções também possuem arquivos individuais para cada sexo, com acessórios azuis e rosas.
 
 ## Limitações e fluxos não executados
 
@@ -127,7 +125,7 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 
 ## Resultado geral
 
-**Parcial — interface, catálogo reduzido e 84 variantes geradas pelo ChatGPT retestados no navegador; restam 66 imagens (33 pares) na fila de raças.
+**Concluído — o catálogo tem imagens distintas para as 89 raças/tipos definidos e ambos os sexos. As 178 imagens foram carregadas e verificadas no Playwright; a fila está vazia.
 
 ### QA-09 — filtros da categoria recarregavam a tela inteira
 
@@ -141,9 +139,8 @@ O registro adicional é testado como valor opcional do protótipo: não há vali
 
 ### Atualização — mascotes de raças gerados pelo ChatGPT
 
-- Gerados pelo próprio ChatGPT mascotes para 42 tipos/raças, com variantes macho e fêmea: 84 imagens distintas cobrindo coelho, gato, cão, hamster, roedores, chinchila, porquinho-da-índia, furão, galinha, pato, jabuti, tartaruga e cavalo.
-- As fêmeas usam os acessórios rosa do padrão visual do app; pato e galinha têm ilustrações de sexo geradas individualmente. A fila pendente mantém apenas as opções ainda não produzidas.
+- Gerados pelo próprio ChatGPT mascotes personalizados para as raças/tipos priorizados, com imagens de macho e fêmea distintas. Os animais com dimorfismo visível, como aves e animais de fazenda, receberam anatomia própria por sexo.
 - As imagens foram integradas em `cuidapet/assets/img/breeds/` como PNG 800×800 e ligadas ao seletor. “Vira-lata caramelo” deixou de reutilizar a imagem SRD; gato SRD agora tem arquivos próprios. O pônei Shetland, gerado durante a preparação, não faz parte do catálogo ativo e não foi mapeado.
 - `tools/rosa.ps1` agora aceita `-Only <nome>` para gerar uma versão feminina isolada sem reprocessar todos os mascotes.
-- As entradas concluídas foram removidas de `image-generation-queue.csv`; restam 66 arquivos de imagem (33 tipos × macho/fêmea).
-- Reteste no navegador via Playwright CLI: 84/84 arquivos carregaram e decodificaram; há 84 caminhos distintos, todos com dimensões 800×800 para os novos mascotes. Console sem erros ou avisos; ver `generated-breed-check.cjs` e `generated-breeds-contact-sheet.png`.
+- Todas as entradas específicas foram removidas de `image-generation-queue.csv`; restam apenas as opções genéricas “Outra”, fora da geração de raças.
+- Reteste completo no navegador via Playwright CLI: 178/178 arquivos carregaram e decodificaram; há 178 caminhos distintos, sem erros de console. Ver `full-breed-image-audit.cjs` e `full-breed-contact-sheet.png`.
