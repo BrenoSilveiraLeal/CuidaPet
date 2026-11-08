@@ -37,9 +37,21 @@
   let bootError = null;
   const save = () => { if (S) Store.save(S); };
 
-  const ui = { vacTab: 'geral', remTab: 'vacinas', petTab: 'carteira', agTab: 'proximas', query: '', spQuery: '', newPet: null, pd: null, booking: null };
+  const ui = { vacTab: 'geral', remTab: 'vacinas', petTab: 'carteira', agTab: 'proximas', query: '', spQuery: '', newPet: null, pd: null, booking: null, pendingBackup: null, photoCrop: null };
   let timers = [];
-  let navStack = [];
+  const NAV_STACK_STATE = '__cuidapetNavStack';
+  const NAV_ROUTE_STATE = '__cuidapetRoute';
+  let photoCropDrag = null;
+  let navStack = history.state?.[NAV_ROUTE_STATE] === location.hash
+    && Array.isArray(history.state?.[NAV_STACK_STATE])
+    ? [...history.state[NAV_STACK_STATE]]
+    : [];
+  const persistNavStack = () => history.replaceState({
+    ...(history.state && typeof history.state === 'object' ? history.state : {}),
+    [NAV_ROUTE_STATE]: location.hash,
+    [NAV_STACK_STATE]: [...navStack],
+  }, '', location.href);
+  persistNavStack();
 
   /* ------------------------------------------------------------ Utilidades */
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -54,12 +66,32 @@
       : `<span class="avatar user"${st}>${esc(firstName()[0].toUpperCase())}</span>`;
   };
   const product = (id) => products.find((p) => p.id === id);
+  const ratingSummary = (p) => {
+    const reviews = (S?.orders || []).flatMap((order) => order.products || [])
+      .filter((item) => item.id === p.id && item.review)
+      .map((item) => item.review.rating);
+    const count = p.reviews + reviews.length;
+    const average = count ? (p.rating * p.reviews + reviews.reduce((sum, rating) => sum + rating, 0)) / count : p.rating;
+    return { count, average };
+  };
   const main = (list) => list.find((x) => x.main) || list[0];
 
-  const ageMonths = (birth) => (birth ? Math.floor(-daysUntil(birth) / 30.44) : null);
-  const ageText = (birth) => {
-    const m = ageMonths(birth);
-    if (m === null) return 'idade não informada';
+  const maxPlausibleAge = (speciesId) => {
+    const years = (species[speciesId]?.life.match(/\d+(?:[.,]\d+)?/g) || []).map((n) => Number(n.replace(',', '.')));
+    return years.length ? Math.ceil(Math.max(...years) * 1.5) : 40;
+  };
+  const earliestBirthDate = (speciesId) => iso(-Math.round(maxPlausibleAge(speciesId) * 365.2425));
+  const validDate = (value) => {
+    const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || '');
+    if (!parts || Number(parts[1]) < 1000) return false;
+    const date = new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
+    return date.getFullYear() === Number(parts[1]) && date.getMonth() === Number(parts[2]) - 1 && date.getDate() === Number(parts[3]);
+  };
+  const validPetBirth = (birth, speciesId) => !birth || (validDate(birth) && birth >= earliestBirthDate(speciesId) && birth <= iso(0));
+  const ageMonths = (birth, speciesId) => (validPetBirth(birth, speciesId) && birth ? Math.max(0, Math.floor(-daysUntil(birth) / 30.44)) : null);
+  const ageText = (p) => {
+    const m = ageMonths(p.birth, p.species);
+    if (m === null) return p.birth ? 'data de nascimento inválida' : 'idade não informada';
     if (m < 1) return 'recém-chegado';
     if (m < 12) return `${m} ${m === 1 ? 'mês' : 'meses'}`;
     const y = Math.floor(m / 12);
@@ -83,10 +115,8 @@
   };
   const lostPetCard = (p) => {
     if (!p.lost?.active) return `
-      <section class="lost-entry" aria-labelledby="lostEntryTitle">
-        <span class="r-ic">${icon('search', 20)}</span>
-        <div class="lost-entry-copy"><strong id="lostEntryTitle">Ajude a encontrar seu pet</strong><small>Se ele se perder, gere um alerta com foto, local e contato.</small></div>
-        <button class="btn sm lost-trigger" data-act="lostPet" data-arg="${p.id}">Avisar que se perdeu</button>
+      <section class="lost-entry" aria-label="Alerta de desaparecimento">
+        <button class="lost-trigger" data-act="lostPet" data-arg="${p.id}" aria-label="Avisar que ${esc(p.name)} se perdeu">${icon('search', 15)}<span>Avisar que se perdeu</span></button>
       </section>`;
     const message = lostMessage(p);
     return `
@@ -131,8 +161,9 @@
     const n = applied.length;
     const fem = v.kind !== 'exame';
     const ages = v.ages;
-    const ageW = p.birth ? -daysUntil(p.birth) / 7 : null;
-    const ageAtW = (date) => (p.birth ? (new Date(date + 'T00:00:00') - new Date(p.birth + 'T00:00:00')) / 6048e5 : null);
+    const birth = validPetBirth(p.birth, p.species) ? p.birth : '';
+    const ageW = birth ? Math.max(0, -daysUntil(birth) / 7) : null;
+    const ageAtW = (date) => (birth ? (new Date(date + 'T00:00:00') - new Date(birth + 'T00:00:00')) / 6048e5 : null);
     // Esquema de filhote: começou (ou ainda pode começar) dentro da janela de idade das doses de filhote
     const lastPuppyW = ages[ages.length - 1];
     const startW = n ? ageAtW(applied[0]) : ageW;
@@ -142,8 +173,8 @@
     const plan = [];
     for (let i = 0; i < series; i++) {
       let due = null;
-      if (i === 0) due = p.birth ? addDays(p.birth, ages[0] * 7) : null;
-      else if (puppy) due = applied[i - 1] ? addDays(applied[i - 1], (ages[i] - ages[i - 1]) * 7) : p.birth ? addDays(p.birth, ages[i] * 7) : null;
+      if (i === 0) due = birth ? addDays(birth, ages[0] * 7) : null;
+      else if (puppy) due = applied[i - 1] ? addDays(applied[i - 1], (ages[i] - ages[i - 1]) * 7) : birth ? addDays(birth, ages[i] * 7) : null;
       else due = applied[i - 1] ? addDays(applied[i - 1], v.gap) : null;
       plan.push({ n: i + 1, due, taken: applied[i] || null, ageW: puppy || i === 0 ? ages[i] : null, booster: false });
     }
@@ -216,7 +247,7 @@
 
   // Produtos indicados: respeita a fase de vida (filhote x adulto x sênior)
   const recommended = (p) => {
-    const m = ageMonths(p.birth);
+    const m = ageMonths(p.birth, p.species);
     const all = products.filter((x) => x.sp === p.species);
     const stage = m === null ? null : m < 12 ? 'Filhotes' : m >= 84 ? 'Sênior' : 'Adultos';
     return all.filter((x) => !['Filhotes', 'Sênior', 'Adultos'].includes(x.tag) || x.tag === stage || (stage === 'Sênior' && x.tag === 'Adultos'));
@@ -286,6 +317,63 @@
     }, delay);
   };
 
+  const photoCropMarkup = (label) => `
+    <h3>Ajustar foto</h3>
+    <p class="muted">Enquadre a foto do ${label}. Arraste a imagem ou ajuste os controles de zoom e posição.</p>
+    <div class="photo-crop-preview" data-crop-preview><img src="${ui.photoCrop.src}" alt="Prévia da foto" draggable="false"></div>
+    <div class="photo-crop-controls">
+      <label class="photo-crop-control"><span>Zoom <output data-crop-value="zoom">100%</output></span><input type="range" min="1" max="3" step="0.05" value="1" data-photo-crop="zoom" aria-label="Zoom da foto"></label>
+      <label class="photo-crop-control"><span>Esquerda / direita <output data-crop-value="x">Centro</output></span><input type="range" min="-100" max="100" step="1" value="0" data-photo-crop="x" aria-label="Posição horizontal da foto"></label>
+      <label class="photo-crop-control"><span>Acima / abaixo <output data-crop-value="y">Centro</output></span><input type="range" min="-100" max="100" step="1" value="0" data-photo-crop="y" aria-label="Posição vertical da foto"></label>
+    </div>
+    <div class="photo-crop-actions"><button class="btn ghost" data-act="photoCropCancel">Cancelar</button><button class="btn" data-act="photoCropSave">Usar foto</button></div>`;
+  const updatePhotoCropPreview = () => {
+    const crop = ui.photoCrop;
+    const preview = sheet.querySelector('[data-crop-preview]');
+    const image = preview?.querySelector('img');
+    if (!crop || !preview || !image) return;
+    const box = preview.getBoundingClientRect();
+    const scale = Math.max(box.width / crop.image.naturalWidth, box.height / crop.image.naturalHeight) * crop.zoom;
+    const width = crop.image.naturalWidth * scale;
+    const height = crop.image.naturalHeight * scale;
+    image.style.width = `${width}px`;
+    image.style.height = `${height}px`;
+    image.style.left = `${(box.width - width) / 2 + crop.x / 100 * Math.max(0, width - box.width) / 2}px`;
+    image.style.top = `${(box.height - height) / 2 + crop.y / 100 * Math.max(0, height - box.height) / 2}px`;
+    const inputs = [...sheet.querySelectorAll('[data-photo-crop]')];
+    inputs.forEach((input) => {
+      if (input.dataset.photoCrop === 'zoom') input.disabled = false;
+      else {
+        const available = input.dataset.photoCrop === 'x' ? width > box.width + 1 : height > box.height + 1;
+        input.disabled = !available;
+      }
+    });
+  };
+  const openPhotoCrop = (src, image, target) => {
+    ui.photoCrop = { src, image, target, zoom: 1, x: 0, y: 0 };
+    openSheet(photoCropMarkup(target === 'user' ? 'seu perfil' : 'seu pet'));
+    requestAnimationFrame(updatePhotoCropPreview);
+  };
+  const finishPhotoCrop = () => {
+    const crop = ui.photoCrop;
+    if (!crop) return;
+    const { image, target, zoom, x, y } = crop;
+    const side = Math.min(image.naturalWidth, image.naturalHeight) / zoom;
+    const sx = (image.naturalWidth - side) * (100 - x) / 200;
+    const sy = (image.naturalHeight - side) * (100 - y) / 200;
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 480;
+    canvas.getContext('2d').drawImage(image, sx, sy, side, side, 0, 0, canvas.width, canvas.height);
+    const photo = canvas.toDataURL('image/jpeg', 0.86);
+    const isUser = target === 'user';
+    ui.photoCrop = null;
+    if (isUser) { S.profile.photo = photo; save(); }
+    else if (ui.newPet) ui.newPet.photo = photo;
+    closeSheet();
+    render(true);
+    if (isUser) toast('Foto do tutor atualizada');
+  };
+
   /* ------------------------------------------------------------ Componentes */
   const topbar = (title, right = '<span></span>', back = true) => `
     <div class="topbar">
@@ -305,24 +393,29 @@
 
   const field = (label, inner, cls = '') => `<label class="field ${cls}"><span>${label}</span><span class="input">${inner}</span></label>`;
 
-  const pcard = (p) => `
+  const pcard = (p) => {
+    const rating = ratingSummary(p);
+    return `
     <button class="pcard" data-go="#/produto/${p.id}">
       ${p.old ? `<span class="badge-off">-${discount(p)}%</span>` : ''}
       ${art(p)}
       <strong>${p.name}</strong>
-      <span class="stars">★ ${p.rating.toLocaleString('pt-BR')} <small>(${p.reviews})</small></span>
+      <span class="stars">★ ${rating.average.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} <small>(${rating.count})</small></span>
       <span class="pc-row">
         <span>${p.old ? `<span class="price-old">${brl(p.old)}</span><br>` : ''}<span class="price">${brl(p.price)}</span></span>
         <span class="add-mini" data-act="addCart" data-arg="${p.id}" role="button" aria-label="Adicionar ao carrinho">${icon('plus', 18)}</span>
       </span>
     </button>`;
+  };
 
-  const prow = (p) => `
+  const prow = (p) => {
+    const rating = ratingSummary(p);
+    return `
     <div class="prow">
       <button data-go="#/produto/${p.id}" class="prow-art" aria-label="${p.name}">${art(p)}</button>
       <div class="pr-main">
         <strong>${p.name}</strong>
-        <span class="stars">★ ${p.rating.toLocaleString('pt-BR')} <small>(${p.reviews})</small></span>
+        <span class="stars">★ ${rating.average.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} <small>(${rating.count})</small></span>
         <span>${p.old ? `<span class="price-old">${brl(p.old)}</span> ` : ''}<span class="price">${brl(p.price)}</span></span>
       </div>
       <div class="pr-side">
@@ -330,6 +423,7 @@
         <button class="btn sm" data-act="addCart" data-arg="${p.id}">Adicionar</button>
       </div>
     </div>`;
+  };
 
   const levelTag = (v) => `<span class="lv ${C.levels[v.level].cls}">${C.levels[v.level].label}</span>`;
   const vrow = ({ v, st, label }) => `
@@ -408,7 +502,7 @@
     const preview = np.photo
       ? `<span class="avatar photo"><img src="${np.photo}" alt="Foto do pet"></span>`
       : `<span class="avatar"><img src="${C.breedImg(np.species, np.breed || s.breeds[0], np.sex)}" alt=""></span>`;
-    const recs = np.birth ? vaccinesFor({ ...np, breed: np.breed || s.breeds[0] }) : [];
+    const recs = np.birth && validPetBirth(np.birth, np.species) ? vaccinesFor({ ...np, breed: np.breed || s.breeds[0] }) : [];
     return {
       cls: 'no-tabbar',
       html: `
@@ -437,7 +531,7 @@
           </div>
           ${field('Raça / tipo', `<select data-model="breed">${[...new Set([...s.breeds, ...(np.breed && !s.breeds.includes(np.breed) ? [np.breed] : [])])].map((b) => `<option ${b === np.breed ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>${icon('down', 18)}`)}
           <div class="field-row">
-            ${field('Nascimento', `<input type="date" data-model="birth" value="${np.birth}" max="${iso(0)}">`)}
+            ${field('Nascimento', `<input type="date" data-model="birth" value="${np.birth}" min="${earliestBirthDate(np.species)}" max="${iso(0)}">`)}
             ${field('Peso', `<input type="number" inputmode="decimal" min="0" step="0.1" data-model="weight" value="${np.weight ?? ''}" placeholder="0"><span class="suffix">${s.unit}</span>`)}
           </div>
           <div class="card auto-wallet">
@@ -496,7 +590,7 @@
         <div class="pet-hero" data-go="#/pet/${p.id}" role="button" tabindex="0" aria-label="Abrir perfil de ${esc(p.name)}">
           <span class="spc">${paw(14)} ${s.label}</span>
           <h2>${esc(p.name)}</h2>
-          <p>${esc(p.breed)}<br>${ageText(p.birth)} · ${weightText(p)}</p>
+          <p>${esc(p.breed)}<br>${ageText(p)} · ${weightText(p)}</p>
           <span class="hero-actions">
             <button class="btn sm white" data-go="#/editar/${p.id}">${icon('edit', 15)} Editar pet</button>
           </span>
@@ -591,7 +685,7 @@
       }).join('');
     } else {
       const rows = [
-        ['Espécie', s.label], ['Raça / tipo', esc(p.breed)], ['Sexo', p.sex || '—'], ['Nascimento', p.birth ? `${fmtDate(p.birth)} (${ageText(p.birth)})` : '—'],
+        ['Espécie', s.label], ['Raça / tipo', esc(p.breed)], ['Sexo', p.sex || '—'], ['Nascimento', p.birth ? `${validPetBirth(p.birth, p.species) ? fmtDate(p.birth) : 'Data inválida'} (${ageText(p)})` : '—'],
         ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', esc(p.chip) || '—'], ['CPF / registro', esc(p.registration) || '—'],
       ];
       body = `
@@ -613,7 +707,7 @@
           ${p.photo ? `<img class="pet-photo" src="${p.photo}" alt="Foto de ${esc(p.name)}">` : `<img class="pet-img" src="${petImg(p)}" alt="">`}
         </div>
         <div class="stats">
-          <div>${icon('cake', 18)}<strong>${ageText(p.birth)}</strong><small>Idade</small></div>
+          <div>${icon('cake', 18)}<strong>${ageText(p)}</strong><small>Idade</small></div>
           <div>${icon('weight', 18)}<strong>${weightText(p)}</strong><small>Peso</small></div>
           <div>${paw(18)}<strong>${p.sex || '—'}</strong><small>Sexo</small></div>
         </div>
@@ -669,7 +763,7 @@
     return {
       html: `
       <div class="view">
-        <div class="topbar left"><h1>${hasVaccine(p.species) ? 'Vacinas' : 'Saúde'}</h1><button class="icon-btn" data-act="share" aria-label="Compartilhar carteira">${icon('file')}</button></div>
+        <div class="topbar left vet-ficha-topbar"><h1>${hasVaccine(p.species) ? 'Vacinas' : 'Saúde'}</h1><button class="btn sm vet-ficha-trigger" data-act="share">${icon('file', 17)} Gerar ficha</button></div>
         <div class="shop-for"><small>${walletName(p.species)} de</small>${petChip()}</div>
         <div class="seg vac-tabs" role="tablist" aria-label="Seções da carteira">
           <button class="${ui.vacTab === 'geral' ? 'on' : ''}" data-tab-index="0" data-act="vacTab" data-arg="geral" role="tab" aria-selected="${ui.vacTab === 'geral'}">Visão geral</button>
@@ -974,6 +1068,7 @@
       ui.pd = { id, size: p.sizes ? Math.max(0, p.sizes.findIndex((s) => s[1] === p.price)) : 0, qty: 1 };
     }
     const price = p.sizes ? p.sizes[ui.pd.size][1] : p.price;
+    const rating = ratingSummary(p);
     const sp = species[p.sp];
     const active = pet();
     const mismatch = active.species !== p.sp;
@@ -986,7 +1081,7 @@
         <div class="pd-art">${p.old ? `<span class="badge-off" style="position:absolute;top:10px;right:30px;z-index:1">-${discount(p)}%</span>` : ''}${art(p)}</div>
         <span class="for-chip"><img src="${sp.img}" alt="">Para ${sp.plural.toLowerCase()}</span>
         <h1 class="pd-name">${p.name}</h1>
-        <span class="stars">★ ${p.rating.toLocaleString('pt-BR')} <small>(${p.reviews} avaliações) · ${p.brand}</small></span>
+        <span class="stars">★ ${rating.average.toLocaleString('pt-BR', { maximumFractionDigits: 1 })} <small>(${rating.count} avaliações) · ${p.brand}</small></span>
         <div class="pd-price"><span class="price">${brl(price)}</span>${p.old && (!p.sizes || p.sizes[ui.pd.size][1] === p.price) ? `<span class="price-old">${brl(p.old)}</span><span class="badge-off">-${discount(p)}%</span>` : ''}</div>
         ${p.sizes ? `<div class="sizes">${p.sizes.map(([l, v], i) => `<button class="${i === ui.pd.size ? 'on' : ''}" data-act="size" data-arg="${i}">${l}<small>${brl(v)}</small></button>`).join('')}</div>` : ''}
         <div class="sec-title" style="margin-top:4px"><h2>Sobre o produto</h2></div>
@@ -996,7 +1091,7 @@
           <span>${icon('shield', 16)} Troca grátis em 7 dias</span>
         </div>
         ${mismatch ? `<div class="warn">${icon('help', 18)}<span>Este produto é para ${sp.plural.toLowerCase()}. O pet selecionado é ${esc(active.name)} (${spOf(active).label.toLowerCase()}).</span></div>` : ''}
-        ${similar.length ? `<div class="sec-title"><h2>Você também pode gostar</h2></div><div class="hscroll">${similar.map(pcard).join('')}</div>` : ''}
+        ${similar.length ? `<div class="sec-title"><h2>Você também pode gostar</h2></div><div class="similar-products">${similar.slice(0, 3).map(pcard).join('')}</div>` : ''}
         <div class="buybar">
           <div class="stepper"><button data-act="qty" data-arg="-1" aria-label="Diminuir">${icon('minus', 16)}</button><span>${ui.pd.qty}</span><button data-act="qty" data-arg="1" aria-label="Aumentar">${icon('plus', 16)}</button></div>
           <button class="btn" data-act="addDetail">Adicionar ao carrinho</button>
@@ -1102,16 +1197,18 @@
     };
   };
 
-  V.parceiros = () => ({
-    html: `
-    <div class="view">
-      ${topbar('Nossas marcas parceiras')}
-      <p class="muted-sm" style="text-align:center;margin:-6px 0 18px">Produtos de qualidade para o bem-estar do seu pet.</p>
-      <div class="brands">${C.brands.map((b) => `<div class="brand-tile ${b.font}" style="color:${b.color}">${b.name}</div>`).join('')}</div>
-      <div class="sec-title"></div>
-      <button class="promo" data-go="#/loja"><strong>As melhores marcas para quem você ama</strong><small>Do cachorro ao peixinho.</small><span class="btn sm white">Ir à loja</span><img src="${petImg(pet())}" alt=""></button>
-    </div>`,
-  });
+  V.parceiros = () => {
+    const groups = [...new Set(C.brands.map((b) => b.kind))];
+    return {
+      html: `
+      <div class="view">
+        ${topbar('Marcas e serviços')}
+        <p class="brand-note">Exemplos de marcas reais do setor pet. A presença nesta página é demonstrativa e não confirma parceria comercial com o CuidaPet.</p>
+        ${groups.map((kind) => `<section class="brand-group"><div class="sec-title"><h2>${kind}</h2></div><div class="brands">${C.brands.filter((b) => b.kind === kind).map((b) => `<a class="brand-tile ${b.font}" style="--brand-color:${b.color}" href="${b.url}" target="_blank" rel="noopener noreferrer"><strong>${b.name}</strong><small>Visitar site oficial</small></a>`).join('')}</div></section>`).join('')}
+        <button class="promo" data-go="#/loja"><strong>Encontre produtos para quem você ama</strong><small>Do cachorro ao peixinho.</small><span class="btn sm white">Ir à loja</span><img src="${petImg(pet())}" alt=""></button>
+      </div>`,
+    };
+  };
 
   V.mais = () => {
     const items = [
@@ -1145,7 +1242,7 @@
           return `
           <button class="row pet-row" data-go="#/pet/${p.id}">
             ${avatar(p, 56)}
-            <span class="r-main"><strong>${esc(p.name)}</strong><small>${spOf(p).label} · ${esc(p.breed)}</small><small>${ageText(p.birth)} · ${weightText(p)}</small></span>
+            <span class="r-main"><strong>${esc(p.name)}</strong><small>${spOf(p).label} · ${esc(p.breed)}</small><small>${ageText(p)} · ${weightText(p)}</small></span>
             <span class="r-end">${late ? `<span class="status late">${late} atrasado${late > 1 ? 's' : ''}</span>` : '<span class="status ok">Em dia</span>'}${icon('right', 18)}</span>
           </button>`;
         }).join('')}
@@ -1159,12 +1256,17 @@
     <div class="view">
       ${topbar('Meus pedidos')}
       ${S.orders.length
-        ? `<div class="list">${S.orders.slice().reverse().map((o) => {
+        ? `<div class="list">${S.orders.map((o, orderIndex) => ({ o, orderIndex })).reverse().map(({ o, orderIndex }) => {
             const d = daysUntil(o.date);
             const st = d <= -2 ? ['ok', 'Entregue'] : ['soon', 'A caminho'];
-            return `<div class="row"><span class="r-ic">${icon('truck', 22)}</span>
+            const productsHtml = (o.products || []).map((item, itemIndex) => {
+              const bought = product(item.id);
+              if (!bought) return '';
+              return `<div class="order-review-row"><span><strong>${bought.name}</strong><small>${item.size ? `${item.size} · ` : ''}Qtd. ${item.qty}</small></span>${item.review ? `<span class="review-done" aria-label="Avaliado com ${item.review.rating} de 5 estrelas">${'★'.repeat(item.review.rating)}${'☆'.repeat(5 - item.review.rating)} <small>Avaliado</small></span>` : `<button class="link-btn" data-act="reviewProduct" data-arg="${orderIndex}:${itemIndex}">Avaliar produto</button>`}</div>`;
+            }).join('');
+            return `<div class="card order-card"><div class="row"><span class="r-ic">${icon('truck', 22)}</span>
               <span class="r-main"><strong>Pedido #${o.n}</strong><small>${fmtDate(o.date)} · ${o.items} ${o.items > 1 ? 'itens' : 'item'} · ${brl(o.total)}</small></span>
-              <span class="status ${st[0]}">${st[1]}</span></div>`;
+              <span class="status ${st[0]}">${st[1]}</span></div>${productsHtml ? `<div class="order-review-list">${productsHtml}</div>` : ''}</div>`;
           }).join('')}</div>`
         : emptyState('Nenhum pedido ainda', 'Seus pedidos da loja aparecem aqui.', null, '<button class="btn" style="margin-top:18px" data-go="#/loja">Ir para a loja</button>')}
     </div>`,
@@ -1206,7 +1308,7 @@
       <div class="sec-title"><h2>Dados pessoais</h2></div>
       <form data-form="perfil">
         ${field('Nome completo', `<input name="name" value="${esc(S.profile.name)}" autocomplete="name">`)}
-        <div class="field"><span>CPF do tutor (opcional)</span><label class="input"><input name="cpf" value="${esc(fmtCpf(S.profile.cpf || ''))}" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00" aria-describedby="cpfHint"></label><small class="field-hint" id="cpfHint">Fica salvo neste aparelho e não aparece no alerta de pet perdido.</small></div>
+        <div class="field"><span>CPF do tutor</span><label class="input"><input name="cpf" value="${esc(fmtCpf(S.profile.cpf || ''))}" inputmode="numeric" autocomplete="off" maxlength="14" placeholder="000.000.000-00"></label></div>
         ${field('E-mail', `<input name="email" type="email" value="${esc(S.profile.email)}" autocomplete="email" placeholder="opcional">`)}
         ${field('Celular', `<input name="phone" type="tel" value="${esc(S.profile.phone)}" autocomplete="tel">`)}
         <div class="field-row">
@@ -1215,6 +1317,13 @@
         </div>
         <button class="btn" type="submit">Salvar</button>
       </form>
+      <div class="sec-title"><h2>Backup dos seus dados</h2></div>
+      <p class="muted-sm" style="margin:-8px 0 14px">O backup inclui pets, vacinas, consultas e dados pessoais salvos neste aparelho. O arquivo fica com você e não é enviado a um servidor.</p>
+      <div class="list">
+        <button class="row" data-act="exportBackup"><span class="r-ic">${icon('file', 20)}</span><span class="r-main"><strong>Baixar backup</strong><small>Salvar uma cópia em arquivo JSON</small></span><span class="chev">${icon('right', 18)}</span></button>
+        <button class="row" data-act="importBackup"><span class="r-ic">${icon('file', 20)}</span><span class="r-main"><strong>Restaurar backup</strong><small>Carregar uma cópia deste CuidaPet</small></span><span class="chev">${icon('right', 18)}</span></button>
+      </div>
+      <input id="backupImportInput" type="file" accept="application/json,.json" hidden>
       <button class="btn ghost" style="margin-top:10px" data-act="reset">${icon('sparkle', 18)} Restaurar perfil de exemplo</button>
     </div>`,
   });
@@ -1251,7 +1360,7 @@
         </div>`).join('')}</div>
       <button class="btn" style="margin-top:20px" data-act="openCard">${icon('plus', 20)} Adicionar cartão</button>
       ${S.payments.some((x) => x.kind === 'boleto') ? '' : `<button class="btn ghost" style="margin-top:10px" data-act="addBoleto">${icon('file', 18)} Habilitar boleto</button>`}
-      <p class="muted-sm" style="text-align:center;margin-top:14px">${icon('lock', 14)} Protótipo: os dados do cartão não são enviados a lugar nenhum.</p>
+      <p class="muted-sm payment-privacy-note" style="margin-top:14px">${icon('lock', 14)} Protótipo: os dados do cartão não são enviados a lugar nenhum.</p>
     </div>`,
   });
 
@@ -1270,7 +1379,7 @@
         ${sw('lembretes', 'Lembretes', 'Vermífugo, limpeza, unhas e outros')}
         ${sw('ofertas', 'Ofertas e cupons', 'Promoções para os seus pets')}
         <div class="field" style="margin-top:16px"><span>Avisar com antecedência de</span>
-          <div class="seg seg-lead" style="margin:0">${[1, 3, 7, 15].map((d, i) => `<button class="${Number(S.settings.antecedencia) === d ? 'on' : ''}" data-tab-index="${i}" data-act="ahead" data-arg="${d}">${d} ${d > 1 ? 'dias' : 'dia'}</button>`).join('')}</div>
+          <div class="seg tabs4 seg-lead" style="margin:0">${[1, 3, 7, 15].map((d, i) => `<button class="${Number(S.settings.antecedencia) === d ? 'on' : ''}" data-tab-index="${i}" data-act="ahead" data-arg="${d}">${d} ${d > 1 ? 'dias' : 'dia'}</button>`).join('')}</div>
         </div>
         <div class="sec-title"><h2>Dados do protótipo</h2></div>
         <div class="card menu">
@@ -1327,6 +1436,7 @@
   const sidebar = $('#sidebar');
   const deskTop = $('#deskTop');
   let renderedRoute = null;
+  let renderedHash = location.hash;
 
   const renderChrome = (name) => {
     const active = SIDE_OF[name] || 'home';
@@ -1397,6 +1507,7 @@
     if (!V[name]) name = 'home';
     if (!S.pets.length && NEEDS_PET.has(name)) name = 'semPet';
     renderedRoute = { name, args: [...args] };
+    renderedHash = location.hash;
     const view = V[name](...args);
     const isAuth = /\bauth\b/.test(view.cls || '');
     document.body.classList.toggle('is-auth', isAuth);
@@ -1404,6 +1515,19 @@
     const top = screen.scrollTop;
     screen.className = 'screen ' + (view.cls || '');
     screen.innerHTML = view.html;
+    screen.querySelectorAll('.seg').forEach((seg) => {
+      let indicator = seg.querySelector(':scope > .seg-indicator');
+      if (!indicator) {
+        indicator = document.createElement('span');
+        indicator.className = 'seg-indicator';
+        indicator.setAttribute('aria-hidden', 'true');
+        seg.prepend(indicator);
+      }
+      const buttons = [...seg.querySelectorAll(':scope > button')];
+      const first = buttons[0];
+      const selected = buttons.find((button) => button.classList.contains('on'));
+      indicator.style.setProperty('--seg-indicator-offset', `${first && selected ? selected.offsetLeft - first.offsetLeft : 0}px`);
+    });
     if (keepScroll) {
       screen.scrollTop = top;
       const v = screen.querySelector('.view');
@@ -1456,6 +1580,7 @@
     void results.offsetWidth;
     results.classList.add('is-updating');
     renderedRoute = { name: next.name, args: [...next.args] };
+    renderedHash = location.hash;
     return true;
   };
 
@@ -1464,7 +1589,15 @@
     const activeIndexes = new Map([...device.querySelectorAll('.seg')].map((seg) => {
       const key = [...seg.classList].sort().join('.');
       const buttons = [...seg.querySelectorAll(':scope > button')];
-      return [key, buttons.findIndex((button) => button.classList.contains('on'))];
+      return [key, {
+        index: buttons.findIndex((button) => button.classList.contains('on')),
+        colors: buttons.map((button) => getComputedStyle(button).color),
+        position: (() => {
+          const indicator = seg.querySelector(':scope > .seg-indicator');
+          const transform = indicator ? getComputedStyle(indicator).transform : 'none';
+          try { return new DOMMatrixReadOnly(transform).m41; } catch { return 0; }
+        })(),
+      }];
     }));
 
     render(true);
@@ -1472,45 +1605,76 @@
 
     device.querySelectorAll('.seg').forEach((seg) => {
       const key = [...seg.classList].sort().join('.');
-      const oldIndex = activeIndexes.get(key);
+      const previous = activeIndexes.get(key);
+      const oldIndex = previous?.index;
       const buttons = [...seg.querySelectorAll(':scope > button')];
       const newIndex = buttons.findIndex((button) => button.classList.contains('on'));
       if (oldIndex == null || oldIndex < 0 || newIndex < 0 || oldIndex === newIndex) return;
 
-      const firstLeft = buttons[0].offsetLeft;
-      const startX = buttons[oldIndex].offsetLeft - firstLeft;
-      const endX = buttons[newIndex].offsetLeft - firstLeft;
-      seg.classList.add('is-sliding');
-      seg.style.setProperty('--seg-slider-transform', `translateX(${startX}px)`);
-      void getComputedStyle(seg, '::before').transform;
-      requestAnimationFrame(() => seg.style.setProperty('--seg-slider-transform', `translateX(${endX}px)`));
+      if (typeof Element.prototype.animate === 'function') {
+        buttons.forEach((button, i) => {
+          const from = previous.colors[i];
+          const to = getComputedStyle(button).color;
+          if (from === to) return;
+          button.animate([{ color: from }, { color: to }], {
+            duration: 280,
+            easing: 'cubic-bezier(.16, 1, .3, 1)',
+          });
+        });
+      }
 
-      let cleaned = false;
-      let onTransitionEnd;
-      const cleanup = () => {
-        if (cleaned) return;
-        cleaned = true;
-        seg.removeEventListener('transitionend', onTransitionEnd);
-        seg.classList.remove('is-sliding');
-        seg.style.removeProperty('--seg-slider-transform');
-      };
-      onTransitionEnd = (event) => {
-        if (event.pseudoElement === '::before' && event.propertyName === 'transform') cleanup();
-      };
-      seg.addEventListener('transitionend', onTransitionEnd);
-      setTimeout(cleanup, 360);
+      const firstLeft = buttons[0].offsetLeft;
+      const startX = Number.isFinite(previous.position) ? previous.position : buttons[oldIndex].offsetLeft - firstLeft;
+      const endX = buttons[newIndex].offsetLeft - firstLeft;
+      const indicator = seg.querySelector(':scope > .seg-indicator');
+      if (indicator && typeof indicator.animate === 'function') {
+        indicator.animate([
+          { transform: `translateX(${startX}px)` },
+          { transform: `translateX(${endX}px)` },
+        ], { duration: 300, easing: 'cubic-bezier(.16, 1, .3, 1)' });
+      }
+      seg.classList.add('is-sliding');
+      setTimeout(() => seg.classList.remove('is-sliding'), 320);
     });
   };
 
   const go = (hash) => {
-    if (hash === location.hash) return render();
+    if (hash === location.hash) return;
     navStack.push(location.hash || '#/home');
-    location.hash = hash;
+    history.pushState({ [NAV_ROUTE_STATE]: hash, [NAV_STACK_STATE]: [...navStack] }, '', hash);
+    persistNavStack();
+    closeSheet();
+    if (updateCategoryView()) return;
+    render();
   };
-  const replace = (hash) => { location.replace(hash); };
-  const back = () => { location.hash = navStack.pop() || '#/home'; };
+  const replace = (hash) => {
+    if (hash === location.hash) return;
+    history.replaceState({ [NAV_ROUTE_STATE]: hash, [NAV_STACK_STATE]: [...navStack] }, '', hash);
+    persistNavStack();
+    if (updateCategoryView()) return;
+    render();
+  };
+  const back = () => {
+    if (navStack.length) { history.back(); return; }
+    if (location.hash !== '#/home') go('#/home');
+  };
 
   window.addEventListener('hashchange', () => {
+    const state = history.state;
+    navStack = state?.[NAV_ROUTE_STATE] === location.hash && Array.isArray(state?.[NAV_STACK_STATE])
+      ? [...state[NAV_STACK_STATE]]
+      : [];
+    persistNavStack();
+    if (renderedHash === location.hash) return;
+    if (updateCategoryView()) return;
+    closeSheet();
+    render();
+  });
+  window.addEventListener('popstate', (event) => {
+    navStack = event.state?.[NAV_ROUTE_STATE] === location.hash && Array.isArray(event.state?.[NAV_STACK_STATE])
+      ? [...event.state[NAV_STACK_STATE]]
+      : [];
+    persistNavStack();
     if (updateCategoryView()) return;
     closeSheet();
     render();
@@ -1553,6 +1717,8 @@
   const setMain = (list, id) => list.forEach((x) => { x.main = x.id === id; });
 
   const A = {
+    photoCropSave() { finishPhotoCrop(); },
+    photoCropCancel() { ui.photoCrop = null; closeSheet(); },
     // Atalho para agendar a partir do perfil do pet ou de uma vacina: "petId|serviço|observação"
     bookFor(arg) {
       const [petId, service, notes = ''] = arg.split('|');
@@ -1569,6 +1735,7 @@
     confirmAppt() {
       const b = ui.booking;
       if (!b || !b.time) return;
+      if (!validDate(b.date) || b.date < iso(1) || b.date > iso(90)) { toast('Escolha uma data entre amanhã e os próximos 90 dias'); return; }
       S.appointments = S.appointments || [];
       S.appointments.push({ id: 'c' + Date.now().toString(36), petId: b.petId, service: b.service, clinic: b.clinic, date: b.date, time: b.time, notes: b.notes.trim(), status: 'agendado' });
       save();
@@ -1618,7 +1785,29 @@
     petTab(t) { ui.petTab = t; renderTabChange(); },
     vacTab(t) { ui.vacTab = t; renderTabChange(); },
     remTab(t) { ui.remTab = t; renderTabChange(); },
-    share() { toast(`Ficha de ${pet().name} pronta para enviar ao veterinário`); },
+    share() {
+      const p = pet();
+      if (!p) return;
+      const records = petVaccines(p).filter(({ v }) => v.kind === 'vacina');
+      const vaccineRows = records.length
+        ? records.map(({ v, rec, st }) => `<li><strong>${esc(v.name)}</strong><span>${rec?.applied?.length ? `Aplicada${rec.applied.length > 1 ? 's' : ''}: ${rec.applied.map(fmtDate).join(', ')}` : 'Sem registro de aplicação no app'} · ${esc(st.label)}</span></li>`).join('')
+        : '<li><strong>Sem vacinas cadastradas para esta espécie</strong><span>Leve os documentos de saúde disponíveis ao veterinário.</span></li>';
+      openSheet(`
+        <h3>Ficha para consulta veterinária</h3>
+        <p class="muted">Os dados abaixo vêm do perfil e da carteira de ${esc(p.name)}. Confira e complete o motivo antes de compartilhar.</p>
+        <section class="vet-ficha-summary">
+          <h4>Dados do pet</h4>
+          <div class="vet-ficha-facts"><span><small>Nome</small><strong>${esc(p.name)}</strong></span><span><small>Espécie / raça</small><strong>${esc(spOf(p).label)} · ${esc(p.breed || 'Não informada')}</strong></span><span><small>Sexo / idade</small><strong>${esc(p.sex || 'Não informado')} · ${ageText(p)}</strong></span><span><small>Peso</small><strong>${weightText(p)}</strong></span><span><small>Tutor</small><strong>${esc(S.profile.name || 'Não informado')}</strong></span><span><small>Contato</small><strong>${esc(S.profile.phone || 'Não informado')}</strong></span><span><small>Microchip / registro</small><strong>${esc(p.chip || '—')} / ${esc(p.registration || '—')}</strong></span></div>
+          <details class="vet-vaccine-details"><summary>Vacinas no CuidaPet · ${records.length} no calendário</summary><ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p></details>
+        </section>
+        <form data-form="vet-ficha">
+          ${field('Motivo da consulta', '<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required></textarea>')}
+          ${field('Sintomas e observações (opcional)', '<textarea name="notes" rows="3" maxlength="700" placeholder="Quando começou, frequência, mudanças recentes e outras informações úteis"></textarea>')}
+          <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Imprimir / salvar em PDF</button></div>
+        </form>`);
+    },
+    sendVetFicha() { shareVetFicha('whatsapp'); },
+    printVetFicha() { printVetFicha(); },
     chat() { toast('Um veterinário vai responder em instantes'); },
     lostPet(id) {
       const p = petById(id);
@@ -1629,7 +1818,7 @@
         <div class="lost-sheet-pet">${p.photo ? `<img src="${esc(p.photo)}" alt="Foto de ${esc(p.name)}">` : `<img src="${petImg(p)}" alt="Mascote de ${esc(p.name)}">`}<span><strong>${esc(p.name)}</strong><small>${esc(spOf(p).label)} · ${esc(p.breed || 'Tipo não informado')}</small></span></div>
         <form data-form="lost" data-pet="${p.id}">
           ${field('Local onde foi visto', `<input name="lastSeen" maxlength="160" value="${esc(p.lost?.lastSeen || '')}" placeholder="Rua, bairro ou ponto de referência" required>`)}
-          ${field('Data e horário aproximados', `<input name="when" type="datetime-local" value="${esc(p.lost?.when || localDateTimeValue())}" required>`)}
+          ${field('Data e horário aproximados', `<input name="when" type="datetime-local" value="${esc(p.lost?.when || localDateTimeValue())}" max="${localDateTimeValue()}" required>`)}
           ${field('Cidade – UF', `<input name="city" maxlength="100" value="${esc(p.lost?.city || S.profile.city || '')}" placeholder="Ex.: São Paulo – SP" required>`)}
           ${field('Telefone para contato', `<input name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" value="${esc(p.lost?.phone || S.profile.phone || '')}" placeholder="(11) 99999-9999" required>`)}
           ${field('Detalhes para ajudar a reconhecer (opcional)', `<textarea name="details" maxlength="500" rows="3" placeholder="Coleira, marcas e comportamento. Não inclua endereço residencial.">${esc(p.lost?.details || '')}</textarea>`)}
@@ -1721,6 +1910,20 @@
       render(true);
     },
     cartRemove(idx) { S.cart.splice(Number(idx), 1); save(); render(true); toast('Item removido'); },
+    reviewProduct(arg) {
+      const [orderIndex, itemIndex] = arg.split(':').map(Number);
+      const item = S.orders[orderIndex]?.products?.[itemIndex];
+      const bought = item && product(item.id);
+      if (!item || !bought || item.review) return;
+      openSheet(`
+        <h3>Avaliar produto</h3>
+        <p class="muted">${bought.name} · comprado no pedido #${S.orders[orderIndex].n}</p>
+        <form data-form="review" data-order="${orderIndex}" data-item="${itemIndex}">
+          ${field('Sua nota', `<select name="rating" required><option value="">Escolha de 1 a 5 estrelas</option><option value="5">★★★★★ · Adorei</option><option value="4">★★★★☆ · Gostei</option><option value="3">★★★☆☆ · Foi bom</option><option value="2">★★☆☆☆ · Não gostei</option><option value="1">★☆☆☆☆ · Não recomendo</option></select>`)}
+          ${field('Comentário (opcional)', '<textarea name="comment" maxlength="500" rows="3" placeholder="Conte sua experiência com o produto"></textarea>')}
+          <button class="btn" type="submit">Enviar avaliação</button>
+        </form>`);
+    },
     openCep() {
       openSheet(`
         <h3>Calcular frete</h3>
@@ -1736,7 +1939,7 @@
     confirmOrder() {
       const t = cartTotals(S.checkout.delivery);
       const addr = S.addresses.find((a) => a.id === S.checkout.addr) || main(S.addresses);
-      const order = { n: String(Math.floor(10000 + Math.random() * 89999)), date: iso(0), total: t.total, items: cartCount() };
+      const order = { n: String(Math.floor(10000 + Math.random() * 89999)), date: iso(0), total: t.total, items: cartCount(), products: S.cart.map((item) => ({ id: item.id, size: item.size, qty: item.qty, review: null })) };
       S.orders.push(order);
       S.cart = [];
       S.coupon = null;
@@ -1846,6 +2049,36 @@
     removePay(id) { removeById(S.payments, id); save(); render(true); toast('Cartão removido'); },
     addBoleto() { S.payments.push({ id: 'p' + Date.now().toString(36), kind: 'boleto', brand: 'Boleto', main: false }); save(); render(true); },
     ahead(d) { S.settings.antecedencia = Number(d); save(); renderTabChange(); },
+    exportBackup() {
+      try {
+        const backup = { app: 'CuidaPet', version: STATE_VERSION, exportedAt: new Date().toISOString(), state: S };
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `cuidapet-backup-${iso(0)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        toast('Backup baixado neste aparelho');
+      } catch (e) {
+        toast('Não foi possível criar o backup neste navegador');
+      }
+    },
+    importBackup() { $('#backupImportInput')?.click(); },
+    confirmImportBackup() {
+      if (!ui.pendingBackup) return;
+      S = clone(ui.pendingBackup.state);
+      if (!S.pets.some((p) => p.id === S.active)) S.active = S.pets[0]?.id || null;
+      ui.pendingBackup = null;
+      ui.query = '';
+      ui.booking = null;
+      save();
+      closeSheet();
+      render();
+      toast('Backup restaurado neste aparelho');
+    },
     askWipe() {
       openSheet(`
         <h3>Começar do zero?</h3>
@@ -1876,8 +2109,138 @@
   /* ------------------------------------------------------------ Formulários */
   const fmtCep = (v) => v.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
   const fmtCpf = (v) => v.replace(/\D/g, '').slice(0, 11).replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d{1,2})$/, '.$1-$2');
+  const vetFichaData = () => {
+    const p = pet();
+    const form = $('[data-form="vet-ficha"]');
+    const vaccines = petVaccines(p).filter(({ v }) => v.kind === 'vacina').map(({ v, rec, st }) => ({
+      name: v.name,
+      applied: rec?.applied?.length ? rec.applied.map(fmtDate).join(', ') : 'Sem registro de aplicação no CuidaPet',
+      status: st.label,
+    }));
+    return {
+      p, reason: form?.elements.reason.value.trim() || '', notes: form?.elements.notes.value.trim() || '', vaccines,
+      tutor: S.profile.name || 'Não informado', phone: S.profile.phone || 'Não informado',
+    };
+  };
+  const vetFichaLines = (data) => [
+    'CuidaPet · Ficha para consulta veterinária',
+    `Emitida em: ${new Date().toLocaleDateString('pt-BR')}`,
+    '', 'DADOS DO PET',
+    `Nome: ${data.p.name}`, `Espécie: ${spOf(data.p).label}`, `Raça / tipo: ${data.p.breed || 'Não informada'}`,
+    `Sexo: ${data.p.sex || 'Não informado'}`, `Idade: ${ageText(data.p)}`, `Nascimento: ${data.p.birth ? fmtDate(data.p.birth) : 'Não informado'}`,
+    `Peso: ${weightText(data.p)}`, `Microchip: ${data.p.chip || 'Não informado'}`, `Registro: ${data.p.registration || 'Não informado'}`,
+    '', 'DADOS DO TUTOR', `Nome: ${data.tutor}`, `Telefone: ${data.phone}`,
+    '', 'MOTIVO DA CONSULTA', data.reason,
+    ...(data.notes ? ['', 'SINTOMAS E OBSERVAÇÕES', data.notes] : []),
+    '', 'VACINAS REGISTRADAS NO CUIDAPET',
+    ...(data.vaccines.length ? data.vaccines.flatMap((v) => [`${v.name} — ${v.applied}`, `Situação na carteira: ${v.status}`]) : ['Nenhuma vacina cadastrada para esta espécie.']),
+    '', 'Atenção: “Sem registro” indica ausência de anotação no app e não confirma que a vacina não foi aplicada. Confira a carteira e os comprovantes com o tutor.',
+  ];
+  const wrapFichaLines = (lines, max = 88) => lines.flatMap((line) => {
+    const result = [];
+    let current = '';
+    line.split(/\s+/).forEach((word) => {
+      if (current && `${current} ${word}`.length > max) { result.push(current); current = word; }
+      else current = current ? `${current} ${word}` : word;
+    });
+    result.push(current);
+    return result;
+  });
+  const winAnsiChar = (char) => {
+    const cp = char.codePointAt(0);
+    const special = { 0x20ac: 0x80, 0x201a: 0x82, 0x0192: 0x83, 0x201e: 0x84, 0x2026: 0x85, 0x2020: 0x86, 0x2021: 0x87, 0x02c6: 0x88, 0x2030: 0x89, 0x0160: 0x8a, 0x2039: 0x8b, 0x0152: 0x8c, 0x017d: 0x8e, 0x2018: 0x91, 0x2019: 0x92, 0x201c: 0x93, 0x201d: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97, 0x02dc: 0x98, 0x2122: 0x99, 0x0161: 0x9a, 0x203a: 0x9b, 0x0153: 0x9c, 0x017e: 0x9e, 0x0178: 0x9f };
+    return String.fromCharCode(special[cp] || (cp <= 0xff ? cp : 0x3f));
+  };
+  const makeVetFichaPdf = (data) => {
+    const lines = wrapFichaLines(vetFichaLines(data));
+    const pages = Array.from({ length: Math.ceil(lines.length / 48) }, (_, i) => lines.slice(i * 48, (i + 1) * 48));
+    const objects = [];
+    objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
+    objects[2] = `<< /Type /Pages /Kids [${pages.map((_, i) => `${4 + i * 2} 0 R`).join(' ')}] /Count ${pages.length} >>`;
+    objects[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+    pages.forEach((pageLines, i) => {
+      const pageId = 4 + i * 2;
+      const streamId = pageId + 1;
+      const content = `BT\n/F1 10 Tf\n14 TL\n52 790 Td\n${pageLines.map((line) => `(${[...line].map(winAnsiChar).join('').replace(/[\\()]/g, '\\$&')}) Tj T*`).join('\n')}\nET`;
+      objects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${streamId} 0 R >>`;
+      objects[streamId] = `<< /Length ${content.length} >>\nstream\n${content}\nendstream`;
+    });
+    let pdf = '%PDF-1.4\n%\xe2\xe3\xcf\xd3\n';
+    const offsets = [0];
+    for (let id = 1; id < objects.length; id++) {
+      offsets[id] = pdf.length;
+      pdf += `${id} 0 obj\n${objects[id]}\nendobj\n`;
+    }
+    const xref = pdf.length;
+    pdf += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
+    for (let id = 1; id < objects.length; id++) pdf += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
+    pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
+    const bytes = Uint8Array.from(pdf, (char) => char.charCodeAt(0));
+    return new Blob([bytes], { type: 'application/pdf' });
+  };
+  const fichaFileName = (p) => `ficha-veterinaria-${p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')}.pdf`;
+  const downloadVetFicha = (data) => {
+    const url = URL.createObjectURL(makeVetFichaPdf(data));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fichaFileName(data.p);
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  };
+  const shareVetFicha = async () => {
+    const data = vetFichaData();
+    const form = $('[data-form="vet-ficha"]');
+    if (!data.reason) { form.elements.reason.reportValidity(); return; }
+    const file = new File([makeVetFichaPdf(data)], fichaFileName(data.p), { type: 'application/pdf' });
+    const message = `Ficha veterinária de ${data.p.name} · motivo: ${data.reason}`;
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: `Ficha de ${data.p.name}`, text: message });
+        closeSheet();
+        return;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+      }
+    }
+    downloadVetFicha(data);
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${message}\nO PDF da ficha foi baixado. Anexe-o nesta conversa.`)}`, '_blank', 'noopener,noreferrer');
+    closeSheet();
+    toast('Ficha PDF baixada. Anexe o arquivo no WhatsApp.');
+  };
+  const printVetFicha = () => {
+    const data = vetFichaData();
+    const form = $('[data-form="vet-ficha"]');
+    if (!data.reason) { form.elements.reason.reportValidity(); return; }
+    const lines = vetFichaLines(data).map((line) => `<p>${esc(line) || '&nbsp;'}</p>`).join('');
+    const w = window.open('', '_blank');
+    if (!w) { downloadVetFicha(data); toast('Janela de impressão bloqueada. A ficha PDF foi baixada.'); return; }
+    w.document.write(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Ficha veterinária · ${esc(data.p.name)}</title><style>body{font:12pt/1.45 Arial,sans-serif;color:#172033;max-width:780px;margin:32px auto;padding:0 28px}h1{color:#075985;font-size:20pt;margin-bottom:22px}p{margin:0 0 5px;white-space:pre-wrap}p:empty{height:9px}@media print{body{margin:12mm auto;padding:0}}</style><h1>CuidaPet · Ficha para consulta veterinária</h1>${lines}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></html>`);
+    w.document.close();
+  };
+  const validCpf = (value) => {
+    const cpf = value.replace(/\D/g, '');
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+    const digit = (length) => {
+      const sum = cpf.slice(0, length).split('').reduce((total, n, i) => total + Number(n) * (length + 1 - i), 0);
+      const result = (sum * 10) % 11;
+      return result === 10 ? 0 : result;
+    };
+    return digit(9) === Number(cpf[9]) && digit(10) === Number(cpf[10]);
+  };
 
   const F = {
+    review(form) {
+      const order = S.orders[Number(form.dataset.order)];
+      const item = order?.products?.[Number(form.dataset.item)];
+      if (!item || item.review) { closeSheet(); return; }
+      const rating = Number(form.elements.rating.value);
+      if (!Number.isInteger(rating) || rating < 1 || rating > 5) { toast('Escolha uma nota de 1 a 5 estrelas'); return; }
+      item.review = { rating, comment: form.elements.comment.value.trim().slice(0, 500), date: iso(0) };
+      save();
+      closeSheet();
+      render(true);
+      toast('Avaliação salva neste aparelho');
+    },
     lost(form) {
       const p = petById(form.dataset.pet);
       if (!p) { closeSheet(); return; }
@@ -1886,6 +2249,7 @@
       const city = e.city.value.trim();
       const phone = e.phone.value.trim();
       if (!lastSeen || !city || !phone || !e.when.value) { toast('Informe local, horário, cidade e telefone para ativar o alerta'); return; }
+      if (e.when.value > localDateTimeValue()) { toast('A data do desaparecimento não pode estar no futuro'); return; }
       p.lost = { active: true, lastSeen: lastSeen.slice(0, 160), when: e.when.value, city: city.slice(0, 100), phone: phone.slice(0, 24), details: e.details.value.trim().slice(0, 500), updatedAt: new Date().toISOString() };
       save();
       closeSheet();
@@ -1898,6 +2262,12 @@
         $('#nameField').classList.add('error');
         $('#nameField input').focus();
         toast('Como seu pet se chama?');
+        return;
+      }
+      if (!validPetBirth(np.birth, np.species)) {
+        const birthInput = form.querySelector('[data-model="birth"]');
+        birthInput?.focus();
+        toast(`O nascimento deve estar entre ${fmtDate(earliestBirthDate(np.species))} e hoje`);
         return;
       }
       const data = {
@@ -1940,7 +2310,8 @@
     },
     apply(form) {
       const key = form.dataset.key;
-      const date = form.elements.date.value || iso(0);
+      const date = form.elements.date.value;
+      if (!validDate(date) || date > iso(0)) { toast('Informe uma data de aplicação válida, até hoje'); return; }
       const p = pet();
       const v = vaccinesFor(p).find((x) => x.key === key);
       const rec = p.records[key] || (p.records[key] = { applied: [] });
@@ -1957,12 +2328,14 @@
     },
     reminder(form) {
       const type = form.elements.type.value;
+      const date = form.elements.date.value;
+      if (!validDate(date) || date < iso(0)) { toast('Escolha uma data válida a partir de hoje'); return; }
       S.reminders.push({
         id: 'r' + Date.now().toString(36),
         petId: pet().id,
         type,
         title: form.elements.title.value.trim() || reminderTypes[type].label,
-        date: form.elements.date.value || iso(7),
+        date,
       });
       ui.remTab = type === 'vermifugo' ? 'vermifugos' : 'outros';
       save();
@@ -1986,7 +2359,14 @@
     },
     perfil(form) {
       const e = form.elements;
-      Object.assign(S.profile, { name: e.name.value.trim() || S.profile.name, cpf: (e.cpf?.value || '').replace(/\D/g, '').slice(0, 11), email: e.email.value.trim() || S.profile.email, phone: e.phone.value.trim(), cep: fmtCep(e.cep.value), city: e.city.value.trim() });
+      if (e.cpf.value.trim() && !validCpf(e.cpf.value)) {
+        e.cpf.setCustomValidity('Informe um CPF válido para o tutor.');
+        e.cpf.reportValidity();
+        e.cpf.focus();
+        return;
+      }
+      e.cpf.setCustomValidity('');
+      Object.assign(S.profile, { name: e.name.value.trim() || S.profile.name, cpf: e.cpf.value.replace(/\D/g, '').slice(0, 11), email: e.email.value.trim() || S.profile.email, phone: e.phone.value.trim(), cep: fmtCep(e.cep.value), city: e.city.value.trim() });
       save();
       render(true);
       toast('Perfil atualizado');
@@ -2015,6 +2395,7 @@
 
   /* ------------------------------------------------------------ Eventos */
   const SELECT_ACTIONS = new Set(['ahead', 'bk', 'fav', 'pickAddr', 'pickDelivery', 'pickPay', 'pickSex', 'pickSpecies', 'setPet', 'size']);
+  const NOOP_IF_SELECTED_ACTIONS = new Set(['ahead', 'bk', 'pickAddr', 'pickDelivery', 'pickPay', 'pickSex', 'pickSpecies', 'setPet', 'size', 'petTab', 'vacTab', 'remTab', 'agTab']);
   const animateChoice = (action, arg) => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || typeof Element.prototype.animate !== 'function') return;
     requestAnimationFrame(() => {
@@ -2040,13 +2421,14 @@
       if (t.type === 'checkbox') { /* deixa o checkbox alternar */ }
       const action = t.dataset.act;
       const arg = t.dataset.arg || '';
-      const wasSelected = t.classList.contains('on') || t.getAttribute('aria-checked') === 'true' || !!t.querySelector('.radio.on');
+      const wasSelected = t.classList.contains('on') || t.getAttribute('aria-checked') === 'true' || t.getAttribute('aria-pressed') === 'true' || t.getAttribute('aria-selected') === 'true' || !!t.querySelector('.radio.on');
+      if (NOOP_IF_SELECTED_ACTIONS.has(action) && wasSelected) return;
       const fn = A[action];
       if (fn) fn(arg, t, e);
       if (fn && SELECT_ACTIONS.has(action) && !wasSelected) animateChoice(action, arg);
       return;
     }
-    if (t.dataset.tab) { navStack = []; closeSheet(); if (location.hash === t.dataset.tab) render(); else location.hash = t.dataset.tab; return; }
+    if (t.dataset.tab) { go(t.dataset.tab); return; }
     if (t.hasAttribute('data-back')) { back(); return; }
     if (t.dataset.replace) { replace(t.dataset.replace); return; }
     if (t.dataset.go) {
@@ -2070,6 +2452,18 @@
 
   device.addEventListener('input', (e) => {
     const el = e.target;
+    if (el.dataset.photoCrop && ui.photoCrop) {
+      const key = el.dataset.photoCrop;
+      ui.photoCrop[key] = Number(el.value);
+      const output = sheet.querySelector(`[data-crop-value="${key}"]`);
+      if (output) output.textContent = key === 'zoom'
+        ? `${Math.round(Number(el.value) * 100)}%`
+        : Number(el.value) === 0 ? 'Centro'
+          : key === 'x' ? Number(el.value) < 0 ? 'Mais à esquerda' : 'Mais à direita'
+            : Number(el.value) < 0 ? 'Mais acima' : 'Mais abaixo';
+      updatePhotoCropPreview();
+      return;
+    }
     if (el.dataset.model && ui.newPet) {
       ui.newPet[el.dataset.model] = el.value;
       const bar = $('#onbProgress');
@@ -2097,7 +2491,7 @@
         setTimeout(() => { const g = $('[data-globalsearch]'); if (g) { g.focus(); g.value = ui.query; } }, 30);
       }
     }
-    if (el.name === 'cpf') el.value = fmtCpf(el.value);
+    if (el.name === 'cpf') { el.setCustomValidity(''); el.value = fmtCpf(el.value); }
     if (el.name === 'cep' || el.name === 'number' || el.name === 'exp') {
       if (el.name === 'cep') el.value = fmtCep(el.value);
       if (el.name === 'number') el.value = el.value.replace(/\D/g, '').slice(0, 16).replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -2107,34 +2501,95 @@
 
   device.addEventListener('change', (e) => {
     const el = e.target;
+    if (el.id === 'backupImportInput' && el.files?.[0]) {
+      const file = el.files[0];
+      el.value = '';
+      if (file.size > 50 * 1024 * 1024) { toast('O arquivo de backup é grande demais'); return; }
+      file.text().then((contents) => {
+        const backup = JSON.parse(contents);
+        const state = backup?.state;
+        const isObject = (value) => value && typeof value === 'object' && !Array.isArray(value);
+        const arraysOk = ['pets', 'reminders', 'appointments', 'addresses', 'payments', 'cart', 'favs', 'orders'].every((key) => Array.isArray(state?.[key]));
+        const petsOk = Array.isArray(state?.pets) && state.pets.every((p) => isObject(p) && typeof p.id === 'string' && typeof p.name === 'string' && species[p.species] && isObject(p.records || {}));
+        if (backup.app !== 'CuidaPet' || backup.version !== STATE_VERSION || state?.version !== STATE_VERSION || !isObject(state.profile) || !isObject(state.settings) || !isObject(state.checkout) || !arraysOk || !petsOk) {
+          throw new Error('invalid-backup');
+        }
+        const restored = clone(state);
+        let invalidBirths = 0;
+        restored.pets.forEach((p) => {
+          if (p.birth && !validPetBirth(p.birth, p.species)) { p.birth = ''; invalidBirths++; }
+        });
+        ui.pendingBackup = { state: restored, invalidBirths };
+        openSheet(`
+          <h3>Restaurar backup?</h3>
+          <p class="muted">Esta cópia contém o perfil de ${esc(restored.profile.name || 'Tutor')} e ${restored.pets.length} ${restored.pets.length === 1 ? 'pet' : 'pets'}. Ao confirmar, os dados atuais deste aparelho serão substituídos.</p>
+          ${invalidBirths ? `<p class="muted">${invalidBirths} ${invalidBirths === 1 ? 'data de nascimento inválida foi removida' : 'datas de nascimento inválidas foram removidas'} para evitar idades impossíveis.</p>` : ''}
+          <p class="muted-sm">O arquivo é lido neste navegador e não é enviado a um servidor.</p>
+          <div class="list"><button class="btn" data-act="confirmImportBackup">Substituir e restaurar</button><button class="btn ghost" data-act="closeSheet">Cancelar</button></div>`);
+      }).catch(() => toast('Esse arquivo não é um backup CuidaPet compatível'));
+      return;
+    }
     if (el.dataset.model && ui.newPet) {
       ui.newPet[el.dataset.model] = el.value;
       if (el.dataset.model === 'breed' || el.dataset.model === 'birth') render(true); // atualiza o mascote e a prévia da carteira
     }
     if (el.dataset.modelCheck && ui.newPet) ui.newPet[el.dataset.modelCheck] = el.checked;
-    if (el.dataset.bk === 'date' && ui.booking && el.value) { ui.booking.date = el.value; ui.booking.time = null; render(true); }
+    if (el.dataset.bk === 'date' && ui.booking && el.value) {
+      if (!validDate(el.value) || el.value < iso(1) || el.value > iso(90)) { toast('Escolha uma data entre amanhã e os próximos 90 dias'); render(true); return; }
+      ui.booking.date = el.value;
+      ui.booking.time = null;
+      render(true);
+    }
     if (el.dataset.setting) { S.settings[el.dataset.setting] = el.checked; save(); toast(el.checked ? 'Notificação ativada' : 'Notificação desativada'); }
     if ((el.hasAttribute('data-photo') || el.hasAttribute('data-photo-user')) && el.files && el.files[0]) {
+      const target = el.hasAttribute('data-photo-user') ? 'user' : 'pet';
+      const file = el.files[0];
+      el.value = '';
+      if (!file.type.startsWith('image/')) { toast('Escolha um arquivo de imagem'); return; }
       const reader = new FileReader();
       reader.onload = () => {
         const img = new Image();
-        img.onload = () => {
-          const size = 240;
-          const c = document.createElement('canvas');
-          c.width = c.height = size;
-          const s = Math.min(img.width, img.height);
-          c.getContext('2d').drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
-          const photo = c.toDataURL('image/jpeg', 0.82);
-          if (el.hasAttribute('data-photo-user')) { S.profile.photo = photo; save(); render(true); toast('Foto do tutor atualizada'); }
-          else { ui.newPet.photo = photo; render(true); }
-        };
+        img.onload = () => openPhotoCrop(reader.result, img, target);
+        img.onerror = () => toast('Não foi possível abrir essa imagem');
         img.src = reader.result;
       };
-      reader.readAsDataURL(el.files[0]);
+      reader.onerror = () => toast('Não foi possível ler essa imagem');
+      reader.readAsDataURL(file);
     }
   });
 
   backdrop.addEventListener('click', () => { if (sheetDismissOnBackdrop) closeSheet(); });
+  sheet.addEventListener('pointerdown', (e) => {
+    const preview = e.target.closest('[data-crop-preview]');
+    if (!preview || !ui.photoCrop) return;
+    e.preventDefault();
+    photoCropDrag = { id: e.pointerId, x: e.clientX, y: e.clientY, cropX: ui.photoCrop.x, cropY: ui.photoCrop.y };
+    preview.setPointerCapture(e.pointerId);
+  });
+  sheet.addEventListener('pointermove', (e) => {
+    if (!photoCropDrag || photoCropDrag.id !== e.pointerId || !ui.photoCrop) return;
+    const preview = sheet.querySelector('[data-crop-preview]');
+    const box = preview?.getBoundingClientRect();
+    if (!box) return;
+    const scale = Math.max(box.width / ui.photoCrop.image.naturalWidth, box.height / ui.photoCrop.image.naturalHeight) * ui.photoCrop.zoom;
+    const width = ui.photoCrop.image.naturalWidth * scale;
+    const height = ui.photoCrop.image.naturalHeight * scale;
+    if (width > box.width + 1) ui.photoCrop.x = Math.max(-100, Math.min(100, photoCropDrag.cropX + (e.clientX - photoCropDrag.x) / (width - box.width) * 200));
+    if (height > box.height + 1) ui.photoCrop.y = Math.max(-100, Math.min(100, photoCropDrag.cropY + (e.clientY - photoCropDrag.y) / (height - box.height) * 200));
+    ['x', 'y'].forEach((key) => {
+      const input = sheet.querySelector(`[data-photo-crop="${key}"]`);
+      if (!input) return;
+      input.value = String(Math.round(ui.photoCrop[key]));
+      const output = sheet.querySelector(`[data-crop-value="${key}"]`);
+      if (output) output.textContent = ui.photoCrop[key] === 0 ? 'Centro'
+        : key === 'x' ? ui.photoCrop[key] < 0 ? 'Mais à esquerda' : 'Mais à direita'
+          : ui.photoCrop[key] < 0 ? 'Mais acima' : 'Mais abaixo';
+    });
+    updatePhotoCropPreview();
+  });
+  const endPhotoCropDrag = (e) => { if (photoCropDrag?.id === e.pointerId) photoCropDrag = null; };
+  sheet.addEventListener('pointerup', endPhotoCropDrag);
+  sheet.addEventListener('pointercancel', endPhotoCropDrag);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet(); });
 
   /* ------------------------------------------------------------ Início */

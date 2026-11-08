@@ -557,19 +557,16 @@
   ];
 
   const brands = [
-    { name: 'NutriPata', color: '#0369a1', font: 'logo' },
-    { name: 'Ronron', color: '#ea580c', font: 'logo' },
-    { name: 'Roedor Feliz', color: '#65a30d', font: 'logo' },
-    { name: 'Réptil Pro', color: '#15803d', font: 'sans' },
-    { name: 'AquaVida', color: '#0891b2', font: 'logo' },
-    { name: 'Pena Viva', color: '#ca8a04', font: 'logo' },
-    { name: 'Equi Forte', color: '#166534', font: 'sans' },
-    { name: 'Bicho Feliz', color: '#b45309', font: 'logo' },
-    { name: 'VitaPet', color: '#16a34a', font: 'sans' },
-    { name: 'Pata Limpa', color: '#0e7490', font: 'sans' },
-    { name: 'Brinca+', color: '#dc2626', font: 'logo' },
-    { name: 'CuidaPet Vet', color: '#0284c7', font: 'logo' },
-    { name: 'Campo Forte', color: '#a16207', font: 'sans' },
+    { name: 'Royal Canin', kind: 'Alimentação', color: '#dc2626', font: 'sans', url: 'https://www.royalcanin.com/br' },
+    { name: 'PremieRpet', kind: 'Alimentação', color: '#1d4ed8', font: 'logo', url: 'https://premierpet.com.br/' },
+    { name: 'Purina', kind: 'Alimentação', color: '#b91c1c', font: 'sans', url: 'https://purina.com.br/nossas-marcas' },
+    { name: "Hill's", kind: 'Alimentação', color: '#15803d', font: 'sans', url: 'https://www.hillsvet.com.br/' },
+    { name: 'GranPlus', kind: 'Alimentação', color: '#ea580c', font: 'logo', url: 'https://granplus.com.br/pt' },
+    { name: 'Special Dog Company', kind: 'Alimentação', color: '#7c2d12', font: 'sans', url: 'https://www.specialdog.com.br/' },
+    { name: 'Vetnil', kind: 'Saúde animal', color: '#0284c7', font: 'logo', url: 'https://vetnil.com.br/' },
+    { name: 'Ourofino Saúde Animal', kind: 'Saúde animal', color: '#15803d', font: 'sans', url: 'https://www.ourofinosaudeanimal.com/' },
+    { name: 'Seres', kind: 'Atendimento veterinário', color: '#0e7490', font: 'logo', url: 'https://www.petz.com.br/seres' },
+    { name: 'Cobasi', kind: 'Lojas e clínicas', color: '#ea580c', font: 'logo', url: 'https://www.cobasi.com.br/institucional/veterinarios' },
   ];
 
   /* ---------------------------------------------------------------- Cuidados */
@@ -748,6 +745,36 @@
       ['Febre aftosa', 'O Brasil é livre de aftosa sem vacinação: não é mais preciso vacinar.'],
     ],
   };
+
+  // Orientações alimentares por espécie; consulte veterinário para um plano individual.
+  const nutritionTips = {
+    cachorro: [['Alimentos tóxicos', 'Chocolate, uvas e passas, cebola, alho e xilitol podem intoxicar cães. Procure orientação veterinária se houver ingestão.'], ['Petiscos com moderação', 'Prefira petiscos próprios, evite restos temperados e ossos cozidos e não troque a ração de repente.']],
+    gato: [['Alimentos perigosos', 'Cebola, alho, chocolate, álcool e cafeína podem fazer mal. Mantenha água fresca.'], ['Dieta completa', 'Escolha alimento completo adequado à fase de vida. Comida caseira não deve substituir a dieta sem orientação veterinária.']],
+    coelho: [['Feno sempre disponível', 'Feno de capim é a base; complemente com folhas seguras e pellets próprios em quantidade adequada.'], ['Introdução gradual', 'Frutas devem ser limitadas. Confirme se folhas e plantas são seguras e introduza novidades aos poucos.']],
+    hamster: [['Alimento próprio', 'Use alimento completo formulado para hamster; vegetais seguros podem entrar em pequenas porções. Retire sobras frescas.'], ['Evite doces e sal', 'Não ofereça chocolate ou alimentos salgados. Frutas e sementes gordurosas são apenas ocasionais.']],
+    roedor: [['Dieta específica', 'Ratos, camundongos, gerbils e degus têm necessidades diferentes. Escolha alimento completo para a espécie.'], ['Petiscos em pequenas porções', 'Vegetais seguros podem complementar. Evite doces e alimentos salgados; consulte veterinário de exóticos.']],
+    chinchila: [['Feno e pellets próprios', 'Mantenha feno de gramínea disponível e use alimento formulado para chinchilas.'], ['Evite excesso de açúcar', 'Frutas, sementes, nozes e petiscos doces não devem ser frequentes. Descarte alimento úmido ou mofado.']],
+    porquinho: [['Feno e vitamina C', 'Ofereça feno à vontade, pellets próprios com vitamina C e vegetais adequados. Confira validade do alimento.'], ['Mudanças graduais', 'Introduza vegetais aos poucos. Não ofereça chocolate, cebola, alho ou alimentos processados.']],
+    furao: [['Dieta de carnívoro', 'Use alimento completo formulado para furões. Dietas caseiras devem ser planejadas com veterinário experiente.'], ['Evite doces e frutas', 'Não ofereça açúcar, frutas, pão ou leite; evite trocas bruscas de alimento.']],
+    passaro: [['Alimento adequado à ave', 'A dieta depende da espécie. Sementes não são automaticamente a base ideal; converse com veterinário de aves.'], ['Evite alimentos tóxicos', 'Não ofereça chocolate, cafeína, álcool, abacate, cebola ou comida muito salgada e doce.']],
+    galinha: [['Ração conforme a fase', 'Use ração completa adequada à idade e finalidade. Milho e restos não substituem dieta balanceada.'], ['Água e alimento frescos', 'Mantenha água limpa e descarte comida úmida ou mofada. Evite restos muito salgados ou temperados.']],
+    pato: [['Alimento para aves aquáticas', 'Prefira ração formulada para patos e para a fase de vida. Pão não é alimento completo nem deve ser rotina.'], ['Sem sobras estragadas', 'Disponibilize água limpa e descarte comida mofada, salgada ou temperada.']],
+    jabuti: [['Vegetais adequados à espécie', 'A proporção de folhas e outros vegetais varia. Confirme a dieta com veterinário de répteis.'], ['Evite improvisar', 'Não baseie a dieta em frutas ou alimento de outros animais; variedade depende da espécie.']],
+    tartaruga: [['Dieta conforme espécie e idade', 'A necessidade de proteína e vegetais varia. Use alimento apropriado e peça orientação de veterinário de répteis.'], ['Não ofereça pão', 'Evite comida temperada e retire sobras para preservar a qualidade da água.']],
+    cobra: [['Presa adequada', 'Tamanho e intervalo dependem da espécie, idade e condição corporal. Siga o plano de veterinário de répteis.'], ['Alimentação segura', 'Use presas de origem confiável, descongeladas com segurança. Presas vivas podem ferir a cobra.']],
+    iguana: [['Não confunda as espécies', 'Iguanas são herbívoras; geckos e pogonas têm outras necessidades. Identifique o animal antes de escolher.'], ['Dieta vegetal', 'Não ofereça carne, insetos ou ração de cão e gato à iguana. Consulte especialista sobre vegetais e suplementos.']],
+    anfibio: [['Dieta específica', 'Axolotes, sapos e pererecas não comem a mesma coisa. Escolha alimento adequado à espécie e ao tamanho.'], ['Retire sobras', 'Use alimento de origem segura; frequência e suplementos devem ser definidos com veterinário de exóticos.']],
+    aranha: [['Presas de origem segura', 'Tipo e tamanho dependem da espécie. Use insetos de criação confiável, sem exposição a pesticidas.'], ['Respeite a muda', 'A aranha pode recusar alimento antes da muda. Retire presas não consumidas para evitar ferimentos.']],
+    peixe: [['Alimento conforme a espécie', 'Peixes herbívoros, onívoros e carnívoros precisam de dietas diferentes. Escolha alimento adequado.'], ['Evite sobras', 'Ofereça apenas o que será consumido rapidamente. Excesso de ração prejudica a água.']],
+    cavalo: [['Forragem como base', 'Capim e feno de boa qualidade são fundamentais. Concentrados devem ser calculados individualmente.'], ['Mudanças graduais', 'Altere a dieta aos poucos, mantenha água limpa e evite plantas desconhecidas e alimento mofado.']],
+    porco: [['Alimento completo', 'Use ração formulada para mini porcos e adequada à fase de vida; restos de cozinha não garantem equilíbrio.'], ['Controle os extras', 'Petiscos em excesso favorecem ganho de peso. Evite comida mofada, salgada ou temperada.']],
+    cabra: [['Alimento e mineral caprinos', 'Pasto e feno de qualidade são importantes. Use suplemento mineral formulado para caprinos.'], ['Cuidado com plantas', 'Evite plantas desconhecidas e alimento mofado. Ajustes de dieta precisam de orientação técnica.']],
+    ovelha: [['Mineral formulado para ovinos', 'O cobre pode ser perigoso para ovelhas; não compartilhe suplemento de bovinos ou caprinos.'], ['Pasto e feno de qualidade', 'Mude a dieta gradualmente e descarte alimento mofado. A quantidade de concentrado depende da fase.']],
+    bovino: [['Dieta conforme a categoria', 'Pasto, volumoso, concentrado e minerais devem ser ajustados à fase e ao objetivo com apoio técnico.'], ['Evite mudanças bruscas', 'Alterações rápidas de grãos podem causar problemas digestivos. Mantenha água limpa e evite alimento mofado.']],
+  };
+  Object.entries(nutritionTips).forEach(([sp, items]) => {
+    tips[sp] = [...(tips[sp] || []), ...items];
+  });
 
   const articles = [
     ['Calendário de vacinas: o que é obrigatório?', 'Antirrábica é obrigatória por lei para cães e gatos. As demais dependem da espécie e do estilo de vida.', 'syringe'],
