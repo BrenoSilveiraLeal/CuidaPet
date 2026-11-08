@@ -15,7 +15,7 @@
     @media(min-width:900px){body.startup-revealing .shell{isolation:auto}}
     @media(max-width:899px){#startupSplash.done{transform:translateY(-100%)}#startupBrand.docked{transform:translate(-50%,-50%) translateY(-100vh)}}
     @keyframes sidebarRise{0%{opacity:0;transform:translateY(16px) scale(.985)}55%{opacity:1;transform:translateY(-1px) scale(1)}100%{opacity:1;transform:translateY(0) scale(1)}}
-    @media(prefers-reduced-motion:reduce){#startupSplash,#startupBrand{transition:none}body.startup-revealing .sidebar>* ,body.startup-sidebar-ready .side-nav button{animation:none!important}}
+    @media(prefers-reduced-motion:reduce){#startupSplash,#startupBrand{transition:opacity .2s linear}#startupSplash.done{width:100vw;transform:none;opacity:0}#startupBrand.docked{left:50%;top:50%;transform:translate(-50%,-50%);opacity:0}body.startup-revealing .sidebar>* ,body.startup-sidebar-ready .side-nav button{animation:none!important}}
   </style>
 
   <!-- App instalável -->

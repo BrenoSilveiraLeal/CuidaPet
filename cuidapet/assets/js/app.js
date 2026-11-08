@@ -142,6 +142,7 @@
       ? 'Peso inválido. Informe um valor maior que zero.'
       : '';
   };
+  const formatMicrochip = (value) => String(value ?? '').replace(/\D/g, '').slice(0, 15).replace(/(\d{3})(?=\d)/g, '$1 ');
   const ageMonths = (birth, speciesId) => (validPetBirth(birth, speciesId) && birth ? Math.max(0, Math.floor(-daysUntil(birth) / 30.44)) : null);
   const ageText = (p) => {
     const m = ageMonths(p.birth, p.species);
@@ -614,7 +615,7 @@
             <div><strong>${recs.length ? `${recs.length} itens na carteira de ${s.plural.toLowerCase()}` : 'Carteira automática'}</strong>
             <small>${recs.length ? recs.map((v) => esc(v.name.split(' (')[0].split(':')[0])).join(' · ') : 'Informe o nascimento para ver as vacinas e datas que o app vai calcular.'}</small></div>
           </div>
-          ${field('Microchip (opcional)', `<input data-model="chip" value="${esc(np.chip || '')}" inputmode="numeric" placeholder="000 000 000 000 000">`)}
+          ${field('Microchip (opcional)', `<input data-model="chip" value="${esc(formatMicrochip(np.chip))}" inputmode="numeric" maxlength="19" autocomplete="off" placeholder="000 000 000 000 000" aria-label="Microchip (apenas números)">`)}
           ${field('CPF / registro do pet (opcional)', `<input data-model="registration" value="${esc(np.registration || '')}" inputmode="text" maxlength="32" placeholder="CPF, RGA ou outro número">`)}
           <label class="card v-remind" style="margin:0 0 16px">
             <span class="t">${icon('shield', 20)} Castrado(a)</span>
@@ -1062,8 +1063,8 @@
       html: `
       <div class="view">
         ${topbar('Notificações', `<button class="icon-btn" data-go="#/config" aria-label="Configurar notificações">${icon('sliders')}</button>`)}
-        ${list.length ? `<div class="list">${list.map((n) => `
-          <button class="row" data-act="openNotif" data-arg="${n.p.id}" data-then="${n.go}">
+        ${list.length ? `<div class="list notification-list">${list.map((n) => `
+          <button class="row notification-row" data-act="openNotif" data-arg="${n.p.id}" data-then="${n.go}">
             ${avatar(n.p, 44)}
             <span class="r-main"><strong>${esc(n.title)}</strong><small>${n.sub}</small></span>
             <span class="r-end"><span class="r-ic ${n.cls}" style="width:34px;height:34px;border-radius:10px">${icon(n.ic, 16)}</span></span>
@@ -2405,7 +2406,7 @@
         birth: np.birth,
         weight: weightValue ? Number(weightValue) : null,
         neutered: !!np.neutered,
-        chip: (np.chip || '').trim(),
+        chip: formatMicrochip(np.chip),
         registration: (np.registration || '').trim(),
         photo: np.photo || null,
       };
@@ -2609,6 +2610,11 @@
         setInlineFieldError(el, error);
       } else {
         ui.newPet[el.dataset.model] = el.value;
+        if (el.dataset.model === 'chip') {
+          const formatted = formatMicrochip(el.value);
+          if (el.value !== formatted) el.value = formatted;
+          ui.newPet.chip = formatted;
+        }
       }
       if (el.dataset.model === 'weight') setInlineFieldError(el, petWeightError(el.value));
       const bar = $('#onbProgress');
@@ -2781,6 +2787,7 @@
     S.profile.cpf = S.profile.cpf || '';
     let repairedWeights = 0;
     S.pets.forEach((p) => {
+      p.chip = formatMicrochip(p.chip);
       if (p.weight == null || p.weight === '') return;
       const weight = Number(p.weight);
       if (!Number.isFinite(weight) || weight <= 0) { p.weight = null; repairedWeights++; }
