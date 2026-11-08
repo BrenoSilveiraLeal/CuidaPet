@@ -384,6 +384,31 @@
     bovino: [cat('racoes', 'Rações', 'bowl'), C_SAUDE, cat('acessorios', 'Manejo', 'tag')],
   };
 
+  const toyOfferings = [
+    ['coelho', 'Brinquedo de Forrageamento para Coelhos', 34.9, '#65a30d', 'hay'],
+    ['hamster', 'Roda de Madeira e Túnel para Hamster', 49.9, '#a16207', 'wheel'],
+    ['roedor', 'Labirinto de Forrageamento para Roedores', 54.9, '#a16207', 'house'],
+    ['chinchila', 'Bloco de Madeira e Brinquedos de Roer', 29.9, '#92400e', 'box'],
+    ['porquinho', 'Túnel de Feno para Porquinhos-da-índia', 39.9, '#65a30d', 'hay'],
+    ['passaro', 'Balanço Natural com Contas para Pássaros', 29.9, '#ca8a04', 'perch'],
+    ['galinha', 'Bloco de Forrageamento para Galinhas', 44.9, '#ca8a04', 'box'],
+    ['pato', 'Brinquedo Flutuante para Patos', 39.9, '#06b6d4', 'ball'],
+    ['jabuti', 'Toca de Cortiça para Jabutis', 49.9, '#92400e', 'house'],
+    ['tartaruga', 'Labirinto Flutuante para Tartarugas', 34.9, '#06b6d4', 'tank'],
+    ['cobra', 'Abrigo e Galho de Escalada para Serpentes', 59.9, '#92400e', 'house'],
+    ['iguana', 'Poleiro de Escalada para Iguanas', 69.9, '#15803d', 'perch'],
+    ['anfibio', 'Abrigo de Cortiça para Anfíbios', 39.9, '#65a30d', 'house'],
+    ['aranha', 'Toca de Casca Natural para Aranhas', 24.9, '#78350f', 'house'],
+    ['peixe', 'Caverna e Anel de Alimentação para Peixes', 44.9, '#0284c7', 'tank'],
+    ['cavalo', 'Bola de Brinquedo para Cavalos', 89.9, '#2563eb', 'ball'],
+    ['cabra', 'Bola de Forrageamento para Cabras', 59.9, '#a16207', 'ball'],
+    ['ovelha', 'Brinquedo de Enriquecimento para Ovelhas', 59.9, '#64748b', 'ball'],
+    ['bovino', 'Bola e Escova de Enriquecimento para Bovinos', 129.9, '#15803d', 'ball'],
+  ];
+  toyOfferings.forEach(([sp]) => {
+    if (!categories[sp].some((item) => item.id === 'brinquedos')) categories[sp].push(cat('brinquedos', 'Brinquedos', 'ball'));
+  });
+
   const P = (sp, id, c, name, brand, price, extra = {}) => ({
     id: `${sp}-${id}`, sp, cat: c, name, brand, price,
     old: null, rating: 4.7, reviews: 80, sizes: null, art: 'bag', color: '#0284c7', tag: null, desc: '', ...extra,
@@ -564,6 +589,11 @@
     P('bovino', 'carrapaticida', 'saude', 'Carrapaticida Pour-on 1 L', 'VitaPet', 159.9, { rating: 4.6, reviews: 38, art: 'bottle', color: '#16a34a', desc: 'Aplicação no dorso. Respeite o período de carência do leite.' }),
     P('bovino', 'cabresto', 'acessorios', 'Cabresto de Corda para Bovinos', 'Campo Forte', 49.9, { reviews: 17, art: 'halter', color: '#92400e', desc: 'Corda trançada resistente para manejo.' }),
   ];
+
+  products.push(...toyOfferings.map(([sp, name, price, color, art]) => P(
+    sp, 'brinquedo-enriquecimento', 'brinquedos', name, 'Brinca+', price,
+    { color, art, desc: 'Brinquedo de enriquecimento para o habitat. Supervisione o uso e confira o estado do produto regularmente.' },
+  )));
 
   const brands = [
     { name: 'Royal Canin', kind: 'Alimentação', color: '#dc2626', font: 'sans', url: 'https://www.royalcanin.com/br' },
@@ -982,8 +1012,53 @@
       <path d="M22 58h56M22 70h56M22 82h12M66 82h12M22 94h12M66 94h12" stroke="#fff" stroke-width="2" opacity=".25"/>`,
   };
 
-  const art = (p) =>
-    `<div class="p-art" style="--art:${shade(p.color, 0.88)}"><svg viewBox="0 0 100 120" aria-hidden="true">${(ART[p.art] || ART.bag)(p.color, p.sp)}</svg></div>`;
+  const productPhotos = {
+    'cachorro-sache': 'food-wet-pouches.jpg', 'gato-sache': 'food-wet-pouches.jpg',
+    'cachorro-bifinho': 'treat-dog.jpg', 'cachorro-osso': 'treat-dog-bone.jpg', 'gato-cremoso': 'treat-cat.jpg',
+    'coelho-cenoura': 'treat-rabbit.jpg', 'hamster-iogurte': 'treat-hamster.jpg', 'porquinho-ervas': 'treat-guinea-pig.jpg',
+    'furao-pasta': 'treat-ferret-paste.jpg', 'passaro-farinhada': 'treat-bird.jpg', 'passaro-painco': 'treat-bird.jpg',
+    'cavalo-petisco': 'treat-horse.jpg', 'roedor-petisco': 'treat-rodent.jpg', 'porco-petisco': 'treat-pig.jpg',
+    'cachorro-shampoo': 'hygiene-shampoo.jpg', 'cachorro-tapete': 'hygiene-pads.jpg', 'gato-areia': 'hygiene-cat-litter.jpg',
+    'coelho-substrato': 'hygiene-paper-bedding.jpg', 'hamster-maravalha': 'hygiene-wood-shavings.jpg',
+    'hamster-areia': 'hygiene-bathing-sand.jpg', 'porquinho-tapete': 'hygiene-pads.jpg',
+    'furao-shampoo': 'hygiene-shampoo.jpg', 'furao-areia': 'hygiene-cat-litter.jpg', 'passaro-banheira': 'hygiene-bird-bath.jpg',
+    'jabuti-coco': 'hygiene-reptile-substrate.jpg', 'cobra-aspen': 'hygiene-reptile-substrate.jpg',
+    'cobra-spray': 'health-reptile-mist.jpg', 'iguana-grama': 'hygiene-grass-mat.jpg',
+    'peixe-condicionador': 'hygiene-water-conditioner.jpg', 'peixe-bacterias': 'hygiene-water-conditioner.jpg',
+    'cavalo-shampoo': 'hygiene-shampoo.jpg', 'cavalo-casco': 'hygiene-hoof-oil.jpg',
+    'cavalo-escova': 'hygiene-horse-grooming.jpg', 'roedor-papel': 'hygiene-paper-bedding.jpg',
+    'chinchila-po': 'hygiene-bathing-sand.jpg', 'galinha-maravalha': 'hygiene-wood-shavings.jpg',
+    'tartaruga-condicionador': 'hygiene-water-conditioner.jpg', 'anfibio-condicionador': 'hygiene-water-conditioner.jpg',
+    'anfibio-musgo': 'hygiene-reptile-substrate.jpg', 'aranha-coco': 'hygiene-reptile-substrate.jpg',
+    'porco-hidratante': 'hygiene-pig-skin.jpg', 'ovelha-tesoura': 'hygiene-horse-grooming.jpg',
+    'cachorro-antipulgas': 'health-flea-chew.jpg', 'cachorro-vermifugo': 'health-deworm-tablets.jpg',
+    'gato-vermifugo': 'health-deworm-tablets.jpg', 'coelho-vitamina': 'health-vitamin-drops.jpg',
+    'porquinho-vitc': 'health-vitamin-drops.jpg', 'furao-antipulgas': 'health-ferret-pipette.jpg',
+    'passaro-vitamina': 'health-vitamin-drops.jpg', 'jabuti-calcio': 'health-calcium-powder.jpg',
+    'chinchila-pedra': 'health-mineral-block.jpg', 'iguana-calcio': 'health-calcium-powder.jpg',
+    'peixe-teste': 'health-fish-test.jpg', 'cavalo-vermifugo': 'health-deworm-paste.jpg',
+    'galinha-vermifugo': 'health-poultry-water.jpg', 'pato-vitamina': 'health-vitamin-drops.jpg',
+    'tartaruga-calcio': 'health-mineral-block.jpg', 'porco-vermifugo': 'health-deworm-tablets.jpg',
+    'cabra-sal': 'health-mineral-salt.jpg', 'ovelha-sal': 'health-mineral-salt.jpg',
+    'cabra-vermifugo': 'health-livestock-pouron.jpg', 'ovelha-vermifugo': 'health-livestock-pouron.jpg',
+    'bovino-sal': 'health-mineral-salt.jpg', 'bovino-carrapaticida': 'health-livestock-pouron.jpg',
+    'coelho-toca': 'accessory-rabbit-house.jpg', 'hamster-roda': 'accessory-hamster-wheel.jpg',
+    'hamster-gaiola': 'accessory-small-cage.jpg', 'porquinho-iglu': 'accessory-felt-hide.jpg',
+    'passaro-poleiro': 'accessory-bird-perch.jpg', 'passaro-gaiola': 'accessory-bird-cage.jpg',
+    'jabuti-uvb': 'accessory-uvb-lamp.jpg', 'jabuti-toca': 'jabuti-toy.jpg',
+    'cobra-placa': 'accessory-heat-mat.jpg', 'cobra-bebedouro': 'accessory-reptile-water-dish.jpg',
+    'iguana-uvb': 'accessory-uvb-lamp.jpg', 'iguana-galho': 'iguana-toy.jpg',
+    'peixe-aquario': 'accessory-aquarium.jpg', 'cavalo-cabresto': 'accessory-horse-halter.jpg',
+    'roedor-gaiola': 'accessory-small-cage.jpg', 'chinchila-gaiola': 'accessory-small-cage.jpg',
+    'galinha-bebedouro': 'accessory-poultry-waterer.jpg', 'pato-piscina': 'accessory-duck-pool.jpg',
+    'pato-abrigo': 'accessory-duck-shelter.jpg', 'tartaruga-uvb': 'accessory-uvb-lamp.jpg',
+    'aranha-terrario': 'accessory-terrarium.jpg', 'cabra-colar': 'accessory-goat-bell-collar.jpg',
+    'bovino-cabresto': 'accessory-livestock-halter.jpg',
+  };
+  const art = (p) => {
+    const photo = productPhotos[p.id] || (p.cat === 'racoes' ? `${p.sp}-food.jpg` : p.cat === 'brinquedos' ? `${p.sp}-toy.jpg` : null);
+    return `<div class="p-art" style="--art:${shade(p.color, 0.88)}">${photo ? `<img src="assets/img/products/${photo}" alt="${p.name}" loading="lazy">` : `<svg viewBox="0 0 100 120" aria-hidden="true">${(ART[p.art] || ART.bag)(p.color, p.sp)}</svg>`}</div>`;
+  };
 
   /* ---------------------------------------------------------------- Utilidades */
   const brl = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

@@ -66,14 +66,7 @@
       : `<span class="avatar user"${st}>${esc(firstName()[0].toUpperCase())}</span>`;
   };
   const product = (id) => products.find((p) => p.id === id);
-  const ratingSummary = (p) => {
-    const reviews = (S?.orders || []).flatMap((order) => order.products || [])
-      .filter((item) => item.id === p.id && item.review)
-      .map((item) => item.review.rating);
-    const count = p.reviews + reviews.length;
-    const average = count ? (p.rating * p.reviews + reviews.reduce((sum, rating) => sum + rating, 0)) / count : p.rating;
-    return { count, average };
-  };
+  const ratingSummary = (p) => ({ count: p.reviews, average: p.rating });
   const main = (list) => list.find((x) => x.main) || list[0];
 
   const maxPlausibleAge = (speciesId) => {
@@ -501,7 +494,7 @@
       </button>`;
 
   const emptyState = (title, text, img, cta = '') => `
-    <div class="empty"><img src="${img || (S.pets.length ? petImg(pet()) : species.cachorro.img)}" alt=""><strong>${title}</strong><p>${text}</p>${cta}</div>`;
+    <div class="empty">${img === false ? '' : `<img src="${img || (S.pets.length ? petImg(pet()) : species.cachorro.img)}" alt="">`}<strong>${title}</strong><p>${text}</p>${cta}</div>`;
 
   const summaryCard = (p) => {
     const recs = petVaccines(p);
@@ -547,7 +540,7 @@
   V.semPet = () => ({
     html: `
     <div class="view narrow">
-      ${emptyState('Olá, Tutor!', 'Adicione seu primeiro pet: com a espécie e a data de nascimento, a carteira de vacinação já vem pronta, com todas as doses e datas.', species.cachorro.img, `<button class="btn" style="margin-top:18px" data-act="newPet">${icon('plus', 20)} Adicionar meu primeiro pet</button><button class="link-btn" style="margin:14px auto 0" data-act="reset">Ver o perfil de exemplo</button>`)}
+      ${emptyState('Olá, Tutor!', 'Você ainda não cadastrou nenhum pet. Quando quiser, adicione um para montar a carteira de saúde e receber lembretes personalizados.', false, `<button class="btn" style="margin-top:18px" data-act="newPet">${icon('plus', 20)} Cadastrar um pet</button><button class="link-btn" style="margin:14px auto 0" data-act="reset">Ver o perfil de exemplo</button>`)}
       <div class="mini-species">${speciesOrder.slice(0, 6).map((id) => `<img src="${species[id].img}" alt="">`).join('')}</div>
     </div>`,
   });
@@ -622,7 +615,7 @@
             <span class="switch"><input type="checkbox" data-model-check="neutered" ${np.neutered ? 'checked' : ''} aria-label="Castrado"><span></span></span>
           </label>
           <button class="btn" type="submit">${editId ? 'Salvar alterações' : 'Adicionar pet'}</button>
-          ${editId && S.pets.length > 1 ? `<button type="button" class="btn danger" style="margin-top:10px" data-act="askRemove" data-arg="${editId}">Remover pet</button>` : ''}
+          ${editId ? `<button type="button" class="btn danger" style="margin-top:10px" data-act="askRemove" data-arg="${editId}">Remover pet</button>` : ''}
         </form>
       </div>`,
     };
@@ -1311,8 +1304,8 @@
     html: `
     <div class="view">
       ${topbar('Meus pets', `<button class="icon-btn" data-act="newPet" aria-label="Cadastrar pet">${icon('plus')}</button>`)}
-      <p class="muted-sm" style="margin:-8px 0 14px">${S.pets.length} ${S.pets.length > 1 ? 'pets cadastrados' : 'pet cadastrado'}. Toque para ver o perfil completo.</p>
-      <div class="list">
+      <p class="muted-sm" style="margin:-8px 0 14px">${S.pets.length} ${S.pets.length === 1 ? 'pet cadastrado' : 'pets cadastrados'}${S.pets.length ? '. Toque para ver o perfil completo.' : '.'}</p>
+      ${S.pets.length ? `<div class="list">
         ${S.pets.map((p) => {
           const late = lateCount(p);
           return `
@@ -1323,7 +1316,7 @@
           </button>`;
         }).join('')}
       </div>
-      <button class="btn" style="margin-top:20px" data-act="newPet">${icon('plus', 20)} Cadastrar novo pet</button>
+      <button class="btn" style="margin-top:20px" data-act="newPet">${icon('plus', 20)} Cadastrar novo pet</button>` : emptyState('Nenhum pet cadastrado', 'Quando quiser, cadastre um pet para acompanhar a saúde e os cuidados dele.', false, `<button class="btn" style="margin-top:18px" data-act="newPet">${icon('plus', 20)} Cadastrar meu primeiro pet</button>`)}
     </div>`,
   });
 
@@ -1332,13 +1325,13 @@
     <div class="view">
       ${topbar('Meus pedidos')}
       ${S.orders.length
-        ? `<div class="list">${S.orders.map((o, orderIndex) => ({ o, orderIndex })).reverse().map(({ o, orderIndex }) => {
+        ? `<div class="list">${[...S.orders].reverse().map((o) => {
             const d = daysUntil(o.date);
             const st = d <= -2 ? ['ok', 'Entregue'] : ['soon', 'A caminho'];
             const productsHtml = (o.products || []).map((item, itemIndex) => {
               const bought = product(item.id);
               if (!bought) return '';
-              return `<div class="order-review-row"><span><strong>${bought.name}</strong><small>${item.size ? `${item.size} · ` : ''}Qtd. ${item.qty}</small></span>${item.review ? `<span class="review-done" aria-label="Avaliado com ${item.review.rating} de 5 estrelas">${'★'.repeat(item.review.rating)}${'☆'.repeat(5 - item.review.rating)} <small>Avaliado</small></span>` : `<button class="link-btn" data-act="reviewProduct" data-arg="${orderIndex}:${itemIndex}">Avaliar produto</button>`}</div>`;
+              return `<div class="order-review-row"><span><strong>${bought.name}</strong><small>${item.size ? `${item.size} · ` : ''}Qtd. ${item.qty}</small></span></div>`;
             }).join('');
             return `<div class="card order-card"><div class="row"><span class="r-ic">${icon('truck', 22)}</span>
               <span class="r-main"><strong>Pedido #${o.n}</strong><small>${fmtDate(o.date)} · ${o.items} ${o.items > 1 ? 'itens' : 'item'} · ${brl(o.total)}</small></span>
@@ -2040,20 +2033,6 @@
       render(true);
     },
     cartRemove(idx) { S.cart.splice(Number(idx), 1); save(); render(true); toast('Item removido'); },
-    reviewProduct(arg) {
-      const [orderIndex, itemIndex] = arg.split(':').map(Number);
-      const item = S.orders[orderIndex]?.products?.[itemIndex];
-      const bought = item && product(item.id);
-      if (!item || !bought || item.review) return;
-      openSheet(`
-        <h3>Avaliar produto</h3>
-        <p class="muted">${bought.name} · comprado no pedido #${S.orders[orderIndex].n}</p>
-        <form data-form="review" data-order="${orderIndex}" data-item="${itemIndex}">
-          ${field('Sua nota', `<select name="rating" required><option value="">Escolha de 1 a 5 estrelas</option><option value="5">★★★★★ · Adorei</option><option value="4">★★★★☆ · Gostei</option><option value="3">★★★☆☆ · Foi bom</option><option value="2">★★☆☆☆ · Não gostei</option><option value="1">★☆☆☆☆ · Não recomendo</option></select>`)}
-          ${field('Comentário (opcional)', '<textarea name="comment" maxlength="500" rows="3" placeholder="Conte sua experiência com o produto"></textarea>')}
-          <button class="btn" type="submit">Enviar avaliação</button>
-        </form>`);
-    },
     openCep() {
       openSheet(`
         <h3>Calcular frete</h3>
@@ -2134,18 +2113,19 @@
       const p = petById(id);
       openSheet(`
         <h3>Remover ${esc(p.name)}?</h3>
-        <p class="muted">A carteira, os lembretes e o perfil deste pet serão apagados.</p>
+        <p class="muted">A carteira, os lembretes, as consultas e o perfil deste pet serão apagados.</p>
         <div class="list"><button class="btn danger" data-act="removePet" data-arg="${id}">Remover</button><button class="btn ghost" data-act="closeSheet">Cancelar</button></div>`);
     },
     removePet(id) {
       S.pets = S.pets.filter((x) => x.id !== id);
       S.reminders = S.reminders.filter((r) => r.petId !== id);
-      if (S.active === id) S.active = S.pets[0].id;
+      S.appointments = (S.appointments || []).filter((a) => a.petId !== id);
+      if (S.active === id) S.active = S.pets[0]?.id || null;
       save();
       closeSheet();
       ui.newPet = null;
       navStack = [];
-      replace('#/pets');
+      replace('#/home');
       toast('Pet removido');
     },
     openAddr() {
@@ -2359,18 +2339,6 @@
   };
 
   const F = {
-    review(form) {
-      const order = S.orders[Number(form.dataset.order)];
-      const item = order?.products?.[Number(form.dataset.item)];
-      if (!item || item.review) { closeSheet(); return; }
-      const rating = Number(form.elements.rating.value);
-      if (!Number.isInteger(rating) || rating < 1 || rating > 5) { toast('Escolha uma nota de 1 a 5 estrelas'); return; }
-      item.review = { rating, comment: form.elements.comment.value.trim().slice(0, 500), date: iso(0) };
-      save();
-      closeSheet();
-      render(true);
-      toast('Avaliação salva neste aparelho');
-    },
     lost(form) {
       const p = petById(form.dataset.pet);
       if (!p) { closeSheet(); return; }
@@ -2794,7 +2762,7 @@
       return;
     }
     const saved = Store.load();
-    S = saved && saved.version === STATE_VERSION ? saved : fresh(true);
+    S = saved && saved.version === STATE_VERSION ? saved : fresh(false);
     S.profile = S.profile || fresh(false).profile;
     S.profile.cpf = S.profile.cpf || '';
     let repairedWeights = 0;

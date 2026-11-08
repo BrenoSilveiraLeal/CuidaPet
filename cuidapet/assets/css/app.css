@@ -784,7 +784,7 @@ button.row:active { transform: scale(0.98); }
 .cart-item .trash { border: 0; background: none; color: #94a3b8; align-self: flex-start; padding: 4px; }
 
 .coupon { display: flex; gap: 8px; margin-top: 4px; }
-.coupon .input { flex: 1; height: 46px; }
+.coupon .input { flex: 1; height: 46px; gap: 8px; }
 .coupon .btn.sm { height: 46px; }
 .totals { padding: 16px; margin-top: 16px; display: grid; gap: 10px; font-size: 0.9rem; }
 .totals div { display: flex; justify-content: space-between; color: var(--text-muted); }
@@ -807,8 +807,6 @@ button.row:active { transform: scale(0.98); }
 .order-review-row strong { font-size: .82rem; }
 .order-review-row small { color: var(--text-muted); font-size: .72rem; }
 .order-review-row .link-btn { flex: 0 0 auto; font-size: .8rem; }
-.review-done { flex: 0 0 auto; color: #f59e0b; white-space: nowrap; }
-.review-done small { color: var(--ok); margin-left: 4px; }
 
 /* Mais */
 .profile { display: flex; align-items: center; gap: 14px; padding: 16px; margin-bottom: 18px; width: 100%; text-align: left; }
