@@ -1534,7 +1534,7 @@
       ['pedidos', 'Pedidos', 'box', '#/pedidos'], ['conta', 'Minha conta', 'user', '#/mais'],
     ];
     sidebar.innerHTML = `
-      <a class="side-logo" href="#/home" data-tab="#/home">CuidaPet</a>
+      <button type="button" class="side-logo" data-tab="#/home" aria-label="Ir para Início">CuidaPet</button>
       <nav class="side-nav" aria-label="Menu">
         ${items.map(([k, l, ic, go]) => `<button class="${k === active ? 'on' : ''}" data-tab="${go}">${k === 'pets' ? paw(20) : icon(ic, 20)}<span>${l}</span>${k === 'vacinas' && late ? `<i class="side-badge late">${late}</i>` : ''}${k === 'loja' && n ? `<i class="side-badge">${n}</i>` : ''}</button>`).join('')}
       </nav>
@@ -1725,7 +1725,9 @@
   };
 
   const go = (hash) => {
-    if (hash === location.hash) return;
+    // O hash pode estar vazio quando o app abriu pela primeira vez; parse()
+    // ainda assim mostra a rota home. Evite renderizar a mesma tela nesse caso.
+    if (hash === location.hash || (hash === '#/home' && renderedRoute?.name === 'home' && !renderedRoute.args.length)) return;
     navStack.push(location.hash || '#/home');
     history.pushState({ [NAV_ROUTE_STATE]: hash, [NAV_STACK_STATE]: [...navStack] }, '', hash);
     persistNavStack();
