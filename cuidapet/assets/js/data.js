@@ -48,25 +48,25 @@
       'Burmês', 'Chartreux', 'Cornish Rex', 'Devon Rex', 'Exótico de Pelo Curto', 'Himalaio', 'Maine Coon', 'Manx', 'Munchkin', 'Norueguês da Floresta', 'Oriental', 'Persa',
       'Ragdoll', 'Savannah', 'Scottish Fold', 'Siamês', 'Siberiano', 'Somali', 'Sphynx', 'Tonquinês', 'Van Turco', 'Outra']),
     coelho: S('coelho', 'Coelho', 'Coelhos', 'rabbit.png', 'pequenos', 'kg', 'do seu', '8 a 12 anos', [
-      'Mini Lop', 'Angorá', 'Califórnia', 'Fuzzy Lop', 'Gigante de Flandres', 'Holandês', 'Holandês Anão', 'Hotot Anão', 'Lionhead', 'Mini Rex', 'Nova Zelândia', 'Polish', 'Rex',
+      'Mini Lop', 'Angorá', 'Califórnia', 'Fuzzy Lop', 'Gigante de Flandres', 'Holandês', 'Holandês Anão', 'Hotot Anão', 'Havana', 'Lionhead', 'Mini Rex', 'Nova Zelândia', 'Polish', 'Rex',
       'Teddy', 'Sem raça definida (SRD)', 'Outra']),
     hamster: S('hamster', 'Hamster', 'Hamsters', 'hamster.png', 'pequenos', 'g', 'do seu', '2 a 3 anos', [
-      'Sírio', 'Sírio de pelo longo (Angorá)', 'Anão Russo', 'Anão Campbell', 'Anão Chinês', 'Roborovski', 'Outra']),
+      'Sírio', 'Sírio de pelo longo (Angorá)', 'Anão Russo', 'Anão Campbell', 'Anão Chinês', 'Roborovski', 'Winter White', 'Dourado', 'Urso de Pelúcia', 'Urso Negro', 'Panda', 'Creme', 'Canela', 'Dove', 'Umbrous', 'Outra']),
     roedor: S('roedor', 'Rato / Gerbil', 'Ratos e gerbils', 'rat.png', 'pequenos', 'g', 'do seu', '2 a 5 anos', [
-      'Rato twister', 'Rato dumbo', 'Rato rex', 'Camundongo', 'Gerbil (esquilo-da-mongólia)', 'Degu', 'Outra']),
+      'Rato twister', 'Rato dumbo', 'Rato rex', 'Rato sem pelo', 'Rato siamês', 'Rato hooded', 'Camundongo', 'Camundongo fancy', 'Gerbil (esquilo-da-mongólia)', 'Gerbil agouti', 'Gerbil preto', 'Degu', 'Degu chinchila', 'Camundongo malhado', 'Camundongo dourado', 'Outra']),
     chinchila: S('chinchila', 'Chinchila', 'Chinchilas', 'chinchilla.png', 'pequenos', 'g', 'da sua', '10 a 20 anos', [
-      'Padrão (cinza)', 'Bege', 'Branca (Wilson)', 'Ébano', 'Violeta', 'Safira', 'Veludo-preto', 'Outra']),
+      'Padrão (cinza)', 'Bege', 'Branca (Wilson)', 'Ébano', 'Violeta', 'Safira', 'Veludo-preto', 'Mosaico', 'Branca-rosa', 'Goldbar', 'Canela', 'Carvão', 'Diamante azul', 'Ébano heterozigoto', 'Veludo-marrom', 'Outra']),
     porquinho: S('porquinho', 'Porquinho-da-índia', 'Porquinhos-da-índia', 'guineapig.png', 'pequenos', 'g', 'do seu', '5 a 8 anos', [
-      'Inglês (pelo curto)', 'Abissínio', 'Americano', 'Coronet', 'Crested', 'Peruano', 'Rex', 'Sheltie', 'Skinny (sem pelo)', 'Teddy', 'Texel', 'Sem raça definida (SRD)', 'Outra']),
+      'Inglês (pelo curto)', 'Abissínio', 'Americano', 'Coronet', 'Crested', 'Peruano', 'Rex', 'Sheltie', 'Skinny (sem pelo)', 'Teddy', 'Texel', 'Silkie', 'Merino', 'Lunkarya', 'Himalaio', 'Sem raça definida (SRD)', 'Outra']),
     furao: S('furao', 'Furão', 'Furões', 'ferret.png', 'pequenos', 'kg', 'do seu', '6 a 10 anos', [
-      'Sable', 'Black Sable', 'Albino', 'Canela', 'Champagne', 'Chocolate', 'Prata', 'Panda', 'Blaze', 'Outra']),
+      'Sable', 'Black Sable', 'Albino', 'Canela', 'Champagne', 'Chocolate', 'Prata', 'Panda', 'Blaze', 'Branco de olhos escuros', 'Mitt', 'Roan', 'DEW', 'Canela mitt', 'Sable mitt', 'Outra']),
     passaro: S('passaro', 'Pássaro', 'Aves', 'breeds/bird-canario.png', 'aves', 'g', 'do seu', '5 a 30 anos', [
       'Canário-belga', 'Agapornis', 'Arara', 'Cacatua', 'Calafate', 'Calopsita', 'Canário-da-terra', 'Curió', 'Diamante-de-gould', 'Mandarim', 'Manon', 'Papagaio',
-      'Periquito-australiano', 'Ring-neck', 'Rosela', 'Sabiá', 'Trinca-ferro', 'Outra']),
+      'Periquito-australiano', 'Ring-neck', 'Rosela', 'Sabiá', 'Trinca-ferro', 'Conure', 'Eclectus', 'Pionus', 'Outra']),
     galinha: S('galinha', 'Galinha', 'Galinhas', 'breeds/bird-galinha.png', 'fazenda', 'kg', 'da sua', '8 a 10 anos', [
-      'Caipira', 'Australorp', 'Brahma', 'Embrapa 051', 'Garnisé', 'Índio Gigante', 'Legorne', 'Plymouth Rock', 'Polonesa', 'Rhode Island Red', 'Sedosa (Silkie)', 'Sussex', 'Outra']),
+      'Caipira', 'Australorp', 'Brahma', 'Embrapa 051', 'Garnisé', 'Índio Gigante', 'Legorne', 'Plymouth Rock', 'Polonesa', 'Rhode Island Red', 'Sedosa (Silkie)', 'Sussex', 'Orpington', 'Wyandotte', 'Marans', 'Outra']),
     pato: S('pato', 'Pato', 'Patos e gansos', 'duck.png', 'fazenda', 'kg', 'do seu', '8 a 15 anos', [
-      'Pato-de-pequim', 'Pato-real (Mallard)', 'Pato-corredor-indiano', 'Pato-mandarim', 'Marreco', 'Ganso', 'Ganso-sinaleiro', 'Outra']),
+      'Pato-de-pequim', 'Pato-real (Mallard)', 'Pato-corredor-indiano', 'Pato-mandarim', 'Pato-muscovy', 'Khaki Campbell', 'Cayuga', 'Welsh Harlequin', 'Swedish Blue', 'Rouen', 'Pato-call', 'Buff Orpington', 'Ganso-toulouse', 'Ganso-embden', 'Ganso-chinês', 'Marreco', 'Ganso', 'Ganso-sinaleiro', 'Outra']),
     jabuti: S('jabuti', 'Jabuti', 'Jabutis', 'tortoise.png', 'repteis', 'kg', 'do seu', '40 a 80 anos', [
       'Jabuti-piranga', 'Jabuti-tinga', 'Outra']),
     tartaruga: S('tartaruga', 'Tartaruga aquática', 'Tartarugas aquáticas', 'turtle.png', 'repteis', 'kg', 'da sua', '20 a 40 anos', [
@@ -97,32 +97,33 @@
   // Sele??o enxuta de ra?as para manter o cadastro simples e a galeria visual vi?vel.
   // Quatro ra?as representativas + "Outra" por esp?cie, quando dispon?veis.
   const curatedBreeds = {
-    cachorro: ['Sem ra\u00e7a definida (SRD)', 'Vira-lata caramelo', 'Golden Retriever', 'Shih Tzu', 'Outra'],
-    gato: ['Sem ra\u00e7a definida (SRD)', 'Siam\u00eas', 'Persa', 'Maine Coon', 'Outra'],
-    coelho: ['Mini Lop', 'Angor\u00e1', 'Holand\u00eas', 'Lionhead', 'Outra'],
-    hamster: ['S\u00edrio', 'An\u00e3o Russo', 'Roborovski', 'S\u00edrio de pelo longo (Angor\u00e1)', 'Outra'],
-    roedor: ['Rato twister', 'Rato dumbo', 'Gerbil (esquilo-da-mong\u00f3lia)', 'Degu', 'Outra'],
-    chinchila: ['Padr\u00e3o (cinza)', 'Bege', 'Branca (Wilson)', '\u00c9bano', 'Outra'],
-    porquinho: ['Ingl\u00eas (pelo curto)', 'Abiss\u00ednio', 'Peruano', 'Rex', 'Outra'],
-    furao: ['Sable', 'Albino', 'Canela', 'Champagne', 'Outra'],
-    passaro: ['Can\u00e1rio-belga', 'Calopsita', 'Periquito-australiano', 'Papagaio', 'Outra'],
-    galinha: ['Caipira', 'Brahma', 'Garnis\u00e9', 'Rhode Island Red', 'Outra'],
-    pato: ['Pato-de-pequim', 'Pato-real (Mallard)', 'Pato-corredor-indiano', 'Marreco', 'Outra'],
-    jabuti: ['Jabuti-piranga', 'Jabuti-tinga', 'Outra'],
-    tartaruga: ['Tigre-d\u0027\u00e1gua', 'C\u00e1gado-de-barbicha', 'Mu\u00e7u\u00e3', 'Outra'],
-    cobra: ['P\u00edton-real (Ball python)', 'Corn snake', 'Jiboia', 'King snake', 'Outra'],
-    iguana: ['Iguana-verde', 'Pogona (Drag\u00e3o-barbudo)', 'Gecko-leopardo', 'Tei\u00fa', 'Outra'],
-    anfibio: ['Axolote', 'Sapo-boi (Pacman)', 'Perereca-de-olhos-vermelhos', 'R\u00e3-touro', 'Outra'],
-    aranha: ['Caranguejeira-brasileira', 'Tar\u00e2ntula Chilean Rose', 'Tar\u00e2ntula Red Knee', 'Tar\u00e2ntula Pink Toe', 'Outra'],
-    peixe: ['Kinguio', 'Betta', 'Guppy', 'Peixe-palha\u00e7o (marinho)', 'Outra'],
-    cavalo: ['Mangalarga Marchador', '\u00c1rabe', 'Crioulo', 'Quarto de Milha', 'Outra'],
-    porco: ['Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Outra'],
-    cabra: ['Saanen', 'Anglo-nubiana', 'Boer', 'Moxot\u00f3', 'Outra'],
-    ovelha: ['Santa In\u00eas', 'Dorper', 'Merino', 'Suffolk', 'Outra'],
-    bovino: ['Nelore', 'Angus', 'Girolando', 'Holandesa', 'Outra'],
+    cachorro: ['Corgi', 'Shiba Inu', 'Bulldog Franc\u00eas', 'Beagle', 'Pastor Alem\u00e3o', 'Dachshund (Salsicha)', 'Pug', 'Husky Siberiano', 'Yorkshire Terrier', 'Boxer', 'Chihuahua', 'Border Collie', 'Rottweiler', 'Spitz Alem\u00e3o', 'D\u00e1lmata', 'Outra'],
+    gato: ['British Shorthair', 'Maine Coon', 'Persa', 'Siam\u00eas', 'Bengal', 'Ragdoll', 'Sphynx', 'Scottish Fold', 'Abiss\u00ednio', 'Azul Russo', 'Noruegu\u00eas da Floresta', 'Angor\u00e1', 'Birman\u00eas (Sagrado da Birm\u00e2nia)', 'Devon Rex', 'American Shorthair', 'Outra'],
+    coelho: ['Mini Lop', 'Angor\u00e1', 'Holand\u00eas', 'Lionhead', 'Rex', 'Mini Rex', 'Gigante de Flandres', 'Holand\u00eas An\u00e3o', 'Calif\u00f3rnia', 'Nova Zel\u00e2ndia', 'Polish', 'Hotot An\u00e3o', 'Havana', 'English Spot', 'Teddy', 'Outra'],
+    hamster: ['S\u00edrio', 'S\u00edrio de pelo longo (Angor\u00e1)', 'An\u00e3o Russo', 'An\u00e3o Campbell', 'An\u00e3o Chin\u00eas', 'Roborovski', 'Winter White', 'Dourado', 'Urso de Pel\u00facia', 'Urso Negro', 'Panda', 'Creme', 'Canela', 'Dove', 'Umbrous', 'Outra'],
+    roedor: ['Rato twister', 'Rato dumbo', 'Rato rex', 'Rato sem pelo', 'Rato siamês', 'Rato hooded', 'Camundongo', 'Camundongo fancy', 'Gerbil (esquilo-da-mong\u00f3lia)', 'Gerbil agouti', 'Gerbil preto', 'Degu', 'Degu chinchila', 'Camundongo malhado', 'Gerbil-da-Mongólia', 'Outra'],
+    chinchila: ['Padr\u00e3o (cinza)', 'Bege', 'Branca (Wilson)', '\u00c9bano', 'Violeta', 'Safira', 'Veludo-preto', 'Mosaico', 'Branca-rosa', 'Goldbar', 'Canela', 'Carvão', 'Diamante azul', '\u00c9bano heterozigoto', 'Veludo-marrom', 'Outra'],
+    porquinho: ['Ingl\u00eas (pelo curto)', 'Abiss\u00ednio', 'Americano', 'Coronet', 'Crested', 'Peruano', 'Rex', 'Sheltie', 'Skinny (sem pelo)', 'Teddy', 'Texel', 'Silkie', 'Merino', 'Lunkarya', 'Himalaio', 'Outra'],
+    furao: ['Sable', 'Black Sable', 'Albino', 'Canela', 'Champagne', 'Chocolate', 'Prata', 'Panda', 'Blaze', 'Branco de olhos escuros', 'Mitt', 'Roan', 'DEW', 'Canela mitt', 'Sable mitt', 'Outra'],
+    passaro: ['Periquito-australiano', 'Calopsita', 'Agapornis', 'Papagaio', 'Arara', 'Cacatua', 'Canário-belga', 'Diamante-de-gould', 'Calafate', 'Mandarim', 'Conure', 'Eclectus', 'Ring-neck', 'Rosela', 'Pionus', 'Outra'],
+    galinha: ['Caipira', 'Brahma', 'Garnisé', 'Rhode Island Red', 'Australorp', 'Legorne', 'Plymouth Rock', 'Sussex', 'Sedosa (Silkie)', 'Polonesa', 'Orpington', 'Wyandotte', 'Índio Gigante', 'Embrapa 051', 'Marans', 'Outra'],
+    pato: ['Pato-de-pequim', 'Pato-real (Mallard)', 'Pato-corredor-indiano', 'Pato-mandarim', 'Pato-muscovy', 'Khaki Campbell', 'Cayuga', 'Welsh Harlequin', 'Swedish Blue', 'Rouen', 'Pato-call', 'Buff Orpington', 'Ganso-toulouse', 'Ganso-embden', 'Ganso-chinês', 'Outra'],
+    cavalo: ['Mangalarga Marchador', '\u00c1rabe', 'Crioulo', 'Quarto de Milha', 'Andaluz', 'Appaloosa', 'Fr\u00edsio', 'Lusitano', 'Campolina', 'Brasileiro de Hipismo', 'Paint Horse', 'Puro-Sangue Ingl\u00eas', 'Percheron', 'Pampa', 'Pantaneiro', 'Outra'],
+    jabuti: ['Jabuti-piranga', 'Jabuti-tinga', 'Tartaruga-grega', 'Tartaruga-de-Hermann', 'Tartaruga-russa', 'Tartaruga-sulcata', 'Tartaruga-leopardo', 'Jabuti-amarelo', 'Tartaruga-estrela', 'Tartaruga-marginada', 'Tartaruga-panqueca', 'Tartaruga-do-deserto', 'Tartaruga-caixa', 'Tartaruga-radiada', 'Jabuti-de-patas-azuis', 'Outra'],
+    tartaruga: ['Tigre-d\u0027\u00e1gua', 'Red-eared slider', 'Tartaruga-pintada', 'Tartaruga-almiscarada', 'Tartaruga-lamacenta', 'Tartaruga-mapa', 'Tartaruga-caixa', 'Tartaruga-mordedora', 'Mata-mata', 'Tartaruga-amarela', 'Tartaruga-cabeçuda', 'Tartaruga-de-Reeves', 'Cooter', 'Diamondback terrapin', 'Tartaruga-africana-de-pescoço-lateral', 'Outra'],
+    cobra: ['P\u00edton-real (Ball python)', 'Corn snake', 'Jiboia', 'King snake', 'Milk snake', 'Hognose', 'Gopher snake', 'Boa imperator', 'P\u00edton-verde-arbor\u00edcola', 'P\u00edton-carpet', 'Jiboia-rosada', 'Jiboia-da-areia', 'Cobra-rato', 'Cobra-liga', 'P\u00edton-sangue', 'Outra'],
+    iguana: ['Iguana-verde', 'Pogona (Drag\u00e3o-barbudo)', 'Gecko-leopardo', 'Gecko-de-crista', 'Tei\u00fa', 'Drag\u00e3o-d\u0027\u00e1gua', 'Camale\u00e3o', 'Uromastyx', 'Escinco-de-l\u00edngua-azul', 'Gecko-africano-de-cauda-gorda', 'Gecko-tokay', 'Gecko-gargoyle', 'Monitor-da-savana', 'Anolis-verde', 'Lagarto-jewel', 'Outra'],
+    anfibio: ['Axolote', 'Sapo-boi (Pacman)', 'Perereca-de-olhos-vermelhos', 'R\u00e3-touro', 'Salamandra', 'Sapo-de-barriga-de-fogo', 'R\u00e3-dardo', 'Perereca-de-White', 'R\u00e3-an\u00e3-africana', 'Salamandra-tigre', 'Trit\u00e3o', 'Sapo-tomate', 'Sapo-de-chifre', 'Trit\u00e3o-marmorizado', 'Cec\u00edlia', 'Outra'],
+    aranha: ['Caranguejeira-brasileira', 'Tar\u00e2ntula Chilean Rose', 'Tar\u00e2ntula Red Knee', 'Tar\u00e2ntula Pink Toe', 'Tar\u00e2ntula Curly Hair', 'Caranguejeira White Knee', 'Tar\u00e2ntula Cobalt Blue', 'Tar\u00e2ntula Green Bottle Blue', 'Caranguejeira Golias', 'Tar\u00e2ntula Mexican Fireleg', 'Tar\u00e2ntula Arizona Blonde', 'Tar\u00e2ntula Singapore Blue', 'Caranguejeira Salmon Pink', 'Caranguejeira Red and White', 'Tar\u00e2ntula Golden Knee', 'Outra'],
+    peixe: ['Kinguio', 'Betta', 'Guppy', 'Peixe-palha\u00e7o (marinho)', 'Acar\u00e1-bandeira', 'Acar\u00e1-disco', 'Neon', 'Cascudo', 'Espada', 'Molin\u00e9sia', 'Platy', 'Oscar', 'Paulistinha (Zebrafish)', 'Tetra-negro', 'Tricogaster', 'Outra'],
+    porco: ['Mini pig', 'Vietnamita', 'Kunekune', 'Juliana', 'Piau', 'G\u00f6ttingen', 'Miniatura americana', 'Yucatan', 'Ossabaw', 'Guinea hog', 'Meishan', 'Mangalitsa', 'Hampshire', 'Berkshire', 'Tamworth', 'Outra'],
+    cabra: ['Saanen', 'Anglo-nubiana', 'Boer', 'Moxot\u00f3', 'Canind\u00e9', 'Pigmeia', 'Toggenburg', 'Alpina', 'LaMancha', 'Nigerian Dwarf', 'Oberhasli', 'Kiko', 'Savanna', 'Angor\u00e1', 'Jamnapari', 'Outra'],
+    ovelha: ['Santa In\u00eas', 'Dorper', 'Merino', 'Suffolk', 'Lacaune', 'Morada Nova', 'Texel', 'Hampshire', 'Dorset', 'Corriedale', 'Romney', 'Katahdin', 'Jacob', 'Valais Blacknose', 'Lincoln', 'Outra'],
+    bovino: ['Nelore', 'Angus', 'Girolando', 'Holandesa', 'Brahman', 'Gir', 'Guzer\u00e1', 'Hereford', 'Jersey', 'Mini Jersey', 'Senepol', 'Tabapu\u00e3', 'Charolais', 'Simmental', 'Belgian Blue', 'Outra'],
   };
   Object.entries(curatedBreeds).forEach(([id, breeds]) => {
-    species[id].breeds = breeds.filter((breed) => species[id].breeds.includes(breed));
+    const requested = breeds.filter((breed) => breed !== 'Outra');
+    species[id].breeds = [...requested.slice(0, 15), 'Outra'];
   });
 
   // Porte estimado para as raças caninas mais comuns do cadastro. SRD e mestiços
@@ -175,6 +176,7 @@
     cachorro: {
       'Sem raça definida (SRD)': B('dog-srd'), 'Vira-lata caramelo': B('dog-caramelo'), 'Golden Retriever': B('dog-golden'), Labrador: B('dog-labrador'), 'Shih Tzu': B('dog-shihtzu'),
       Poodle: B('dog-poodle'), 'Bulldog Francês': B('dog-bulldog'), 'Spitz Alemão': B('dog-spitz'), 'Border Collie': B('dog-border'),
+      'Shiba Inu': B('dog-shiba'), Beagle: B('dog-beagle'), 'Pastor Alemão': B('dog-german-shepherd'), 'Dachshund (Salsicha)': B('dog-dachshund'), Pug: B('dog-pug'), Corgi: B('dog-corgi'), 'Husky Siberiano': B('dog-husky'), 'Yorkshire Terrier': B('dog-yorkshire'),
     },
     gato: {
       'Sem raça definida (SRD)': B('cat-srd'),
@@ -205,6 +207,76 @@
     porco: { 'Mini pig': { male: B('porco-mini-pig'), female: B('porco-mini-pig-f') }, Vietnamita: { male: B('porco-vietnamita'), female: B('porco-vietnamita-f') }, Kunekune: { male: B('porco-kunekune'), female: B('porco-kunekune-f') }, Juliana: { male: B('porco-juliana'), female: B('porco-juliana-f') } },
     cobra: { 'Píton-real (Ball python)': { male: B('cobra-piton-real-ball-python'), female: B('cobra-piton-real-ball-python-f') }, Jiboia: { male: B('cobra-jiboia'), female: B('cobra-jiboia-f') }, 'King snake': { male: B('cobra-king-snake'), female: B('cobra-king-snake-f') }, 'Corn snake': B('snake-corn') },
   };
+  const setBreedImages = (sp, rows) => rows.forEach(([breed, file]) => { breedImages[sp][breed] = B(file); });
+  setBreedImages('cachorro', [
+    ['Corgi','dog-corgi'], ['Shiba Inu','dog-shiba'], ['Bulldog Francês','dog-bulldog-french'], ['Beagle','dog-beagle'], ['Pastor Alemão','dog-german-shepherd'], ['Dachshund (Salsicha)','dog-dachshund'], ['Pug','dog-pug'], ['Husky Siberiano','dog-husky'], ['Yorkshire Terrier','dog-yorkshire'], ['Boxer','dog-boxer'], ['Chihuahua','dog-chihuahua'], ['Border Collie','dog-border-collie'], ['Rottweiler','dog-rottweiler'], ['Spitz Alemão','dog-pomeranian'], ['Dálmata','dog-dalmatian'],
+  ]);
+  setBreedImages('gato', [
+    ['British Shorthair','cat-british-shorthair'], ['Maine Coon','cat-mainecoon'], ['Persa','cat-persa'], ['Siamês','cat-siames'], ['Bengal','cat-bengal'], ['Ragdoll','cat-ragdoll'], ['Sphynx','cat-sphynx'], ['Scottish Fold','cat-scottish-fold'], ['Abissínio','cat-abissinio'], ['Azul Russo','cat-azul-russo'], ['Norueguês da Floresta','cat-norwegian-forest'], ['Angorá','cat-angora'], ['Birmanês (Sagrado da Birmânia)','cat-birman'], ['Devon Rex','cat-devon-rex'], ['American Shorthair','cat-american-shorthair'],
+  ]);
+  setBreedImages('coelho', [
+    ['Mini Lop','coelho-mini-lop'], ['Angorá','coelho-angora'], ['Holandês','coelho-holandes'], ['Lionhead','coelho-lionhead'], ['Rex','coelho-rex'], ['Mini Rex','coelho-mini-rex'], ['Gigante de Flandres','coelho-gigante-flandres'], ['Holandês Anão','coelho-holandes-anao'], ['Califórnia','coelho-california'], ['Nova Zelândia','coelho-nova-zelandia'], ['Polish','coelho-polish'], ['Hotot Anão','coelho-hotot-anao'], ['Havana','coelho-havana'], ['English Spot','coelho-english-spot'], ['Teddy','coelho-satin'],
+  ]);
+  setBreedImages('hamster', [
+    ['Sírio','hamster-sirio'], ['Sírio de pelo longo (Angorá)','hamster-angora'], ['Anão Russo','hamster-russo'], ['Anão Campbell','hamster-campbell'], ['Anão Chinês','hamster-chines'], ['Roborovski','hamster-roborovski'], ['Winter White','hamster-winter-white'], ['Dourado','hamster-golden'], ['Urso de Pelúcia','hamster-teddy-bear'], ['Urso Negro','hamster-black-bear'], ['Panda','hamster-panda'], ['Creme','hamster-cream'], ['Canela','hamster-cinnamon'], ['Dove','hamster-dove'], ['Umbrous','hamster-umbrous'],
+  ]);
+  setBreedImages('roedor', [
+    ['Rato twister','roedor-rato-twister'], ['Rato dumbo','roedor-rato-dumbo'], ['Rato rex','roedor-rato-rex'], ['Rato sem pelo','roedor-rato-sem-pelo'], ['Rato siamês','roedor-rato-siames'], ['Rato hooded','roedor-rato-hooded'], ['Camundongo','roedor-camundongo'], ['Camundongo fancy','roedor-camundongo-fancy'], ['Gerbil (esquilo-da-mongólia)','roedor-gerbil'], ['Gerbil agouti','roedor-gerbil-agouti'], ['Gerbil preto','roedor-gerbil-preto'], ['Degu','roedor-degu'], ['Degu chinchila','roedor-degu-chinchila'], ['Camundongo malhado','roedor-camundongo-guinea'], ['Gerbil-da-Mongólia','roedor-gerbil-mongol'],
+  ]);
+  setBreedImages('chinchila', [
+    ['Padrão (cinza)','chinchila-padrao-cinza'], ['Bege','chinchila-bege'], ['Branca (Wilson)','chinchila-branca-wilson'], ['Ébano','chinchila-ebano'], ['Violeta','chinchila-violeta'], ['Safira','chinchila-safira'], ['Veludo-preto','chinchila-veludo-preto'], ['Mosaico','chinchila-mosaico'], ['Branca-rosa','chinchila-branca-rosa'], ['Goldbar','chinchila-goldbar'], ['Canela','chinchila-canela'], ['Carvão','chinchila-carvao'], ['Diamante azul','chinchila-diamante-azul'], ['Ébano heterozigoto','chinchila-ebano-hetero'], ['Veludo-marrom','chinchila-veludo-marrom'],
+  ]);
+  setBreedImages('porquinho', [
+    ['Inglês (pelo curto)','porquinho-ingles-pelo-curto'], ['Abissínio','porquinho-abissinio'], ['Americano','porquinho-americano'], ['Coronet','porquinho-coronet'], ['Crested','porquinho-crested'], ['Peruano','porquinho-peruano'], ['Rex','porquinho-rex'], ['Sheltie','porquinho-sheltie'], ['Skinny (sem pelo)','porquinho-skinny'], ['Teddy','porquinho-teddy'], ['Texel','porquinho-texel'], ['Silkie','porquinho-silkie'], ['Merino','porquinho-merino'], ['Lunkarya','porquinho-lunkarya'], ['Himalaio','porquinho-himalaio'],
+  ]);
+  setBreedImages('furao', [
+    ['Sable','furao-sable'], ['Black Sable','furao-black-sable'], ['Albino','furao-albino'], ['Canela','furao-canela'], ['Champagne','furao-champagne'], ['Chocolate','furao-chocolate'], ['Prata','furao-prata'], ['Panda','furao-panda'], ['Blaze','furao-blaze'], ['Branco de olhos escuros','furao-branco-olhos-escuros'], ['Mitt','furao-mitt'], ['Roan','furao-roan'], ['DEW','furao-dew'], ['Canela mitt','furao-canela-mitt'], ['Sable mitt','furao-sable-mitt'],
+  ]);
+  setBreedImages('passaro', [
+    ['Periquito-australiano','bird-periquito'], ['Calopsita','bird-calopsita'], ['Agapornis','bird-agapornis'], ['Papagaio','bird-papagaio-cinza'], ['Arara','bird-arara'], ['Cacatua','bird-cacatua'], ['Canário-belga','bird-canario'], ['Diamante-de-gould','bird-gouldian'], ['Calafate','bird-calafate'], ['Mandarim','bird-mandarim'], ['Conure','bird-conure'], ['Eclectus','bird-eclectus'], ['Ring-neck','bird-ringneck'], ['Rosela','bird-rosela'], ['Pionus','bird-pionus'],
+  ]);
+  setBreedImages('galinha', [
+    ['Caipira','galinha-caipira'], ['Brahma','galinha-brahma'], ['Garnisé','galinha-garnise'], ['Rhode Island Red','galinha-rhode-island-red'], ['Australorp','galinha-australorp'], ['Legorne','galinha-legorne'], ['Plymouth Rock','galinha-plymouth-rock'], ['Sussex','galinha-sussex'], ['Sedosa (Silkie)','galinha-sedosa'], ['Polonesa','galinha-polonesa'], ['Orpington','galinha-orpington'], ['Wyandotte','galinha-wyandotte'], ['Índio Gigante','galinha-indio-gigante'], ['Embrapa 051','galinha-embrapa-051'], ['Marans','galinha-marans'],
+  ]);
+  setBreedImages('pato', [
+    ['Pato-de-pequim','pato-pequim'], ['Pato-real (Mallard)','pato-mallard'], ['Pato-corredor-indiano','pato-corredor-indiano'], ['Pato-mandarim','pato-mandarim'], ['Pato-muscovy','pato-muscovy'], ['Khaki Campbell','pato-khaki-campbell'], ['Cayuga','pato-cayuga'], ['Welsh Harlequin','pato-welsh-harlequin'], ['Swedish Blue','pato-swedish-blue'], ['Rouen','pato-rouen'], ['Pato-call','pato-call'], ['Buff Orpington','pato-buff'], ['Ganso-toulouse','ganso-toulouse'], ['Ganso-embden','ganso-embden'], ['Ganso-chinês','ganso-chines'],
+  ]);
+  setBreedImages('cavalo', [
+    ['Mangalarga Marchador','cavalo-mangalarga-marchador'], ['Árabe','cavalo-arabe'], ['Crioulo','cavalo-crioulo'], ['Quarto de Milha','cavalo-quarto-de-milha'], ['Andaluz','cavalo-andaluz'], ['Appaloosa','cavalo-appaloosa'], ['Frísio','cavalo-frisio'], ['Lusitano','cavalo-lusitano'], ['Campolina','cavalo-campolina'], ['Brasileiro de Hipismo','cavalo-brasileiro-hipismo'], ['Paint Horse','cavalo-paint-horse'], ['Puro-Sangue Inglês','cavalo-puro-sangue-ingles'], ['Percheron','cavalo-percheron'], ['Pampa','cavalo-pampa'], ['Pantaneiro','cavalo-pantaneiro'],
+  ]);
+  setBreedImages('jabuti', [
+    ['Jabuti-piranga','jabuti-piranga'], ['Jabuti-tinga','jabuti-tinga'], ['Tartaruga-grega','jabuti-grega'], ['Tartaruga-de-Hermann','jabuti-hermann'], ['Tartaruga-russa','jabuti-russa'], ['Tartaruga-sulcata','jabuti-sulcata'], ['Tartaruga-leopardo','jabuti-leopardo'], ['Jabuti-amarelo','jabuti-amarelo'], ['Tartaruga-estrela','jabuti-estrela'], ['Tartaruga-marginada','jabuti-marginada'], ['Tartaruga-panqueca','jabuti-panqueca'], ['Tartaruga-do-deserto','jabuti-deserto'], ['Tartaruga-caixa','jabuti-caixa'], ['Tartaruga-radiada','jabuti-radiada'], ['Jabuti-de-patas-azuis','jabuti-patas-azuis'],
+  ]);
+  setBreedImages('tartaruga', [
+    ['Tigre-d\u0027água','tartaruga-tigre-dagua'], ['Red-eared slider','tartaruga-red-eared-slider'], ['Tartaruga-pintada','tartaruga-pintada'], ['Tartaruga-almiscarada','tartaruga-almiscarada'], ['Tartaruga-lamacenta','tartaruga-lamacenta'], ['Tartaruga-mapa','tartaruga-mapa'], ['Tartaruga-caixa','tartaruga-caixa'], ['Tartaruga-mordedora','tartaruga-mordedora'], ['Mata-mata','tartaruga-mata-mata'], ['Tartaruga-amarela','tartaruga-amarela'], ['Tartaruga-cabeçuda','tartaruga-cabecuda'], ['Tartaruga-de-Reeves','tartaruga-reeves'], ['Cooter','tartaruga-cooter'], ['Diamondback terrapin','tartaruga-diamondback'], ['Tartaruga-africana-de-pescoço-lateral','tartaruga-sideneck'],
+  ]);
+  setBreedImages('cobra', [
+    ['P\u00edton-real (Ball python)','cobra-piton-real-ball-python'], ['Corn snake','snake-corn'], ['Jiboia','cobra-jiboia'], ['King snake','cobra-king-snake'], ['Milk snake','cobra-milk-snake'], ['Hognose','cobra-hognose'], ['Gopher snake','cobra-gopher'], ['Boa imperator','cobra-boa-imperator'], ['P\u00edton-verde-arbor\u00edcola','cobra-piton-arvore-verde'], ['P\u00edton-carpet','cobra-piton-carpet'], ['Jiboia-rosada','cobra-boa-rosada'], ['Jiboia-da-areia','cobra-boa-areia'], ['Cobra-rato','cobra-rato'], ['Cobra-liga','cobra-garter'], ['P\u00edton-sangue','cobra-piton-sangue'],
+  ]);
+  setBreedImages('iguana', [
+    ['Iguana-verde','iguana-iguana-verde'], ['Pogona (Drag\u00e3o-barbudo)','lizard-pogona'], ['Gecko-leopardo','lizard-gecko'], ['Gecko-de-crista','lizard-gecko-crista'], ['Tei\u00fa','iguana-teiu'], ['Drag\u00e3o-d\u0027\u00e1gua','lizard-dragao-agua'], ['Camale\u00e3o','lizard-camaleao'], ['Uromastyx','lizard-uromastyx'], ['Escinco-de-l\u00edngua-azul','lizard-blue-tongue'], ['Gecko-africano-de-cauda-gorda','lizard-fat-tail'], ['Gecko-tokay','lizard-tokay'], ['Gecko-gargoyle','lizard-gargoyle'], ['Monitor-da-savana','lizard-savannah-monitor'], ['Anolis-verde','lizard-green-anole'], ['Lagarto-jewel','lizard-jeweled'],
+  ]);
+  setBreedImages('anfibio', [
+    ['Axolote','anfibio-axolote'], ['Sapo-boi (Pacman)','anfibio-sapo-pacman'], ['Perereca-de-olhos-vermelhos','anfibio-perereca-olhos-vermelhos'], ['R\u00e3-touro','anfibio-ra-touro'], ['Salamandra','anfibio-salamandra'], ['Sapo-de-barriga-de-fogo','anfibio-fire-bellied'], ['R\u00e3-dardo','anfibio-dart-frog'], ['Perereca-de-White','anfibio-whites-tree-frog'], ['R\u00e3-an\u00e3-africana','anfibio-african-dwarf'], ['Salamandra-tigre','anfibio-tiger-salamander'], ['Trit\u00e3o','anfibio-newt'], ['Sapo-tomate','anfibio-tomato-frog'], ['Sapo-de-chifre','anfibio-horned-frog'], ['Trit\u00e3o-marmorizado','anfibio-marbled-newt'], ['Cec\u00edlia','anfibio-cecilia'],
+  ]);
+  setBreedImages('aranha', [
+    ['Caranguejeira-brasileira','aranha-caranguejeira-brasileira'], ['Tar\u00e2ntula Chilean Rose','aranha-chilean-rose'], ['Tar\u00e2ntula Red Knee','aranha-red-knee'], ['Tar\u00e2ntula Pink Toe','aranha-pink-toe'], ['Tar\u00e2ntula Curly Hair','aranha-curly-hair'], ['Caranguejeira White Knee','aranha-white-knee'], ['Tar\u00e2ntula Cobalt Blue','aranha-cobalt-blue'], ['Tar\u00e2ntula Green Bottle Blue','aranha-green-bottle-blue'], ['Caranguejeira Golias','aranha-goliath'], ['Tar\u00e2ntula Mexican Fireleg','aranha-mexican-fireleg'], ['Tar\u00e2ntula Arizona Blonde','aranha-arizona-blonde'], ['Tar\u00e2ntula Singapore Blue','aranha-singapore-blue'], ['Caranguejeira Salmon Pink','aranha-salmon-pink'], ['Caranguejeira Red and White','aranha-red-white'], ['Tar\u00e2ntula Golden Knee','aranha-golden-knee'],
+  ]);
+  setBreedImages('peixe', [
+    ['Kinguio','peixe-kinguio'], ['Betta','fish-betta'], ['Guppy','peixe-guppy'], ['Peixe-palha\u00e7o (marinho)','peixe-palhaco'], ['Acar\u00e1-bandeira','peixe-acara-bandeira'], ['Acar\u00e1-disco','peixe-acara-disco'], ['Neon','peixe-neon'], ['Cascudo','peixe-cascudo'], ['Espada','peixe-espada'], ['Molin\u00e9sia','peixe-molinesia'], ['Platy','peixe-platy'], ['Oscar','peixe-oscar'], ['Paulistinha (Zebrafish)','peixe-zebra-danio'], ['Tetra-negro','peixe-tetra-negro'], ['Tricogaster','peixe-tricogaster'],
+  ]);
+  setBreedImages('porco', [
+    ['Mini pig','porco-mini-pig'], ['Vietnamita','porco-vietnamita'], ['Kunekune','porco-kunekune'], ['Juliana','porco-juliana'], ['Piau','porco-piau'], ['G\u00f6ttingen','porco-gottingen'], ['Miniatura americana','porco-american-mini'], ['Yucatan','porco-yucatan'], ['Ossabaw','porco-ossabaw'], ['Guinea hog','porco-guinea'], ['Meishan','porco-meishan'], ['Mangalitsa','porco-mangalitsa'], ['Hampshire','porco-hampshire'], ['Berkshire','porco-berkshire'], ['Tamworth','porco-tamworth'],
+  ]);
+  setBreedImages('cabra', [
+    ['Saanen','cabra-saanen'], ['Anglo-nubiana','cabra-anglo-nubiana'], ['Boer','cabra-boer'], ['Moxot\u00f3','cabra-moxoto'], ['Canind\u00e9','cabra-caninde'], ['Pigmeia','cabra-pigmeia'], ['Toggenburg','cabra-toggenburg'], ['Alpina','cabra-alpina'], ['LaMancha','cabra-lamancha'], ['Nigerian Dwarf','cabra-nigerian-dwarf'], ['Oberhasli','cabra-oberhasli'], ['Kiko','cabra-kiko'], ['Savanna','cabra-savanna'], ['Angor\u00e1','cabra-angora'], ['Jamnapari','cabra-jamnapari'],
+  ]);
+  setBreedImages('ovelha', [
+    ['Santa In\u00eas','ovelha-santa-ines'], ['Dorper','ovelha-dorper'], ['Merino','ovelha-merino'], ['Suffolk','ovelha-suffolk'], ['Lacaune','ovelha-lacaune'], ['Morada Nova','ovelha-morada-nova'], ['Texel','ovelha-texel'], ['Hampshire','ovelha-hampshire'], ['Dorset','ovelha-dorset'], ['Corriedale','ovelha-corriedale'], ['Romney','ovelha-romney'], ['Katahdin','ovelha-katahdin'], ['Jacob','ovelha-jacob'], ['Valais Blacknose','ovelha-valais-blacknose'], ['Lincoln','ovelha-lincoln'],
+  ]);
+  setBreedImages('bovino', [
+    ['Nelore','bovino-nelore'], ['Angus','bovino-angus'], ['Girolando','bovino-girolando'], ['Holandesa','bovino-holandesa'], ['Brahman','bovino-brahman'], ['Gir','bovino-gir'], ['Guzer\u00e1','bovino-guzera'], ['Hereford','bovino-hereford'], ['Jersey','bovino-jersey'], ['Mini Jersey','bovino-mini-jersey'], ['Senepol','bovino-senepol'], ['Tabapu\u00e3','bovino-tabapua'], ['Charolais','bovino-charolais'], ['Simmental','bovino-simmental'], ['Belgian Blue','bovino-belgian-blue'],
+  ]);
   // Mascote do pet: raça + sexo (fêmeas usam a versão com óculos e coleira rosa)
   const maleSpeciesImages = { cabra: IMG + 'bode.png', bovino: IMG + 'boi.png', galinha: IMG + 'galo.png', ovelha: IMG + 'carneiro.png' };
   const femaleSpeciesImages = { galinha: IMG + 'galinha-f.png', ovelha: IMG + 'sheep-f.png' };

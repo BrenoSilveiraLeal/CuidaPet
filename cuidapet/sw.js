@@ -1,5 +1,5 @@
-﻿/* Service worker do CuidaPet: deixa o app instalÃ¡vel e abrindo mesmo sem internet. */
-const CACHE = 'cuidapet-v106';
+/* Service worker do CuidaPet: deixa o app instalável e abrindo mesmo sem internet. */
+const CACHE = 'cuidapet-v108';
 const CORE = [
   './',
   'index.html',
@@ -136,8 +136,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   const url = new URL(req.url);
-  if (req.method !== 'GET' || url.origin !== location.origin) return; // fontes etc. vÃ£o direto para a rede
-  // Rede primeiro (sempre a versÃ£o mais nova); cache como reserva offline
+  if (req.method !== 'GET' || url.origin !== location.origin) return; // fontes etc. vão direto para a rede
+  // Rede primeiro (sempre a versão mais nova); cache como reserva offline
   e.respondWith(
     fetch(req)
       .then((res) => {
