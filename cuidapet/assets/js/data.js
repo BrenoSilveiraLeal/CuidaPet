@@ -125,6 +125,15 @@
     species[id].breeds = breeds.filter((breed) => species[id].breeds.includes(breed));
   });
 
+  // Porte estimado para as raças caninas mais comuns do cadastro. SRD e mestiços
+  // variam bastante; nesses casos o tutor escolhe o porte manualmente.
+  const dogBreedSizes = {
+    'Golden Retriever': 'Grande',
+    'Shih Tzu': 'Pequeno',
+    'Corgi': 'Médio',
+  };
+  const dogBreedSize = (breed) => dogBreedSizes[breed] || null;
+
   const speciesOrder = ['cachorro', 'gato', 'coelho', 'hamster', 'roedor', 'chinchila', 'porquinho', 'furao', 'passaro', 'galinha', 'pato', 'jabuti', 'tartaruga', 'cobra', 'iguana',
     'anfibio', 'aranha', 'peixe', 'cavalo', 'porco', 'cabra', 'ovelha', 'bovino'];
 
@@ -994,7 +1003,7 @@
 
   window.CP = {
     IMG, today, iso, addDays, groups, species, speciesOrder, vaccines, vaccineSources, vaccineDb, loadVaccines, reminderTypes, reminderBySpecies,
-    levels, breedImages, breedImg, seedPets, seedReminders, seedAddresses, seedPayments, seedAppointments, services, clinics, slots, categories, products, brands, care, tips, articles, faq,
+    levels, breedImages, breedImg, dogBreedSizes, dogBreedSize, seedPets, seedReminders, seedAddresses, seedPayments, seedAppointments, services, clinics, slots, categories, products, brands, care, tips, articles, faq,
     icon, paw, art, brl, discount, fmtDate, daysUntil, everyText,
   };
 })();

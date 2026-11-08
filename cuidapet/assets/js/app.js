@@ -87,7 +87,61 @@
     const date = new Date(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
     return date.getFullYear() === Number(parts[1]) && date.getMonth() === Number(parts[2]) - 1 && date.getDate() === Number(parts[3]);
   };
+  const birthTextToISO = (value) => {
+    const parts = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec((value || '').trim());
+    if (!parts) return '';
+    const isoValue = `${parts[3]}-${parts[2]}-${parts[1]}`;
+    return validDate(isoValue) ? isoValue : '';
+  };
+  const birthISOToText = (value) => value ? value.split('-').reverse().join('/') : '';
+  const birthCalendar = (np) => {
+    const base = ui.birthCalendarMonth
+      ? new Date(`${ui.birthCalendarMonth}-01T00:00:00`)
+      : new Date(`${np.birth || iso(0)}T00:00:00`);
+    const year = base.getFullYear();
+    const month = base.getMonth();
+    const first = new Date(year, month, 1);
+    const offset = (first.getDay() + 6) % 7;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const min = earliestBirthDate(np.species);
+    const max = iso(0);
+    const monthLabel = first.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+    const monthKey = `${year}-${String(month + 1).padStart(2, '0')}`;
+    const prev = new Date(year, month - 1, 1);
+    const next = new Date(year, month + 1, 1);
+    const prevLast = new Date(year, month, 0);
+    const prevLastKey = `${prevLast.getFullYear()}-${String(prevLast.getMonth() + 1).padStart(2, '0')}-${String(prevLast.getDate()).padStart(2, '0')}`;
+    const prevDisabled = prevLastKey < min;
+    const nextDisabled = next > new Date(`${max}T00:00:00`);
+    const cells = Array.from({ length: 42 }, (_, i) => {
+      const day = i - offset + 1;
+      if (day < 1 || day > daysInMonth) return '<span class="birth-calendar-empty"></span>';
+      const value = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const disabled = value < min || value > max;
+      return `<button type="button" class="birth-calendar-day${value === np.birth ? ' selected' : ''}${value === max ? ' today' : ''}" data-act="pickBirthDate" data-arg="${value}" ${disabled ? 'disabled' : ''} aria-label="${day} de ${monthLabel}" ${value === np.birth ? 'aria-pressed="true"' : ''}>${day}</button>`;
+    }).join('');
+    return `<div class="birth-calendar${ui.birthCalendarAbove ? ' above' : ''}" role="dialog" aria-label="Escolher data de nascimento">
+      <div class="birth-calendar-head"><button type="button" data-act="birthCalendarMonth" data-arg="-1" aria-label="Mês anterior" ${prevDisabled ? 'disabled' : ''}>${icon('left', 16)}</button><strong>${monthLabel}</strong><button type="button" data-act="birthCalendarMonth" data-arg="1" aria-label="Próximo mês" ${nextDisabled ? 'disabled' : ''}>${icon('right', 16)}</button></div>
+      <div class="birth-calendar-weekdays">${['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map((d) => `<span>${d}</span>`).join('')}</div>
+      <div class="birth-calendar-grid">${cells}</div>
+      <div class="birth-calendar-foot"><button type="button" data-act="clearBirthDate">Limpar</button><button type="button" data-act="pickBirthDate" data-arg="${max}">Hoje</button></div>
+    </div>`;
+  };
   const validPetBirth = (birth, speciesId) => !birth || (validDate(birth) && birth >= earliestBirthDate(speciesId) && birth <= iso(0));
+  const petBirthError = (birth, speciesId, badInput = false) => {
+    if (badInput) return 'Data de nascimento inválida. Informe uma data completa.';
+    if (!birth) return '';
+    if (!validDate(birth)) return 'Data de nascimento inválida.';
+    if (birth > iso(0)) return 'A data de nascimento não pode estar no futuro.';
+    if (birth < earliestBirthDate(speciesId)) return `Data inválida. Use uma data a partir de ${fmtDate(earliestBirthDate(speciesId))}.`;
+    return '';
+  };
+  const petWeightError = (value) => {
+    const raw = String(value ?? '').trim();
+    return raw && (!Number.isFinite(Number(raw)) || Number(raw) <= 0)
+      ? 'Peso inválido. Informe um valor maior que zero.'
+      : '';
+  };
   const ageMonths = (birth, speciesId) => (validPetBirth(birth, speciesId) && birth ? Math.max(0, Math.floor(-daysUntil(birth) / 30.44)) : null);
   const ageText = (p) => {
     const m = ageMonths(p.birth, p.species);
@@ -97,7 +151,10 @@
     const y = Math.floor(m / 12);
     return `${y} ${y === 1 ? 'ano' : 'anos'}`;
   };
-  const weightText = (p) => (p.weight ? `${String(p.weight).replace('.', ',')} ${spOf(p).unit}` : '—');
+  const weightText = (p) => {
+    const weight = Number(p.weight);
+    return Number.isFinite(weight) && weight > 0 ? `${String(weight).replace('.', ',')} ${spOf(p).unit}` : '—';
+  };
 
   // Mascote do pet conforme a raça e o sexo (macho: óculos e coleira azuis; fêmea: rosa)
   const petImg = (p) => C.breedImg(p.species, p.breed, p.sex);
@@ -392,6 +449,15 @@
   };
 
   const field = (label, inner, cls = '') => `<label class="field ${cls}"><span>${label}</span><span class="input">${inner}</span></label>`;
+  const setInlineFieldError = (input, message) => {
+    const fieldEl = input?.closest('.field');
+    const note = fieldEl?.querySelector('.field-error');
+    if (!fieldEl || !note) return;
+    fieldEl.classList.toggle('invalid', !!message);
+    input.setAttribute('aria-invalid', message ? 'true' : 'false');
+    note.textContent = message;
+    note.hidden = !message;
+  };
 
   const pcard = (p) => {
     const rating = ratingSummary(p);
@@ -486,7 +552,7 @@
   });
 
   /* Cadastro e edição usam o mesmo formulário */
-  const blankPet = () => ({ species: 'cachorro', name: '', sex: 'Macho', breed: '', birth: '', weight: '', neutered: false, chip: '', registration: '', photo: null });
+  const blankPet = () => ({ species: 'cachorro', name: '', sex: 'Macho', breed: '', sizeClass: '', birth: '', weight: '', neutered: false, chip: '', registration: '', photo: null });
 
   const speciesGrid = (np) => {
     const q = ui.spQuery.trim().toLowerCase();
@@ -503,6 +569,11 @@
       ? `<span class="avatar photo"><img src="${np.photo}" alt="Foto do pet"></span>`
       : `<span class="avatar"><img src="${C.breedImg(np.species, np.breed || s.breeds[0], np.sex)}" alt=""></span>`;
     const recs = np.birth && validPetBirth(np.birth, np.species) ? vaccinesFor({ ...np, breed: np.breed || s.breeds[0] }) : [];
+    const birthError = petBirthError(np.birth, np.species, np._birthInputInvalid);
+    const weightError = petWeightError(np.weight);
+    const dogSize = np.species === 'cachorro' ? C.dogBreedSize(np.breed) : null;
+    const manualDogSize = np.species === 'cachorro' && !dogSize;
+    const selectedDogSize = dogSize || np.sizeClass || '';
     return {
       cls: 'no-tabbar',
       html: `
@@ -530,9 +601,13 @@
             <div class="seg seg-sex" style="margin:0">${['Macho', 'Fêmea'].map((x, i) => `<button type="button" class="${np.sex === x ? 'on' : ''}" data-tab-index="${i}" data-act="pickSex" data-arg="${x}">${x}</button>`).join('')}</div>
           </div>
           ${field('Raça / tipo', `<select data-model="breed">${[...new Set([...s.breeds, ...(np.breed && !s.breeds.includes(np.breed) ? [np.breed] : [])])].map((b) => `<option ${b === np.breed ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>${icon('down', 18)}`)}
+          ${np.species === 'cachorro' ? (manualDogSize
+            ? `<div class="field dog-size-field"><span>Porte</span><label class="input"><select data-model="sizeClass" aria-label="Porte do cachorro"><option value="" ${selectedDogSize ? '' : 'selected'} disabled>Selecione o porte</option>${['Pequeno', 'Médio', 'Grande'].map((size) => `<option value="${size}" ${selectedDogSize === size ? 'selected' : ''}>${size}</option>`).join('')}</select>${icon('down', 18)}</label><small class="field-hint">Raça não identificada ou sem porte definido: escolha o porte do seu cachorro.</small></div>`
+            : `<div class="field dog-size-field"><span>Porte estimado</span><div class="dog-size-value">${dogSize}</div><small class="field-hint">Estimativa baseada na raça.</small></div>`
+          ) : ''}
           <div class="field-row">
-            ${field('Nascimento', `<input type="date" data-model="birth" value="${np.birth}" min="${earliestBirthDate(np.species)}" max="${iso(0)}">`)}
-            ${field('Peso', `<input type="number" inputmode="decimal" min="0" step="0.1" data-model="weight" value="${np.weight ?? ''}" placeholder="0"><span class="suffix">${s.unit}</span>`)}
+            <div class="field birth-field${birthError ? ' invalid' : ''}"><span>Nascimento</span><label class="input birth-input-wrap"><input class="birth-date-input" type="text" inputmode="numeric" autocomplete="bday" data-model="birth" value="${esc(np._birthText ?? birthISOToText(np.birth))}" placeholder="dd/mm/aaaa" maxlength="10" aria-label="Data de nascimento" aria-invalid="${birthError ? 'true' : 'false'}"><button type="button" class="birth-calendar-toggle" data-act="toggleBirthCalendar" aria-label="Abrir calendário">${icon('calendar', 18)}</button></label>${ui.birthCalendarOpen ? birthCalendar(np) : ''}<small class="field-error" data-field-error="birth" aria-live="polite"${birthError ? '' : ' hidden'}>${esc(birthError)}</small></div>
+            <div class="field${weightError ? ' invalid' : ''}"><span>Peso</span><label class="input"><input type="number" inputmode="decimal" min="0.1" step="0.1" data-model="weight" value="${esc(np.weight ?? '')}" placeholder="0,1" aria-invalid="${weightError ? 'true' : 'false'}"><span class="suffix">${s.unit}</span></label><small class="field-error" data-field-error="weight" aria-live="polite"${weightError ? '' : ' hidden'}>${esc(weightError)}</small></div>
           </div>
           <div class="card auto-wallet">
             <span class="r-ic">${icon('syringe', 20)}</span>
@@ -686,7 +761,7 @@
     } else {
       const rows = [
         ['Espécie', s.label], ['Raça / tipo', esc(p.breed)], ['Sexo', p.sex || '—'], ['Nascimento', p.birth ? `${validPetBirth(p.birth, p.species) ? fmtDate(p.birth) : 'Data inválida'} (${ageText(p)})` : '—'],
-        ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', esc(p.chip) || '—'], ['CPF / registro', esc(p.registration) || '—'],
+        ...(p.species === 'cachorro' ? [['Porte', esc(p.sizeClass || C.dogBreedSize(p.breed) || 'Não informado')]] : []), ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', esc(p.chip) || '—'], ['CPF / registro', esc(p.registration) || '—'],
       ];
       body = `
         <div class="card kv-list">${rows.map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>
@@ -1719,6 +1794,47 @@
   const A = {
     photoCropSave() { finishPhotoCrop(); },
     photoCropCancel() { ui.photoCrop = null; closeSheet(); },
+    toggleBirthCalendar() {
+      const np = ui.newPet;
+      ui.birthCalendarOpen = !ui.birthCalendarOpen;
+      if (ui.birthCalendarOpen) {
+        const base = np.birth || iso(0);
+        ui.birthCalendarMonth = base.slice(0, 7);
+        const fieldRect = screen.querySelector('.birth-field')?.getBoundingClientRect();
+        ui.birthCalendarAbove = false;
+        if (fieldRect && window.innerHeight - fieldRect.bottom < 345) {
+          const needed = 345 - (window.innerHeight - fieldRect.bottom);
+          const scrollRoom = screen.scrollHeight - screen.clientHeight - screen.scrollTop;
+          if (scrollRoom >= needed) screen.scrollTop += needed;
+          else ui.birthCalendarAbove = fieldRect.top - 80 >= 345;
+        }
+      }
+      render(true);
+    },
+    birthCalendarMonth(direction) {
+      const base = ui.birthCalendarMonth || iso(0).slice(0, 7);
+      const current = new Date(`${base}-01T00:00:00`);
+      current.setMonth(current.getMonth() + Number(direction));
+      ui.birthCalendarMonth = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}`;
+      render(true);
+    },
+    pickBirthDate(value) {
+      const np = ui.newPet;
+      if (!validDate(value) || value < earliestBirthDate(np.species) || value > iso(0)) return;
+      np.birth = value;
+      np._birthText = birthISOToText(value);
+      np._birthInputInvalid = false;
+      ui.birthCalendarOpen = false;
+      render(true);
+    },
+    clearBirthDate() {
+      const np = ui.newPet;
+      np.birth = '';
+      np._birthText = '';
+      np._birthInputInvalid = false;
+      ui.birthCalendarOpen = false;
+      render(true);
+    },
     // Atalho para agendar a partir do perfil do pet ou de uma vacina: "petId|serviço|observação"
     bookFor(arg) {
       const [petId, service, notes = ''] = arg.split('|');
@@ -1767,6 +1883,7 @@
       const np = ui.newPet;
       np.species = id;
       np.breed = species[id].breeds[0];
+      np.sizeClass = '';
       render(true);
     },
     pickSex(x) { ui.newPet.sex = x; renderTabChange(); },
@@ -2264,10 +2381,19 @@
         toast('Como seu pet se chama?');
         return;
       }
-      if (!validPetBirth(np.birth, np.species)) {
-        const birthInput = form.querySelector('[data-model="birth"]');
-        birthInput?.focus();
-        toast(`O nascimento deve estar entre ${fmtDate(earliestBirthDate(np.species))} e hoje`);
+      const birthInput = form.querySelector('[data-model="birth"]');
+      const birthError = petBirthError(np.birth, np.species, birthInput?.validity.badInput || np._birthInputInvalid);
+      setInlineFieldError(birthInput, birthError);
+      if (birthError) { birthInput?.focus(); return; }
+      const weightValue = String(np.weight ?? '').trim();
+      const weightInput = form.querySelector('[data-model="weight"]');
+      const weightError = petWeightError(weightValue);
+      setInlineFieldError(weightInput, weightError);
+      if (weightError) { weightInput?.focus(); return; }
+      const dogSize = np.species === 'cachorro' ? C.dogBreedSize(np.breed) : null;
+      if (np.species === 'cachorro' && !dogSize && !['Pequeno', 'Médio', 'Grande'].includes(np.sizeClass)) {
+        form.querySelector('[data-model="sizeClass"]')?.focus();
+        toast('Escolha o porte do cachorro');
         return;
       }
       const data = {
@@ -2275,8 +2401,9 @@
         species: np.species,
         sex: np.sex,
         breed: np.breed || species[np.species].breeds[0],
+        ...(np.species === 'cachorro' ? { sizeClass: dogSize || np.sizeClass } : {}),
         birth: np.birth,
-        weight: np.weight ? Number(np.weight) : null,
+        weight: weightValue ? Number(weightValue) : null,
         neutered: !!np.neutered,
         chip: (np.chip || '').trim(),
         registration: (np.registration || '').trim(),
@@ -2439,6 +2566,12 @@
     }
   });
 
+  document.addEventListener('click', (e) => {
+    if (!ui.birthCalendarOpen || e.target.closest('.birth-field')) return;
+    ui.birthCalendarOpen = false;
+    screen.querySelector('.birth-calendar')?.remove();
+  });
+
   device.addEventListener('keydown', (e) => {
     if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[role="button"][data-go]')) { e.preventDefault(); e.target.click(); }
   });
@@ -2465,7 +2598,19 @@
       return;
     }
     if (el.dataset.model && ui.newPet) {
-      ui.newPet[el.dataset.model] = el.value;
+      if (el.dataset.model === 'breed') return;
+      if (el.dataset.model === 'birth') {
+        const typed = el.value;
+        const parsed = birthTextToISO(typed);
+        ui.newPet._birthText = typed;
+        ui.newPet.birth = parsed;
+        ui.newPet._birthInputInvalid = !!typed && !parsed;
+        const error = petBirthError(parsed, ui.newPet.species, ui.newPet._birthInputInvalid);
+        setInlineFieldError(el, error);
+      } else {
+        ui.newPet[el.dataset.model] = el.value;
+      }
+      if (el.dataset.model === 'weight') setInlineFieldError(el, petWeightError(el.value));
       const bar = $('#onbProgress');
       if (bar) bar.style.width = progress(ui.newPet) + '%';
       if (el.dataset.model === 'name') $('#nameField').classList.remove('error');
@@ -2516,22 +2661,40 @@
         }
         const restored = clone(state);
         let invalidBirths = 0;
+        let invalidWeights = 0;
         restored.pets.forEach((p) => {
           if (p.birth && !validPetBirth(p.birth, p.species)) { p.birth = ''; invalidBirths++; }
+          if (p.weight != null && p.weight !== '' && (!Number.isFinite(Number(p.weight)) || Number(p.weight) <= 0)) { p.weight = null; invalidWeights++; }
+          else if (p.weight != null && p.weight !== '') p.weight = Number(p.weight);
         });
-        ui.pendingBackup = { state: restored, invalidBirths };
+        ui.pendingBackup = { state: restored, invalidBirths, invalidWeights };
         openSheet(`
           <h3>Restaurar backup?</h3>
           <p class="muted">Esta cópia contém o perfil de ${esc(restored.profile.name || 'Tutor')} e ${restored.pets.length} ${restored.pets.length === 1 ? 'pet' : 'pets'}. Ao confirmar, os dados atuais deste aparelho serão substituídos.</p>
           ${invalidBirths ? `<p class="muted">${invalidBirths} ${invalidBirths === 1 ? 'data de nascimento inválida foi removida' : 'datas de nascimento inválidas foram removidas'} para evitar idades impossíveis.</p>` : ''}
+          ${invalidWeights ? `<p class="muted">${invalidWeights} ${invalidWeights === 1 ? 'peso inválido foi removido' : 'pesos inválidos foram removidos'} para evitar valores impossíveis.</p>` : ''}
           <p class="muted-sm">O arquivo é lido neste navegador e não é enviado a um servidor.</p>
           <div class="list"><button class="btn" data-act="confirmImportBackup">Substituir e restaurar</button><button class="btn ghost" data-act="closeSheet">Cancelar</button></div>`);
       }).catch(() => toast('Esse arquivo não é um backup CuidaPet compatível'));
       return;
     }
     if (el.dataset.model && ui.newPet) {
-      ui.newPet[el.dataset.model] = el.value;
-      if (el.dataset.model === 'breed' || el.dataset.model === 'birth') render(true); // atualiza o mascote e a prévia da carteira
+      const previousBreed = ui.newPet.breed;
+      if (el.dataset.model === 'breed') {
+        ui.newPet[el.dataset.model] = el.value;
+        if (ui.newPet.species === 'cachorro') ui.newPet.sizeClass = C.dogBreedSize(el.value) || (C.dogBreedSize(previousBreed) ? '' : ui.newPet.sizeClass);
+        render(true);
+      }
+      if (el.dataset.model === 'birth') {
+        const parsed = birthTextToISO(el.value);
+        ui.newPet._birthText = el.value;
+        ui.newPet.birth = parsed;
+        ui.newPet._birthInputInvalid = !!el.value && !parsed;
+        const error = petBirthError(parsed, ui.newPet.species, ui.newPet._birthInputInvalid);
+        setInlineFieldError(el, error);
+        if (!error) render(true);
+      }
+      if (el.dataset.model === 'weight') { ui.newPet.weight = el.value; setInlineFieldError(el, petWeightError(el.value)); }
     }
     if (el.dataset.modelCheck && ui.newPet) ui.newPet[el.dataset.modelCheck] = el.checked;
     if (el.dataset.bk === 'date' && ui.booking && el.value) {
@@ -2590,7 +2753,13 @@
   const endPhotoCropDrag = (e) => { if (photoCropDrag?.id === e.pointerId) photoCropDrag = null; };
   sheet.addEventListener('pointerup', endPhotoCropDrag);
   sheet.addEventListener('pointercancel', endPhotoCropDrag);
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && ui.birthCalendarOpen) {
+      ui.birthCalendarOpen = false;
+      screen.querySelector('.birth-calendar')?.remove();
+    }
+    if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+  });
 
   /* ------------------------------------------------------------ Início */
   // Abre direto no perfil base: carrega a base de vacinas (como uma API) e o que este navegador já salvou.
@@ -2610,12 +2779,20 @@
     S = saved && saved.version === STATE_VERSION ? saved : fresh(true);
     S.profile = S.profile || fresh(false).profile;
     S.profile.cpf = S.profile.cpf || '';
+    let repairedWeights = 0;
+    S.pets.forEach((p) => {
+      if (p.weight == null || p.weight === '') return;
+      const weight = Number(p.weight);
+      if (!Number.isFinite(weight) || weight <= 0) { p.weight = null; repairedWeights++; }
+      else p.weight = weight;
+    });
     if (!S.pets.some((p) => p.id === S.active)) S.active = S.pets[0] ? S.pets[0].id : null;
     save();
     const splashRemaining = 1000 - (performance.now() - splashStartedAt);
     if (splashRemaining > 0) await new Promise((resolve) => setTimeout(resolve, splashRemaining));
     booting = false;
     render();
+    if (repairedWeights) toast(`${repairedWeights} peso${repairedWeights === 1 ? '' : 's'} inválido${repairedWeights === 1 ? '' : 's'} removido${repairedWeights === 1 ? '' : 's'}. Informe o valor correto.`);
   };
   start();
   // App instalável (PWA)

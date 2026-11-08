@@ -292,6 +292,34 @@ button.row:active { transform: scale(0.98); }
 .field { display: grid; min-width: 0; gap: 6px; margin-bottom: 14px; }
 .field > span { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); }
 .field-hint { color: var(--text-muted); font-size: 0.74rem; line-height: 1.45; }
+.dog-size-value { display: flex; align-items: center; min-height: 50px; padding: 0 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; color: var(--primary-blue); font-weight: 700; }
+.dog-size-field .input select, .dog-size-field .dog-size-value { color: var(--text-muted); font-size: 0.78rem; font-weight: 600; }
+.birth-field { position: relative; z-index: 2; }
+.birth-field .birth-date-input { color: var(--text-muted); font-size: 0.78rem; font-weight: 600; letter-spacing: 0; }
+.birth-field .birth-date-input::placeholder { color: #94a3b8; opacity: 1; }
+.birth-input-wrap { gap: 8px; }
+.birth-calendar-toggle { display: grid; flex: 0 0 32px; width: 32px; height: 32px; place-items: center; padding: 0; border: 0; border-radius: 10px; background: var(--sky-100); color: var(--primary-blue-dark); }
+.birth-calendar-toggle:hover { background: #d5efff; }
+.birth-calendar { position: absolute; z-index: 30; top: calc(100% + 5px); left: 0; width: min(292px, calc(100vw - 40px)); padding: 14px; border: 1px solid var(--line); border-radius: 18px; background: #fff; box-shadow: 0 18px 42px rgba(15, 45, 75, .18); animation: birthCalendarIn .16s ease-out both; }
+.birth-calendar.above { top: auto; bottom: calc(100% + 5px); }
+.birth-calendar-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.birth-calendar-head strong { color: var(--primary-blue-deep); font-size: .84rem; font-weight: 700; }
+.birth-calendar-head button { display: grid; width: 30px; height: 30px; place-items: center; padding: 0; border: 0; border-radius: 9px; background: var(--sky-100); color: var(--primary-blue-dark); }
+.birth-calendar-head button:disabled { opacity: .35; }
+.birth-calendar-weekdays, .birth-calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 3px; text-align: center; }
+.birth-calendar-weekdays { margin-bottom: 5px; color: var(--text-muted); font-size: .68rem; font-weight: 700; }
+.birth-calendar-weekdays span { display: grid; height: 25px; place-items: center; }
+.birth-calendar-day, .birth-calendar-empty { display: grid; min-width: 0; height: 30px; place-items: center; border: 0; border-radius: 9px; background: transparent; color: var(--text-dark); font: inherit; font-size: .73rem; font-weight: 600; }
+.birth-calendar-day:hover:not(:disabled) { background: var(--sky-100); color: var(--primary-blue-dark); }
+.birth-calendar-day:disabled { color: #cbd5e1; }
+.birth-calendar-day.today { box-shadow: inset 0 0 0 1px var(--primary-blue-light); color: var(--primary-blue-dark); }
+.birth-calendar-day.selected { background: var(--primary-blue); color: #fff; box-shadow: 0 4px 10px rgba(2, 132, 199, .25); }
+.birth-calendar-foot { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); }
+.birth-calendar-foot button { padding: 4px 6px; border: 0; background: none; color: var(--primary-blue-dark); font-size: .73rem; font-weight: 700; }
+@keyframes birthCalendarIn { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.field-error { color: #b91c1c; font-size: 0.74rem; font-weight: 700; line-height: 1.35; }
+.field.invalid .input { border-color: #dc2626; background: #fffafa; }
+.field.invalid .input:focus-within { box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.14); }
 .field .input:has(textarea) { height: auto; padding: 0; border: 0; background: transparent; }
 .field textarea, .lost-copy-text { width: 100%; min-height: 90px; border: 1px solid var(--line); border-radius: 14px; padding: 12px 14px; background: #fff; color: var(--text-dark); font: inherit; font-size: 1rem; line-height: 1.45; resize: vertical; }
 .field textarea:focus, .lost-copy-text:focus { outline: 3px solid var(--primary-blue-light); outline-offset: 2px; }
@@ -931,6 +959,7 @@ a.row { text-decoration: none; color: inherit; }
 .device button:focus-visible, .device a:focus-visible { outline: 3px solid var(--primary-blue-light); outline-offset: 2px; }
 
 @media (prefers-reduced-motion: reduce) {
+  .birth-calendar { animation: none; }
   .screen > .view, .splash-mascot img, .pet-hero .pet-img, .empty img, .sheet .success img { animation: none; }
   .sheet, .sheet-backdrop, .toast, .tabbar, .seg::before { transition: none; }
   .chip, .species-pick button, .sizes button, .opt, .slots button, .radio, .faq summary .ic, .faq details::details-content { transition: none !important; }
