@@ -1514,6 +1514,16 @@
   let renderedRoute = null;
   let renderedHash = location.hash;
 
+  // A barra lateral fica fora de #device, então seus links não passam pelo
+  // listener de navegação principal. Intercepte-os aqui para evitar a
+  // navegação nativa do fragmento (que pode disparar um render extra).
+  sidebar.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-tab]');
+    if (!link || !sidebar.contains(link)) return;
+    e.preventDefault();
+    go(link.dataset.tab);
+  });
+
   const renderChrome = (name) => {
     const active = SIDE_OF[name] || 'home';
     const n = cartCount();

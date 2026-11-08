@@ -1,5 +1,5 @@
 ﻿/* Service worker do CuidaPet: deixa o app instalÃ¡vel e abrindo mesmo sem internet. */
-const CACHE = 'cuidapet-v97';
+const CACHE = 'cuidapet-v98';
 const CORE = [
   './',
   'index.html',
