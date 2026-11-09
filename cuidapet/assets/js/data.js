@@ -342,11 +342,19 @@
       history: [
         { id: 'h1', type: 'acidente', title: 'Queda do sofá com dor na pata', date: iso(-200), notes: 'Radiografia sem fratura. Repouso por 10 dias.' },
         { id: 'h2', type: 'alergia', title: 'Alergia a frango', date: iso(-500), notes: 'Coceira e vermelhidão. Ração trocada.' },
+        { id: 'h3', type: 'exame', title: 'Hemograma e bioquímico de rotina', date: iso(-90), notes: 'Todos os valores dentro da normalidade.' },
+        { id: 'h4', type: 'cirurgia', title: 'Castração', date: iso(-600), notes: 'Sem intercorrências. Retirada dos pontos após 10 dias.' },
+        { id: 'h5', type: 'consulta', title: 'Otite no ouvido esquerdo', date: iso(-300), notes: 'Limpeza e gotas por 7 dias. Voltou ao normal.' },
       ],
     },
     {
       id: 'bolinha', name: 'Bolinha', species: 'cachorro', breed: 'Golden Retriever', sex: 'Fêmea', neutered: false, birth: iso(-70), weight: 6.5,
       records: { v10: { applied: [iso(-14)], place: 'Clínica CuidaPet Centro' } },
+      history: [
+        { id: 'h1', type: 'consulta', title: 'Primeira consulta de filhote', date: iso(-60), notes: 'Avaliação geral boa. Orientada sobre vacinas e alimentação.' },
+        { id: 'h2', type: 'doenca', title: 'Diarreia por troca de ração', date: iso(-40), notes: 'Melhorou em 2 dias com dieta leve e probiótico.' },
+        { id: 'h3', type: 'exame', title: 'Exame de fezes', date: iso(-30), notes: 'Negativo para parasitas. Vermifugação feita por precaução.' },
+      ],
     },
     {
       id: 'mia', name: 'Mia', species: 'gato', breed: 'Siamês', sex: 'Fêmea', neutered: true, birth: iso(-420), weight: 4.1,
@@ -354,12 +362,22 @@
         v4: { applied: [iso(-81), iso(-60)] },
         raiva: { applied: [iso(-375)] },
       },
+      history: [
+        { id: 'h1', type: 'doenca', title: 'Infecção urinária', date: iso(-180), notes: 'Tratada com antibiótico por 10 dias. Passou a beber mais água.' },
+        { id: 'h2', type: 'exame', title: 'Urina tipo 1 de controle', date: iso(-165), notes: 'Sem sinais de infecção ou cristais.' },
+        { id: 'h3', type: 'acidente', title: 'Arranhão no olho', date: iso(-100), notes: 'Colírio por 5 dias. Sem sequelas.' },
+        { id: 'h4', type: 'cirurgia', title: 'Castração', date: iso(-250), notes: 'Procedimento sem intercorrências.' },
+      ],
     },
     {
       id: 'pipoca', name: 'Pipoca', species: 'coelho', breed: 'Mini Lop', sex: 'Fêmea', neutered: false, birth: iso(-250), weight: 1.6,
       records: {
         checkup: { applied: [iso(-140)] },
       },
+      history: [
+        { id: 'h1', type: 'consulta', title: 'Check-up e corte dos dentes', date: iso(-140), notes: 'Incisivos desgastados. Orientação para mais feno.' },
+        { id: 'h2', type: 'doenca', title: 'Estase gastrointestinal', date: iso(-60), notes: 'Parou de comer por 12 h. Medicada e recuperada em 2 dias.' },
+      ],
     },
     {
       id: 'trovao', name: 'Trovão', species: 'cavalo', breed: 'Mangalarga Marchador', sex: 'Macho', neutered: true, birth: iso(-4 * 365 - 90), weight: 430,
@@ -371,10 +389,19 @@
         aie: { applied: [iso(-50)] },
         mormo: { applied: [iso(-50)] },
       },
+      history: [
+        { id: 'h1', type: 'acidente', title: 'Corte na pata dianteira em cerca de arame', date: iso(-320), notes: 'Sutura e curativo por 15 dias. Cicatrizou bem.' },
+        { id: 'h2', type: 'doenca', title: 'Cólica leve', date: iso(-130), notes: 'Tratada com analgésico e caminhada. Resolvida em 1 dia.' },
+        { id: 'h3', type: 'exame', title: 'Exame de AIE e mormo', date: iso(-50), notes: 'Resultado negativo para ambos.' },
+      ],
     },
     {
       id: 'sol', name: 'Sol', species: 'passaro', breed: 'Canário-belga', sex: 'Macho', neutered: false, birth: iso(-300), weight: 22,
       records: { checkup: { applied: [iso(-120)] } },
+      history: [
+        { id: 'h1', type: 'consulta', title: 'Check-up e corte das unhas', date: iso(-120), notes: 'Peso e plumagem normais.' },
+        { id: 'h2', type: 'doenca', title: 'Ácaros nas patas', date: iso(-70), notes: 'Tratamento tópico por 2 semanas. Curado.' },
+      ],
     },
     {
       id: 'penelope', name: 'Penélope', species: 'galinha', breed: 'Caipira', sex: 'Fêmea', neutered: false, birth: iso(-200), weight: 2.1,
@@ -383,6 +410,10 @@
         newcastle: { applied: [iso(-193), iso(-172), iso(-85)] },
         gumboro: { applied: [iso(-186), iso(-179)] },
       },
+      history: [
+        { id: 'h1', type: 'doenca', title: 'Coriza (espirros e secreção no nariz)', date: iso(-60), notes: 'Isolada do grupo por 7 dias e tratada com antibiótico.' },
+        { id: 'h2', type: 'acidente', title: 'Ataque de cachorro vizinho', date: iso(-30), notes: 'Ferimento leve na asa. Limpeza e cicatrizante.' },
+      ],
     },
   ];
 

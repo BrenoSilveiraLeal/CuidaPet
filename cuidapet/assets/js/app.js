@@ -722,7 +722,9 @@
   /* Histórico do pet: acidentes, doenças, cirurgias etc. Entra na ficha do veterinário. */
   const HISTORY_TYPES = {
     acidente: { label: 'Acidente ou trauma', icon: 'info' },
-    doenca: { label: 'Problema de saúde', icon: 'steth' },
+    doenca: { label: 'Problema de saúde', icon: 'heart' },
+    consulta: { label: 'Consulta veterinária', icon: 'steth' },
+    exame: { label: 'Resultado de exame', icon: 'file' },
     cirurgia: { label: 'Cirurgia ou procedimento', icon: 'scissors' },
     alergia: { label: 'Alergia ou reação', icon: 'drop' },
     medicacao: { label: 'Tratamento ou medicação', icon: 'pill' },
