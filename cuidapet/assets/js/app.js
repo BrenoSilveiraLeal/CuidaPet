@@ -797,7 +797,7 @@
     return {
       html: `
       <div class="view">
-        ${topbar('', `<span class="top-actions"><button class="icon-btn" data-act="share" aria-label="Compartilhar ficha de ${esc(p.name)} com o veterinário" title="Compartilhar ficha com o veterinário">${icon('share')}</button><button class="icon-btn" data-go="#/editar/${p.id}" aria-label="Editar pet" title="Editar pet">${icon('edit')}</button></span>`)}
+        ${topbar('', `<span class="top-actions"><button class="btn sm vet-ficha-trigger" data-act="share" aria-label="Compartilhar ficha de ${esc(p.name)} com o veterinário">${icon('file', 17)} Compartilhar ficha do animal</button><button class="icon-btn" data-go="#/editar/${p.id}" aria-label="Editar pet" title="Editar pet">${icon('edit')}</button></span>`)}
         <div class="pet-hero big">
           <span class="spc">${paw(14)} ${s.label}</span>
           <h2>${esc(p.name)}</h2>
@@ -1952,7 +1952,7 @@
         ? records.map(({ v, rec, st }) => `<li><strong>${esc(v.name)}</strong><span>${rec?.applied?.length ? `Aplicada${rec.applied.length > 1 ? 's' : ''}: ${rec.applied.map(fmtDate).join(', ')}` : 'Sem registro de aplicação no app'} · ${esc(st.label)}</span></li>`).join('')
         : '<li><strong>Sem vacinas cadastradas para esta espécie</strong><span>Leve os documentos de saúde disponíveis ao veterinário.</span></li>';
       openSheet(`
-        <h3>Ficha para consulta veterinária</h3>
+        <div class="sheet-head"><h3>Ficha para consulta veterinária</h3><button type="button" class="icon-btn sm" data-act="closeSheet" aria-label="Fechar ficha">${icon('x', 18)}</button></div>
         <p class="muted">Os dados abaixo vêm do perfil e da carteira de ${esc(p.name)}. Confira e complete o motivo antes de compartilhar.</p>
         <section class="vet-ficha-summary">
           <h4>Dados do pet</h4>
@@ -1963,7 +1963,7 @@
         <form data-form="vet-ficha">
           ${field('Motivo da consulta', '<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required></textarea>')}
           ${field('Sintomas e observações (opcional)', '<textarea name="notes" rows="3" maxlength="700" placeholder="Quando começou, frequência, mudanças recentes e outras informações úteis"></textarea>')}
-          <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Imprimir / salvar em PDF</button></div>
+          <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Abrir PDF para imprimir ou salvar</button></div>
         </form>`);
     },
     openHistory(id) {
@@ -2284,57 +2284,238 @@
       name: v.name,
       applied: rec?.applied?.length ? rec.applied.map(fmtDate).join(', ') : 'Sem registro de aplicação no CuidaPet',
       status: st.label,
+      cls: st.cls,
     }));
     return {
-      history: petHistory(p).map((h) => ({ type: (HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label, title: h.title, date: fmtDate(h.date), notes: h.notes || '' })),
+      history: petHistory(p).map((h) => ({ key: HISTORY_TYPES[h.type] ? h.type : 'outro', type: (HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label, title: h.title, date: fmtDate(h.date), notes: h.notes || '' })),
       p, reason: form?.elements.reason.value.trim() || '', notes: form?.elements.notes.value.trim() || '', vaccines,
       tutor: S.profile.name || 'Não informado', phone: S.profile.phone || 'Não informado',
     };
   };
-  const vetFichaLines = (data) => [
-    'CuidaPet · Ficha para consulta veterinária',
-    `Emitida em: ${new Date().toLocaleDateString('pt-BR')}`,
-    '', 'DADOS DO PET',
-    `Nome: ${data.p.name}`, `Espécie: ${spOf(data.p).label}`, `Raça / tipo: ${data.p.breed || 'Não informada'}`,
-    `Sexo: ${data.p.sex || 'Não informado'}`, `Idade: ${ageText(data.p)}`, `Nascimento: ${data.p.birth ? fmtDate(data.p.birth) : 'Não informado'}`,
-    `Peso: ${weightText(data.p)}`, `Microchip: ${data.p.chip || 'Não informado'}`, `Registro: ${data.p.registration || 'Não informado'}`,
-    '', 'DADOS DO TUTOR', `Nome: ${data.tutor}`, `Telefone: ${data.phone}`,
-    '', 'MOTIVO DA CONSULTA', data.reason,
-    ...(data.notes ? ['', 'SINTOMAS E OBSERVAÇÕES', data.notes] : []),
-    '', 'HISTÓRICO DO ANIMAL (informado pelo tutor)',
-    ...(data.history.length ? data.history.flatMap((h) => [`${h.date} · ${h.type}: ${h.title}`, ...(h.notes ? [`Detalhes: ${h.notes}`] : [])]) : ['Nenhum acidente, doença ou procedimento registrado no CuidaPet.']),
-    '', 'VACINAS REGISTRADAS NO CUIDAPET',
-    ...(data.vaccines.length ? data.vaccines.flatMap((v) => [`${v.name} — ${v.applied}`, `Situação na carteira: ${v.status}`]) : ['Nenhuma vacina cadastrada para esta espécie.']),
-    '', 'Atenção: “Sem registro” indica ausência de anotação no app e não confirma que a vacina não foi aplicada. Confira a carteira e os comprovantes com o tutor.',
-  ];
-  const wrapFichaLines = (lines, max = 88) => lines.flatMap((line) => {
-    const result = [];
-    let current = '';
-    line.split(/\s+/).forEach((word) => {
-      if (current && `${current} ${word}`.length > max) { result.push(current); current = word; }
-      else current = current ? `${current} ${word}` : word;
-    });
-    result.push(current);
-    return result;
-  });
   const winAnsiChar = (char) => {
     const cp = char.codePointAt(0);
     const special = { 0x20ac: 0x80, 0x201a: 0x82, 0x0192: 0x83, 0x201e: 0x84, 0x2026: 0x85, 0x2020: 0x86, 0x2021: 0x87, 0x02c6: 0x88, 0x2030: 0x89, 0x0160: 0x8a, 0x2039: 0x8b, 0x0152: 0x8c, 0x017d: 0x8e, 0x2018: 0x91, 0x2019: 0x92, 0x201c: 0x93, 0x201d: 0x94, 0x2022: 0x95, 0x2013: 0x96, 0x2014: 0x97, 0x02dc: 0x98, 0x2122: 0x99, 0x0161: 0x9a, 0x203a: 0x9b, 0x0153: 0x9c, 0x017e: 0x9e, 0x0178: 0x9f };
     return String.fromCharCode(special[cp] || (cp <= 0xff ? cp : 0x3f));
   };
+  /* PDF da ficha: layout desenhado à mão (A4, Helvetica), sem bibliotecas.
+     Faixa de título, cartão do pet, linha do tempo do histórico e tabela de vacinas com status em cores. */
+  const PDF_W = 595, PDF_H = 842, PDF_M = 40;
+  const PDF_C = { blue: '#075985', blue2: '#0284c7', ink: '#172033', soft: '#334155', muted: '#64748b', line: '#dbe5ee', card: '#f1f7fc', white: '#ffffff' };
+  const PDF_STATUS = { ok: ['#15803d', '#dcfce7'], soon: ['#b45309', '#fef3c7'], late: ['#b91c1c', '#fee2e2'], miss: ['#b91c1c', '#fee2e2'] };
+  const PDF_HISTORY_COLOR = { acidente: '#dc2626', doenca: '#ea580c', consulta: '#0284c7', exame: '#7c3aed', cirurgia: '#be185d', alergia: '#ca8a04', medicacao: '#0d9488', outro: '#64748b' };
+  const pdfColor = (hex) => { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => (c / 255).toFixed(3)).join(' '); };
+  const pn = (v) => Number(v).toFixed(2);
+  const pdfEscape = (s) => [...s].map(winAnsiChar).join('').replace(/[\\()]/g, '\\$&');
+  let measureCtx = null;
+  // Arial e Helvetica têm as mesmas medidas: o canvas serve para quebrar linhas com precisão
+  const textWidth = (s, size, bold) => {
+    try {
+      measureCtx = measureCtx || document.createElement('canvas').getContext('2d');
+      measureCtx.font = `${bold ? 'bold ' : ''}100px Arial, Helvetica, sans-serif`;
+      return (measureCtx.measureText(s).width * size) / 100;
+    } catch (e) { return s.length * size * 0.52; }
+  };
+  const fitText = (s, width, size, bold) => {
+    let t = String(s);
+    if (textWidth(t, size, bold) <= width) return t;
+    while (t.length > 1 && textWidth(`${t}…`, size, bold) > width) t = t.slice(0, -1);
+    return `${t}…`;
+  };
+  const wrapText = (s, width, size, bold) => {
+    const out = [];
+    String(s).split('\n').forEach((para) => {
+      let cur = '';
+      para.split(/\s+/).filter(Boolean).forEach((word) => {
+        let w = word;
+        while (textWidth(w, size, bold) > width && w.length > 1) { // palavra maior que a linha: quebra por letras
+          let cut = w.length - 1;
+          while (cut > 1 && textWidth(w.slice(0, cut), size, bold) > width) cut--;
+          if (cur) { out.push(cur); cur = ''; }
+          out.push(w.slice(0, cut));
+          w = w.slice(cut);
+        }
+        const t = cur ? `${cur} ${w}` : w;
+        if (cur && textWidth(t, size, bold) > width) { out.push(cur); cur = w; } else cur = t;
+      });
+      out.push(cur);
+    });
+    return out;
+  };
+
   const makeVetFichaPdf = (data) => {
-    const lines = wrapFichaLines(vetFichaLines(data));
-    const pages = Array.from({ length: Math.ceil(lines.length / 48) }, (_, i) => lines.slice(i * 48, (i + 1) * 48));
+    const { p } = data;
+    const M = PDF_M;
+    const CW = PDF_W - 2 * M;
+    const pages = [];
+    let ops = null;
+    let y = 0;
+
+    const roundRect = (x, top, w, h, r) => {
+      const Y = PDF_H - top - h;
+      if (!r) return `${pn(x)} ${pn(Y)} ${pn(w)} ${pn(h)} re`;
+      const k = r * 0.5523;
+      const P = (...a) => a.map(pn).join(' ');
+      return `${P(x + r, Y)} m ${P(x + w - r, Y)} l ${P(x + w - r + k, Y, x + w, Y + r - k, x + w, Y + r)} c ${P(x + w, Y + h - r)} l ${P(x + w, Y + h - r + k, x + w - r + k, Y + h, x + w - r, Y + h)} c ${P(x + r, Y + h)} l ${P(x + r - k, Y + h, x, Y + h - r + k, x, Y + h - r)} c ${P(x, Y + r)} l ${P(x, Y + r - k, x + r - k, Y, x + r, Y)} c h`;
+    };
+    const box = (x, top, w, h, color, r = 0, stroke = null) => {
+      ops.push(`q ${pdfColor(color)} rg ${stroke ? `${pdfColor(stroke)} RG 0.8 w ` : ''}${roundRect(x, top, w, h, r)} ${stroke ? 'B' : 'f'} Q`);
+    };
+    const line = (x1, x2, top, color) => ops.push(`q ${pdfColor(color)} RG 0.8 w ${pn(x1)} ${pn(PDF_H - top)} m ${pn(x2)} ${pn(PDF_H - top)} l S Q`);
+    const vline = (x, top1, top2, color) => ops.push(`q ${pdfColor(color)} RG 1.2 w ${pn(x)} ${pn(PDF_H - top1)} m ${pn(x)} ${pn(PDF_H - top2)} l S Q`);
+    const text = (s, x, base, size, { bold = false, color = PDF_C.ink, right = false } = {}) => {
+      const px = right ? x - textWidth(s, size, bold) : x;
+      ops.push(`BT /${bold ? 'F2' : 'F1'} ${size} Tf ${pdfColor(color)} rg ${pn(px)} ${pn(PDF_H - base)} Td (${pdfEscape(s)}) Tj ET`);
+    };
+
+    const newPage = () => {
+      ops = [];
+      pages.push(ops);
+      if (pages.length === 1) {
+        box(0, 0, PDF_W, 108, PDF_C.blue);
+        box(0, 108, PDF_W, 4, PDF_C.blue2);
+        text('CuidaPet', M, 56, 28, { bold: true, color: PDF_C.white });
+        text('Ficha para consulta veterinária', M, 78, 12.5, { color: '#bae6fd' });
+        text('EMITIDA EM', PDF_W - M, 46, 7.5, { bold: true, color: '#7dd3fc', right: true });
+        text(new Date().toLocaleDateString('pt-BR'), PDF_W - M, 62, 12, { bold: true, color: PDF_C.white, right: true });
+        y = 134;
+      } else {
+        box(0, 0, PDF_W, 38, PDF_C.blue);
+        text('CuidaPet', M, 24, 12, { bold: true, color: PDF_C.white });
+        text(`Ficha de ${fitText(p.name, 260, 9.5, false)}`, PDF_W - M, 24, 9.5, { color: '#bae6fd', right: true });
+        y = 62;
+      }
+    };
+    const ensure = (h) => { if (y + h > PDF_H - 62) newPage(); };
+    const section = (title) => {
+      ensure(70);
+      y += 10;
+      box(M, y, 4, 16, PDF_C.blue2, 2);
+      text(title.toUpperCase(), M + 13, y + 12.5, 10.5, { bold: true, color: PDF_C.blue });
+      y += 30;
+    };
+
+    newPage();
+
+    // Cartão do pet e do tutor
+    const facts = [
+      ['Sexo', p.sex || 'Não informado'], ['Idade', ageText(p)], ['Nascimento', p.birth ? fmtDate(p.birth) : 'Não informado'],
+      ['Peso', weightText(p)], ['Castrado(a)', p.neutered ? 'Sim' : 'Não'], ['Microchip', p.chip || 'Não informado'],
+      ['Registro', p.registration || 'Não informado'], ['Tutor', data.tutor], ['Contato', data.phone],
+    ];
+    const colW = (CW - 32) / 3;
+    const cardH = 76 + Math.ceil(facts.length / 3) * 38;
+    box(M, y, CW, cardH, PDF_C.card, 12, PDF_C.line);
+    text(fitText(p.name, CW - 32, 21, true), M + 16, y + 32, 21, { bold: true, color: PDF_C.blue });
+    text(fitText(`${spOf(p).label} · ${p.breed || 'Raça não informada'}`, CW - 32, 11, false), M + 16, y + 50, 11, { color: PDF_C.muted });
+    line(M + 16, M + CW - 16, y + 62, PDF_C.line);
+    facts.forEach(([label, value], i) => {
+      const x = M + 16 + (i % 3) * colW;
+      const top = y + 76 + Math.floor(i / 3) * 38;
+      text(label.toUpperCase(), x, top, 7.5, { bold: true, color: PDF_C.muted });
+      text(fitText(value, colW - 10, 10.5, true), x, top + 15, 10.5, { bold: true });
+    });
+    y += cardH;
+
+    // Motivo e observações
+    const textBlock = (title, content) => {
+      section(title);
+      const lines = wrapText(content, CW - 32, 10.5, false);
+      let i = 0;
+      while (i < lines.length) {
+        ensure(60);
+        const room = Math.max(1, Math.floor((PDF_H - 62 - y - 24) / 15));
+        const part = lines.slice(i, i + room);
+        const h = part.length * 15 + 18;
+        box(M, y, CW, h, PDF_C.white, 10, PDF_C.line);
+        part.forEach((l, k) => text(l, M + 16, y + 20 + k * 15, 10.5, { color: PDF_C.soft }));
+        y += h + 4;
+        i += part.length;
+      }
+    };
+    textBlock('Motivo da consulta', data.reason);
+    if (data.notes) textBlock('Sintomas e observações', data.notes);
+
+    // Histórico do animal: linha do tempo
+    section('Histórico do animal');
+    if (!data.history.length) {
+      text('Nenhum acidente, doença ou procedimento registrado no CuidaPet.', M + 4, y + 8, 10, { color: PDF_C.muted });
+      y += 22;
+    } else {
+      data.history.forEach((h, i) => {
+        const color = PDF_HISTORY_COLOR[h.key] || PDF_HISTORY_COLOR.outro;
+        const titleLines = wrapText(h.title, CW - 34, 11, true);
+        const noteLines = h.notes ? wrapText(h.notes, CW - 34, 9.5, false) : [];
+        const height = titleLines.length * 14 + 14 + noteLines.length * 12.5 + 12;
+        ensure(height);
+        if (i < data.history.length - 1) vline(M + 6, y + 10, y + height + 4, PDF_C.line);
+        box(M + 1, y + 1, 10, 10, color, 5);
+        box(M + 3.5, y + 3.5, 5, 5, PDF_C.white, 2.5);
+        let base = y + 10;
+        titleLines.forEach((l) => { text(l, M + 26, base, 11, { bold: true }); base += 14; });
+        text(`${h.date}  ·  ${h.type}`, M + 26, base, 9, { bold: true, color });
+        base += 13.5;
+        noteLines.forEach((l) => { text(l, M + 26, base, 9.5, { color: PDF_C.soft }); base += 12.5; });
+        y += height;
+      });
+    }
+
+    // Vacinas: tabela
+    section('Vacinas registradas no CuidaPet');
+    const colV = [150, 215, CW - 365];
+    const drawHead = () => {
+      box(M, y, CW, 22, PDF_C.card, 6);
+      text('VACINA', M + 10, y + 14.5, 7.5, { bold: true, color: PDF_C.muted });
+      text('APLICAÇÕES', M + colV[0] + 10, y + 14.5, 7.5, { bold: true, color: PDF_C.muted });
+      text('SITUAÇÃO', M + colV[0] + colV[1] + 10, y + 14.5, 7.5, { bold: true, color: PDF_C.muted });
+      y += 26;
+    };
+    if (!data.vaccines.length) {
+      text('Nenhuma vacina cadastrada para esta espécie.', M + 4, y + 8, 10, { color: PDF_C.muted });
+      y += 22;
+    } else {
+      drawHead();
+      data.vaccines.forEach((v) => {
+        const nameLines = wrapText(v.name, colV[0] - 14, 9.5, true);
+        const appliedLines = wrapText(v.applied, colV[1] - 14, 9, false);
+        const rowH = Math.max(nameLines.length * 12, appliedLines.length * 11.5, 16) + 14;
+        if (y + rowH > PDF_H - 62) { newPage(); drawHead(); }
+        nameLines.forEach((l, k) => text(l, M + 10, y + 12 + k * 12, 9.5, { bold: true }));
+        appliedLines.forEach((l, k) => text(l, M + colV[0] + 10, y + 12 + k * 11.5, 9, { color: PDF_C.soft }));
+        const [fg, bg] = PDF_STATUS[v.cls] || ['#475569', '#e2e8f0'];
+        const label = fitText(v.status, colV[2] - 20, 8, true);
+        const pillW = Math.min(colV[2] - 8, textWidth(label, 8, true) + 16);
+        box(M + colV[0] + colV[1] + 10, y + 3, pillW, 15, bg, 7.5);
+        text(label, M + colV[0] + colV[1] + 18, y + 13.2, 8, { bold: true, color: fg });
+        y += rowH;
+        line(M, M + CW, y - 3, PDF_C.line);
+      });
+    }
+    y += 10;
+    const note = wrapText('“Sem registro” indica ausência de anotação no app e não confirma que a vacina não foi aplicada. Confira a carteira e os comprovantes com o tutor.', CW - 28, 8.5, false);
+    ensure(note.length * 11 + 20);
+    box(M, y, CW, note.length * 11 + 16, '#fffbeb', 8, '#fde68a');
+    note.forEach((l, k) => text(l, M + 14, y + 17 + k * 11, 8.5, { color: '#92400e' }));
+    y += note.length * 11 + 16;
+
+    // Rodapé em todas as páginas
+    pages.forEach((pageOps, i) => {
+      ops = pageOps;
+      line(M, M + CW, PDF_H - 46, PDF_C.line);
+      text('Documento informativo preenchido pelo tutor no CuidaPet. Não substitui a carteira oficial nem a avaliação veterinária.', M, PDF_H - 32, 7.5, { color: PDF_C.muted });
+      text(`Página ${i + 1} de ${pages.length}`, PDF_W - M, PDF_H - 32, 7.5, { bold: true, color: PDF_C.muted, right: true });
+    });
+
+    // Montagem do arquivo PDF
     const objects = [];
     objects[1] = '<< /Type /Catalog /Pages 2 0 R >>';
-    objects[2] = `<< /Type /Pages /Kids [${pages.map((_, i) => `${4 + i * 2} 0 R`).join(' ')}] /Count ${pages.length} >>`;
+    objects[2] = `<< /Type /Pages /Kids [${pages.map((_, i) => `${5 + i * 2} 0 R`).join(' ')}] /Count ${pages.length} >>`;
     objects[3] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
-    pages.forEach((pageLines, i) => {
-      const pageId = 4 + i * 2;
-      const streamId = pageId + 1;
-      const content = `BT\n/F1 10 Tf\n14 TL\n52 790 Td\n${pageLines.map((line) => `(${[...line].map(winAnsiChar).join('').replace(/[\\()]/g, '\\$&')}) Tj T*`).join('\n')}\nET`;
-      objects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 3 0 R >> >> /Contents ${streamId} 0 R >>`;
-      objects[streamId] = `<< /Length ${content.length} >>\nstream\n${content}\nendstream`;
+    objects[4] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+    pages.forEach((pageOps, i) => {
+      const pageId = 5 + i * 2;
+      const content = pageOps.join('\n');
+      objects[pageId] = `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PDF_W} ${PDF_H}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${pageId + 1} 0 R >>`;
+      objects[pageId + 1] = `<< /Length ${content.length} >>\nstream\n${content}\nendstream`;
     });
     let pdf = '%PDF-1.4\n%\xe2\xe3\xcf\xd3\n';
     const offsets = [0];
@@ -2345,9 +2526,8 @@
     const xref = pdf.length;
     pdf += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
     for (let id = 1; id < objects.length; id++) pdf += `${String(offsets[id]).padStart(10, '0')} 00000 n \n`;
-    pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`;
-    const bytes = Uint8Array.from(pdf, (char) => char.charCodeAt(0));
-    return new Blob([bytes], { type: 'application/pdf' });
+    pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R /Info << /Title (${pdfEscape(`Ficha veterinária · ${p.name}`)}) /Producer (CuidaPet) >> >>\nstartxref\n${xref}\n%%EOF`;
+    return new Blob([Uint8Array.from(pdf, (char) => char.charCodeAt(0))], { type: 'application/pdf' });
   };
   const fichaFileName = (p) => `ficha-veterinaria-${p.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')}.pdf`;
   const downloadVetFicha = (data) => {
@@ -2382,11 +2562,10 @@
     const data = vetFichaData();
     const form = $('[data-form="vet-ficha"]');
     if (!data.reason) { form.elements.reason.reportValidity(); return; }
-    const lines = vetFichaLines(data).map((line) => `<p>${esc(line) || '&nbsp;'}</p>`).join('');
-    const w = window.open('', '_blank');
-    if (!w) { downloadVetFicha(data); toast('Janela de impressão bloqueada. A ficha PDF foi baixada.'); return; }
-    w.document.write(`<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Ficha veterinária · ${esc(data.p.name)}</title><style>body{font:12pt/1.45 Arial,sans-serif;color:#172033;max-width:780px;margin:32px auto;padding:0 28px}h1{color:#075985;font-size:20pt;margin-bottom:22px}p{margin:0 0 5px;white-space:pre-wrap}p:empty{height:9px}@media print{body{margin:12mm auto;padding:0}}</style><h1>CuidaPet · Ficha para consulta veterinária</h1>${lines}<script>window.onload=()=>setTimeout(()=>window.print(),250)<\/script></html>`);
-    w.document.close();
+    const url = URL.createObjectURL(makeVetFichaPdf(data));
+    const w = window.open(url, '_blank');
+    if (!w) { URL.revokeObjectURL(url); downloadVetFicha(data); toast('Não foi possível abrir o PDF. Ele foi baixado.'); return; }
+    setTimeout(() => URL.revokeObjectURL(url), 120000);
   };
   const validCpf = (value) => {
     const cpf = value.replace(/\D/g, '');
