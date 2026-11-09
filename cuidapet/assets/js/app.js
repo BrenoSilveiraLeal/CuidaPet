@@ -730,6 +730,9 @@
     medicacao: { label: 'Tratamento ou medicação', icon: 'pill' },
     outro: { label: 'Outro', icon: 'file' },
   };
+  // Acordeão da ficha: cabeçalho com seta que gira + corpo que abre/fecha com animação
+  const accHead = (title) => `<div class="vet-acc"><button type="button" class="vet-acc-head" data-act="toggleAcc" aria-expanded="false"><span>${title}</span>${icon('down', 18)}</button><div class="vet-acc-body"><div class="vet-acc-inner">`;
+  const ACC_END = '</div></div></div>';
   const petHistory = (p) => (p.history || []).slice().sort((a, b) => b.date.localeCompare(a.date));
   const historyBody = (p) => {
     const list = petHistory(p);
@@ -1933,6 +1936,12 @@
     },
     openNotif(id, el) { S.active = id; save(); go(el.dataset.then); },
     petSheet,
+    toggleAcc(_, el) {
+      const acc = el.closest('.vet-acc');
+      const open = !acc.classList.contains('open');
+      acc.classList.toggle('open', open);
+      el.setAttribute('aria-expanded', String(open));
+    },
     petTab(t) { ui.petTab = t; renderTabChange(); },
     vacTab(t) { ui.vacTab = t; renderTabChange(); },
     remTab(t) { ui.remTab = t; renderTabChange(); },
@@ -1949,8 +1958,8 @@
         <section class="vet-ficha-summary">
           <h4>Dados do pet</h4>
           <div class="vet-ficha-facts"><span><small>Nome</small><strong>${esc(p.name)}</strong></span><span><small>Espécie / raça</small><strong>${esc(spOf(p).label)} · ${esc(p.breed || 'Não informada')}</strong></span><span><small>Sexo / idade</small><strong>${esc(p.sex || 'Não informado')} · ${ageText(p)}</strong></span><span><small>Peso</small><strong>${weightText(p)}</strong></span><span><small>Tutor</small><strong>${esc(S.profile.name || 'Não informado')}</strong></span><span><small>Contato</small><strong>${esc(S.profile.phone || 'Não informado')}</strong></span><span><small>Microchip / registro</small><strong>${esc(p.chip || '—')} / ${esc(p.registration || '—')}</strong></span></div>
-          <details class="vet-vaccine-details"><summary>Histórico do animal · ${petHistory(p).length} ${petHistory(p).length === 1 ? 'registro' : 'registros'}</summary><ul class="vet-vaccine-list">${petHistory(p).length ? petHistory(p).map((h) => `<li><strong>${esc(h.title)}</strong><span>${fmtDate(h.date)} · ${(HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label}${h.notes ? ` · ${esc(h.notes)}` : ''}</span></li>`).join('') : '<li><strong>Nenhum registro</strong><span>Adicione acidentes e problemas de saúde na aba Histórico do perfil.</span></li>'}</ul></details>
-          <details class="vet-vaccine-details"><summary>Vacinas no CuidaPet · ${records.length} no calendário</summary><ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p></details>
+          ${accHead(`Histórico do animal · ${petHistory(p).length} ${petHistory(p).length === 1 ? 'registro' : 'registros'}`)}<ul class="vet-vaccine-list">${petHistory(p).length ? petHistory(p).map((h) => `<li><strong>${esc(h.title)}</strong><span>${fmtDate(h.date)} · ${(HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label}${h.notes ? ` · ${esc(h.notes)}` : ''}</span></li>`).join('') : '<li><strong>Nenhum registro</strong><span>Adicione acidentes e problemas de saúde na aba Histórico do perfil.</span></li>'}</ul>${ACC_END}
+          ${accHead(`Vacinas no CuidaPet · ${records.length} no calendário`)}<ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p>${ACC_END}
         </section>
         <form data-form="vet-ficha">
           ${field('Motivo da consulta', '<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required></textarea>')}

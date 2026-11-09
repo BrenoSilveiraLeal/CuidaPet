@@ -390,13 +390,11 @@ button.row:active { transform: scale(0.98); }
   background: #fff;
   transform: translateY(105%);
   transition: transform 0.42s var(--ease-out);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(2, 132, 199, 0.52) transparent;
+  /* Sem barra nativa: as setinhas dela vazavam pelos cantos arredondados do modal */
+  scrollbar-width: none;
+  overscroll-behavior: contain;
 }
-.sheet::-webkit-scrollbar { width: 7px; }
-.sheet::-webkit-scrollbar-track { margin-block: 14px; background: transparent; }
-.sheet::-webkit-scrollbar-thumb { min-height: 36px; border: 2px solid transparent; border-radius: 999px; background: rgba(2, 132, 199, 0.46); background-clip: content-box; }
-.sheet::-webkit-scrollbar-thumb:hover { background: rgba(2, 132, 199, 0.74); background-clip: content-box; }
+.sheet::-webkit-scrollbar { display: none; }
 .sheet.open { transform: none; }
 .sheet.closing { pointer-events: none; }
 .sheet::before { content: ''; display: block; width: 44px; height: 5px; border-radius: 3px; background: #cbd5e1; margin: 0 auto 16px; }
@@ -885,9 +883,15 @@ button.avatar { border: 0; cursor: pointer; }
 .vet-ficha-summary { padding: 14px; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: 16px; background: #f8fbfe; }
 .vet-ficha-summary h4 { margin: 0 0 10px; color: var(--primary-blue-deep); font-size: .9rem; }
 .vet-ficha-summary h4:not(:first-child) { margin-top: 16px; }
-.vet-vaccine-details { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
-.vet-vaccine-details summary { color: var(--primary-blue-deep); cursor: pointer; font-size: .82rem; font-weight: 800; }
-.vet-vaccine-details .muted-sm { margin: 10px 0 0; line-height: 1.45; }
+.vet-acc { margin-top: 14px; padding-top: 4px; border-top: 1px solid var(--line); }
+.vet-acc-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 40px; padding: 0; border: 0; background: none; color: var(--primary-blue-deep); font: inherit; font-size: .82rem; font-weight: 800; text-align: left; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; }
+.vet-acc-head .ic { flex-shrink: 0; transition: transform 320ms cubic-bezier(.16, 1, .3, 1); }
+.vet-acc.open .vet-acc-head .ic { transform: rotate(180deg); }
+.vet-acc-body { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 340ms cubic-bezier(.16, 1, .3, 1), opacity 240ms ease; }
+.vet-acc.open .vet-acc-body { grid-template-rows: 1fr; opacity: 1; }
+.vet-acc-inner { overflow: hidden; min-height: 0; padding-top: 2px; }
+.vet-acc .muted-sm { margin: 10px 0 0; line-height: 1.45; }
+@media (prefers-reduced-motion: reduce) { .vet-acc-head .ic, .vet-acc-body { transition: none; } }
 .vet-ficha-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
 .vet-ficha-facts span { display: grid; gap: 3px; min-width: 0; }
 .vet-ficha-facts small, .vet-vaccine-list span { color: var(--text-muted); font-size: .72rem; }
@@ -1144,7 +1148,7 @@ a.row { text-decoration: none; color: inherit; }
     width: min(500px, calc(100% - 48px));
     max-height: 86%;
     border-radius: 28px;
-    padding: 28px 34px 28px 28px;
+    padding: 28px;
     transform: translate(-50%, -46%) scale(0.97);
     opacity: 0;
     pointer-events: none;
