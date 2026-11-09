@@ -719,7 +719,31 @@
     };
   };
 
-  /* Perfil do pet: carteira, cuidados, produtos e dados no mesmo lugar */
+  /* Histórico do pet: acidentes, doenças, cirurgias etc. Entra na ficha do veterinário. */
+  const HISTORY_TYPES = {
+    acidente: { label: 'Acidente ou trauma', icon: 'info' },
+    doenca: { label: 'Problema de saúde', icon: 'steth' },
+    cirurgia: { label: 'Cirurgia ou procedimento', icon: 'scissors' },
+    alergia: { label: 'Alergia ou reação', icon: 'drop' },
+    medicacao: { label: 'Tratamento ou medicação', icon: 'pill' },
+    outro: { label: 'Outro', icon: 'file' },
+  };
+  const petHistory = (p) => (p.history || []).slice().sort((a, b) => b.date.localeCompare(a.date));
+  const historyBody = (p) => {
+    const list = petHistory(p);
+    const add = `<button class="btn" style="margin-top:16px" data-act="openHistory">${icon('plus', 18)} Adicionar ao histórico</button>`;
+    if (!list.length) {
+      return emptyState('Nenhum registro ainda', `Anote acidentes, doenças, cirurgias e alergias de ${esc(p.name)}. Tudo isso vai junto na ficha para o veterinário.`, false, add);
+    }
+    return `<div class="sec-title"><h2>O que já aconteceu</h2></div>
+      <div class="list">${list.map((h) => {
+        const t = HISTORY_TYPES[h.type] || HISTORY_TYPES.outro;
+        return `<div class="card tip"><span class="r-ic">${icon(t.icon, 20)}</span><div style="flex:1;min-width:0"><strong>${esc(h.title)}</strong><p>${t.label} · ${fmtDate(h.date)}</p>${h.notes ? `<p>${esc(h.notes)}</p>` : ''}
+          <div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm ghost" data-act="openHistory" data-arg="${h.id}">${icon('edit', 16)} Editar</button><button class="btn sm ghost" data-act="removeHistory" data-arg="${h.id}">${icon('trash', 16)} Remover</button></div></div></div>`;
+      }).join('')}</div>${add}`;
+  };
+
+  /* Perfil do pet: carteira, cuidados, produtos, histórico e dados no mesmo lugar */
   V.pet = (id) => {
     const p = petById(id);
     if (!p) return V.pets();
@@ -752,6 +776,8 @@
         const list = rec.filter((x) => x.cat === c.id);
         return list.length ? `<div class="sec-title"><h2>${c.label}</h2><button class="link-btn" data-go="#/categoria/${c.id}">Ver ${icon('right', 14)}</button></div><div class="hscroll">${list.map(pcard).join('')}</div>` : '';
       }).join('');
+    } else if (tab === 'historico') {
+      body = historyBody(p);
     } else {
       const rows = [
         ['Espécie', s.label], ['Raça / tipo', esc(p.breed)], ['Sexo', p.sex || '—'], ['Nascimento', p.birth ? `${validPetBirth(p.birth, p.species) ? fmtDate(p.birth) : 'Data inválida'} (${ageText(p)})` : '—'],
@@ -785,8 +811,8 @@
           <button class="btn sm" data-act="bookFor" data-arg="${p.id}|consulta">${icon('calendar', 16)} Agendar consulta</button>
           <button class="btn sm ghost" data-act="petTab" data-arg="produtos">${icon('bag', 16)} Itens para ${esc(p.name)}</button>
         </div>
-          <div class="seg tabs4 pet-tabs" role="tablist" aria-label="Seções do perfil do pet">
-          ${[['carteira', 'Carteira'], ['cuidados', 'Cuidados'], ['produtos', 'Produtos'], ['dados', 'Dados']].map(([k, l], i) => `<button class="${tab === k ? 'on' : ''}" data-tab-index="${i}" data-act="petTab" data-arg="${k}" role="tab" aria-selected="${tab === k}">${l}</button>`).join('')}
+          <div class="seg tabs5 pet-tabs" role="tablist" aria-label="Seções do perfil do pet">
+          ${[['carteira', 'Carteira'], ['cuidados', 'Cuidados'], ['produtos', 'Produtos'], ['historico', 'Histórico'], ['dados', 'Dados']].map(([k, l], i) => `<button class="${tab === k ? 'on' : ''}" data-tab-index="${i}" data-act="petTab" data-arg="${k}" role="tab" aria-selected="${tab === k}">${l}</button>`).join('')}
         </div>
         ${body}
       </div>`,
@@ -1921,6 +1947,7 @@
         <section class="vet-ficha-summary">
           <h4>Dados do pet</h4>
           <div class="vet-ficha-facts"><span><small>Nome</small><strong>${esc(p.name)}</strong></span><span><small>Espécie / raça</small><strong>${esc(spOf(p).label)} · ${esc(p.breed || 'Não informada')}</strong></span><span><small>Sexo / idade</small><strong>${esc(p.sex || 'Não informado')} · ${ageText(p)}</strong></span><span><small>Peso</small><strong>${weightText(p)}</strong></span><span><small>Tutor</small><strong>${esc(S.profile.name || 'Não informado')}</strong></span><span><small>Contato</small><strong>${esc(S.profile.phone || 'Não informado')}</strong></span><span><small>Microchip / registro</small><strong>${esc(p.chip || '—')} / ${esc(p.registration || '—')}</strong></span></div>
+          <details class="vet-vaccine-details"><summary>Histórico do animal · ${petHistory(p).length} ${petHistory(p).length === 1 ? 'registro' : 'registros'}</summary><ul class="vet-vaccine-list">${petHistory(p).length ? petHistory(p).map((h) => `<li><strong>${esc(h.title)}</strong><span>${fmtDate(h.date)} · ${(HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label}${h.notes ? ` · ${esc(h.notes)}` : ''}</span></li>`).join('') : '<li><strong>Nenhum registro</strong><span>Adicione acidentes e problemas de saúde na aba Histórico do perfil.</span></li>'}</ul></details>
           <details class="vet-vaccine-details"><summary>Vacinas no CuidaPet · ${records.length} no calendário</summary><ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p></details>
         </section>
         <form data-form="vet-ficha">
@@ -1928,6 +1955,27 @@
           ${field('Sintomas e observações (opcional)', '<textarea name="notes" rows="3" maxlength="700" placeholder="Quando começou, frequência, mudanças recentes e outras informações úteis"></textarea>')}
           <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Imprimir / salvar em PDF</button></div>
         </form>`);
+    },
+    openHistory(id) {
+      const p = pet();
+      const h = id ? (p.history || []).find((x) => x.id === id) : null;
+      openSheet(`
+        <h3>${h ? 'Editar registro' : 'Novo registro no histórico'}</h3>
+        <p class="muted">Algo que já aconteceu com ${esc(p.name)}. Esse registro vai na ficha para o veterinário.</p>
+        <form data-form="history" data-id="${h ? h.id : ''}">
+          ${field('Tipo', `<select name="type">${Object.entries(HISTORY_TYPES).map(([k, t]) => `<option value="${k}" ${h && h.type === k ? 'selected' : ''}>${t.label}</option>`).join('')}</select>${icon('down', 18)}`)}
+          ${field('O que aconteceu', `<input name="title" maxlength="80" placeholder="Ex.: Fratura na pata traseira" value="${h ? esc(h.title) : ''}" required>`)}
+          ${field('Data (aproximada, se não souber)', `<input type="date" name="date" max="${iso(0)}" value="${h ? h.date : ''}" required>`)}
+          ${field('Detalhes (opcional)', `<textarea name="notes" rows="3" maxlength="500" placeholder="Tratamento, medicação, sequelas, veterinário...">${h ? esc(h.notes || '') : ''}</textarea>`)}
+          <button class="btn" type="submit">Salvar</button>
+        </form>`);
+    },
+    removeHistory(id) {
+      const p = pet();
+      p.history = (p.history || []).filter((x) => x.id !== id);
+      save();
+      render(true);
+      toast('Registro removido');
     },
     sendVetFicha() { shareVetFicha('whatsapp'); },
     printVetFicha() { printVetFicha(); },
@@ -2228,6 +2276,7 @@
       status: st.label,
     }));
     return {
+      history: petHistory(p).map((h) => ({ type: (HISTORY_TYPES[h.type] || HISTORY_TYPES.outro).label, title: h.title, date: fmtDate(h.date), notes: h.notes || '' })),
       p, reason: form?.elements.reason.value.trim() || '', notes: form?.elements.notes.value.trim() || '', vaccines,
       tutor: S.profile.name || 'Não informado', phone: S.profile.phone || 'Não informado',
     };
@@ -2242,6 +2291,8 @@
     '', 'DADOS DO TUTOR', `Nome: ${data.tutor}`, `Telefone: ${data.phone}`,
     '', 'MOTIVO DA CONSULTA', data.reason,
     ...(data.notes ? ['', 'SINTOMAS E OBSERVAÇÕES', data.notes] : []),
+    '', 'HISTÓRICO DO ANIMAL (informado pelo tutor)',
+    ...(data.history.length ? data.history.flatMap((h) => [`${h.date} · ${h.type}: ${h.title}`, ...(h.notes ? [`Detalhes: ${h.notes}`] : [])]) : ['Nenhum acidente, doença ou procedimento registrado no CuidaPet.']),
     '', 'VACINAS REGISTRADAS NO CUIDAPET',
     ...(data.vaccines.length ? data.vaccines.flatMap((v) => [`${v.name} — ${v.applied}`, `Situação na carteira: ${v.status}`]) : ['Nenhuma vacina cadastrada para esta espécie.']),
     '', 'Atenção: “Sem registro” indica ausência de anotação no app e não confirma que a vacina não foi aplicada. Confira a carteira e os comprovantes com o tutor.',
@@ -2415,6 +2466,23 @@
         <div class="success"><img src="${C.breedImg(data.species, data.breed, data.sex)}" alt=""><h3>${esc(data.name)} entrou na família!</h3>
         <p class="muted">A carteira já veio pronta com ${total} ${total === 1 ? 'item' : 'itens'} para ${species[data.species].plural.toLowerCase()}${data.birth ? ', com as datas calculadas pela idade' : '. Informe o nascimento para calcular as datas'}. É só marcar o que ${data.sex === 'Fêmea' ? 'ela' : 'ele'} já tomou.</p></div>
         <div class="list"><button class="btn" data-act="closeSheet">Ver carteira de ${esc(data.name)}</button><button class="btn ghost" data-act="newPet">${icon('plus', 18)} Adicionar outro pet</button></div>`), 250);
+    },
+    history(form) {
+      const e = form.elements;
+      const title = e.title.value.trim();
+      const date = e.date.value;
+      if (!title) { toast('Conte o que aconteceu'); return; }
+      if (!validDate(date) || date > iso(0)) { toast('Informe uma data válida, até hoje'); return; }
+      const p = pet();
+      p.history = p.history || [];
+      const data = { type: HISTORY_TYPES[e.type.value] ? e.type.value : 'outro', title: title.slice(0, 80), date, notes: e.notes.value.trim().slice(0, 500) };
+      const cur = form.dataset.id ? p.history.find((x) => x.id === form.dataset.id) : null;
+      if (cur) Object.assign(cur, data);
+      else p.history.push({ id: 'h' + Date.now().toString(36), ...data });
+      save();
+      closeSheet();
+      render(true);
+      toast(cur ? 'Registro atualizado' : 'Adicionado ao histórico');
     },
     apply(form) {
       const key = form.dataset.key;

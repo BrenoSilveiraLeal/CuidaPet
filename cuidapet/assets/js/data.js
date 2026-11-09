@@ -339,6 +339,10 @@
         gripe: { applied: [iso(-321), iso(-300)] },
         giardia: { applied: [iso(-381), iso(-360)] },
       },
+      history: [
+        { id: 'h1', type: 'acidente', title: 'Queda do sofá com dor na pata', date: iso(-200), notes: 'Radiografia sem fratura. Repouso por 10 dias.' },
+        { id: 'h2', type: 'alergia', title: 'Alergia a frango', date: iso(-500), notes: 'Coceira e vermelhidão. Ração trocada.' },
+      ],
     },
     {
       id: 'bolinha', name: 'Bolinha', species: 'cachorro', breed: 'Golden Retriever', sex: 'Fêmea', neutered: false, birth: iso(-70), weight: 6.5,

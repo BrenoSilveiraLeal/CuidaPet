@@ -721,6 +721,8 @@ button.row:active { transform: scale(0.98); }
 .seg-indicator { position: absolute; z-index: 0; top: 4px; bottom: 4px; left: 4px; width: var(--seg-slider-width); border-radius: 999px; background: var(--primary-blue); pointer-events: none; transform: translateX(var(--seg-indicator-offset, 0px)); }
 .seg.tabs4 { --seg-slider-width: calc((100% - 20px) / 4); }
 .seg.rem-tabs { --seg-slider-width: calc((100% - 16px) / 3); }
+.seg.tabs5 { --seg-slider-width: calc((100% - 24px) / 5); }
+.seg.tabs5 button { font-size: 0.7rem; padding: 0 2px; }
 .seg.is-sliding button.on {
   color: #fff;
   text-shadow: 0 1px 2px rgba(3, 50, 84, 0.38);
