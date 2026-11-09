@@ -790,15 +790,14 @@
       ];
       body = `
         <div class="card kv-list">${rows.map(([k, v]) => `<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div>
-        <button class="btn" style="margin-top:16px" data-go="#/editar/${p.id}">${icon('edit', 18)} Editar dados</button>
-        <button class="btn ghost" style="margin-top:10px" data-act="share">${icon('file', 18)} Compartilhar ficha com o veterinário</button>`;
+        <button class="btn" style="margin-top:16px" data-go="#/editar/${p.id}">${icon('edit', 18)} Editar dados</button>`;
     }
 
     const late = lateCount(p);
     return {
       html: `
       <div class="view">
-        ${topbar('', `<button class="icon-btn" data-go="#/editar/${p.id}" aria-label="Editar pet">${icon('edit')}</button>`)}
+        ${topbar('', `<span class="top-actions"><button class="icon-btn" data-act="share" aria-label="Compartilhar ficha de ${esc(p.name)} com o veterinário" title="Compartilhar ficha com o veterinário">${icon('share')}</button><button class="icon-btn" data-go="#/editar/${p.id}" aria-label="Editar pet" title="Editar pet">${icon('edit')}</button></span>`)}
         <div class="pet-hero big">
           <span class="spc">${paw(14)} ${s.label}</span>
           <h2>${esc(p.name)}</h2>

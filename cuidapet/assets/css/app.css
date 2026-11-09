@@ -131,6 +131,8 @@ body.is-auth .sidebar, body.is-auth .desk-top, body.is-auth .tabbar { display: n
 .topbar h1 { text-align: center; font-family: var(--font-logo); font-weight: 600; font-size: 1.35rem; color: var(--primary-blue-deep); }
 .topbar.left h1 { text-align: left; font-size: 1.8rem; }
 .topbar.left { grid-template-columns: 1fr 44px; }
+.topbar:has(.top-actions) { grid-template-columns: 44px 1fr auto; }
+.top-actions { display: flex; align-items: center; gap: 8px; }
 .topbar.left.vet-ficha-topbar { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
 .vet-ficha-trigger { flex: 0 0 auto; gap: 7px; padding-inline: 12px; white-space: nowrap; }
 
