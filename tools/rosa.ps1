@@ -21,7 +21,7 @@ public static class Rosa {
     double max = Math.Max(rr, Math.Max(g, b)), min = Math.Min(rr, Math.Min(g, b)), d = max - min;
     if (d < 1e-6 || max != b) return 0; // só tons em que o azul domina
     double h = 60 * (((rr - g) / d) + 4);
-    return Ramp(h, 188, 200) * (1 - Ramp(h, 245, 258)) * Ramp(d / max, 0.28, 0.45) * Ramp(max, 0.16, 0.3);
+    return Ramp(h, 188, 200) * (1 - Ramp(h, 268, 282)) * Ramp(d / max, 0.28, 0.45) * Ramp(max, 0.16, 0.3);
   }
 
   // seeds: pontos [x,y] (frações) sobre os acessórios. Com sementes, só o azul ligado a elas muda de cor
@@ -51,7 +51,7 @@ public static class Rosa {
         allow = new bool[W * H];
         var q = new System.Collections.Generic.Queue<int>();
         foreach (var sd in seeds) {
-          int cx = (int)(sd[0] * W), cy = (int)(sd[1] * H), rad = (int)(0.02 * W);
+          int cx = (int)(sd[0] * W), cy = (int)(sd[1] * H), rad = (int)(0.04 * W);
           for (int y = Math.Max(0, cy - rad); y < Math.Min(H, cy + rad); y++)
             for (int x = Math.Max(0, cx - rad); x < Math.Min(W, cx + rad); x++)
               if (!allow[y * W + x] && Weight(px, y * data.Stride + x * 4) > 0.6) { allow[y * W + x] = true; q.Enqueue(y * W + x); }
@@ -112,21 +112,21 @@ public static class Rosa {
 $root = Join-Path $PSScriptRoot '..\cuidapet\assets\img'
 # Mascotes com azul no corpo ou nos olhos: pontos sobre os óculos, a coleira e o pingente (frações x, y)
 $seeds = @{
-  'cat-ragdoll'    = @(@(0.40, 0.36), @(0.65, 0.30), @(0.443, 0.489), @(0.606, 0.48), @(0.54, 0.56))
-  'cat-siames'     = @(@(0.30, 0.30), @(0.40, 0.385), @(0.366, 0.51), @(0.574, 0.505), @(0.45, 0.59))
-  'cat-angora'     = @(@(0.32, 0.30), @(0.50, 0.30), @(0.34, 0.455), @(0.50, 0.46), @(0.41, 0.53))
-  'bird-periquito' = @(@(0.31, 0.21), @(0.66, 0.21), @(0.42, 0.46), @(0.58, 0.46), @(0.49, 0.54))
-  'bird-papagaio'  = @(@(0.31, 0.17), @(0.62, 0.18), @(0.356, 0.434), @(0.617, 0.44), @(0.47, 0.53))
-  'bird-agapornis' = @(@(0.28, 0.21), @(0.70, 0.20), @(0.42, 0.47), @(0.62, 0.46), @(0.53, 0.55))
+  'bird-papagaio'  = @(@(0.31, 0.15), @(0.69, 0.17), @(0.35, 0.44), @(0.60, 0.44), @(0.47, 0.53))
 }
-# Gatos de olhos azuis: o olho fica como está
+# Gatos de olhos azuis: a íris fica como está (círculo inteiro preservado)
 $keep = @{
-  'cat-ragdoll' = @(@(0.424, 0.297, 0.046, 0.342, 0.339, 0.694, 0.262), @(0.596, 0.264, 0.046, 0.342, 0.339, 0.694, 0.262))
-  'cat-siames'  = @(@(0.402, 0.287, 0.05, 0.280, 0.292, 0.673, 0.318), @(0.569, 0.302, 0.05, 0.280, 0.292, 0.673, 0.318))
-  'cat-angora'  = , [double[]](0.367, 0.236, 0.04, 0.275, 0.245, 0.594, 0.287)
+  'cat-ragdoll' = @(@(0.46, 0.27, 0.048, 0, 1, 1, 1), @(0.635, 0.265, 0.048, 0, 1, 1, 1))
+  'cat-siames'  = @(@(0.33, 0.28, 0.048, 0, 1, 1, 1), @(0.54, 0.28, 0.048, 0, 1, 1, 1))
+  'cat-angora'  = @(@(0.47, 0.28, 0.045, 0, 1, 1, 1), @(0.65, 0.28, 0.045, 0, 1, 1, 1))
 }
+$keep['bird-agapornis'] = @(@(0.51, 0.25, 0.05, 0, 1, 1, 1), @(0.80, 0.135, 0.04, 0, 1, 1, 1))
 # O betta é azul no corpo inteiro e o corpo encosta nos acessórios: a versão fêmea fica rosa e vermelha.
-$regions = @{}
+$regions = @{
+  # Aves com azul no corpo: só óculos e coleira/pingente (x1, y1, x2, y2 em frações)
+  'bird-periquito' = @(@(0.40, 0.06, 1.0, 0.34), @(0.50, 0.43, 0.95, 0.64))
+  'bird-agapornis' = @(@(0.33, 0.06, 1.0, 0.32), @(0.50, 0.42, 0.95, 0.64))
+}
 
 $files = Get-ChildItem -Path $root, (Join-Path $root 'breeds') -Filter *.png | Where-Object { $_.BaseName -notlike '*-f' }
 if ($Only.Count) { $files = $files | Where-Object { $Only -contains $_.BaseName } }
