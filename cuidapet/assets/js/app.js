@@ -1935,6 +1935,7 @@
     },
     openNotif(id, el) { S.active = id; save(); go(el.dataset.then); },
     petSheet,
+    closeFicha() { ui.vetDraft = null; closeSheet(); },
     toggleAcc(_, el) {
       const acc = el.closest('.vet-acc');
       const open = !acc.classList.contains('open');
@@ -1947,12 +1948,13 @@
     share() {
       const p = pet();
       if (!p) return;
+      const draft = ui.vetDraft && ui.vetDraft.petId === p.id ? ui.vetDraft : { reason: '', notes: '' };
       const records = petVaccines(p).filter(({ v }) => v.kind === 'vacina');
       const vaccineRows = records.length
         ? records.map(({ v, rec, st }) => `<li><strong>${esc(v.name)}</strong><span>${rec?.applied?.length ? `Aplicada${rec.applied.length > 1 ? 's' : ''}: ${rec.applied.map(fmtDate).join(', ')}` : 'Sem registro de aplicação no app'} · ${esc(st.label)}</span></li>`).join('')
         : '<li><strong>Sem vacinas cadastradas para esta espécie</strong><span>Leve os documentos de saúde disponíveis ao veterinário.</span></li>';
       openSheet(`
-        <div class="sheet-head"><h3>Ficha para consulta veterinária</h3><button type="button" class="icon-btn sm" data-act="closeSheet" aria-label="Fechar ficha">${icon('x', 18)}</button></div>
+        <div class="sheet-head"><h3>Ficha para consulta veterinária</h3><button type="button" class="icon-btn sm" data-act="closeFicha" aria-label="Fechar ficha e limpar o que foi escrito">${icon('x', 18)}</button></div>
         <p class="muted">Os dados abaixo vêm do perfil e da carteira de ${esc(p.name)}. Confira e complete o motivo antes de compartilhar.</p>
         <section class="vet-ficha-summary">
           <h4>Dados do pet</h4>
@@ -1961,8 +1963,8 @@
           ${accHead(`Vacinas no CuidaPet · ${records.length} no calendário`)}<ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p>${ACC_END}
         </section>
         <form data-form="vet-ficha">
-          ${field('Motivo da consulta', '<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required></textarea>')}
-          ${field('Sintomas e observações (opcional)', '<textarea name="notes" rows="3" maxlength="700" placeholder="Quando começou, frequência, mudanças recentes e outras informações úteis"></textarea>')}
+          ${field('Motivo da consulta', '<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required>${esc(draft.reason)}</textarea>')}
+          ${field('Sintomas e observações (opcional)', '<textarea name="notes" rows="3" maxlength="700" placeholder="Quando começou, frequência, mudanças recentes e outras informações úteis">${esc(draft.notes)}</textarea>')}
           <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Abrir PDF para imprimir ou salvar</button></div>
         </form>`);
     },
@@ -2823,6 +2825,8 @@
 
   device.addEventListener('input', (e) => {
     const el = e.target;
+    // Rascunho da ficha: só some quando a pessoa fecha no X
+    if (el.form?.dataset.form === 'vet-ficha') ui.vetDraft = { petId: pet()?.id, reason: el.form.elements.reason.value, notes: el.form.elements.notes.value };
     if (el.dataset.photoCrop && ui.photoCrop) {
       const key = el.dataset.photoCrop;
       ui.photoCrop[key] = Number(el.value);
