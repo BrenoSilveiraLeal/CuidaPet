@@ -17,7 +17,7 @@ public static class BreedSheet {
 }
 '@
 
-$root = Join-Path $PSScriptRoot '..\cuidapet\assets\img\breeds'
+$root = Join-Path $PSScriptRoot '..\assets\img\breeds'
 for ($i=0; $i -lt $Names.Count; $i++) {
   $path = Join-Path $root ($Names[$i] + '.png')
   [BreedSheet]::Crop((Resolve-Path $Source).Path, $path, $i % 5, [Math]::Floor($i / 5))

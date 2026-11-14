@@ -1,6 +1,6 @@
 ﻿# Gera a versão "fêmea" de cada mascote: troca o azul dos acessórios (óculos e coleira) por rosa.
 # Uso: powershell -ExecutionPolicy Bypass -File tools/rosa.ps1
-# Cria <nome>-f.png ao lado de cada PNG em cuidapet/assets/img e cuidapet/assets/img/breeds.
+# Cria <nome>-f.png ao lado de cada PNG em assets/img e assets/img/breeds.
 # Para mascotes que têm azul no próprio corpo (ex.: betta), $regions limita a troca à área dos acessórios.
 
 param([string[]]$Only = @())
@@ -109,7 +109,7 @@ public static class Rosa {
 }
 '@
 
-$root = Join-Path $PSScriptRoot '..\cuidapet\assets\img'
+$root = Join-Path $PSScriptRoot '..\assets\img'
 # Mascotes com azul no corpo ou nos olhos: pontos sobre os óculos, a coleira e o pingente (frações x, y)
 $seeds = @{
   'bird-papagaio'  = @(@(0.31, 0.15), @(0.69, 0.17), @(0.35, 0.44), @(0.60, 0.44), @(0.47, 0.53))

@@ -1,3 +1,26 @@
-# Artefatos locais de inspeção do navegador.
+# Artefatos locais de inspeção e QA.
 /.playwright-cli/
-/output/playwright/
+/output/
+/qa-reports/
+
+# Imagens brutas usadas para preparar mascotes localmente.
+/tools/mascotes-brutos/
+
+# Arquivos locais e credenciais.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+/secrets/
+/credentials/
+*service-account*.json
+
+# Estado local do Firebase CLI.
+/.firebase/
+/firebase-debug.log*
+/firestore-debug.log*

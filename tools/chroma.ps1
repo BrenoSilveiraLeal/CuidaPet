@@ -1,6 +1,6 @@
 ﻿# Tira o fundo verde (#00FF00) ou magenta (#FF00FF) dos mascotes gerados e salva PNG transparente 800x800.
 # Uso: powershell -ExecutionPolicy Bypass -File tools/chroma.ps1
-# Lê tools/mascotes-brutos/<nome>.png e grava cuidapet/assets/img/<nome>.png. Depois rode tools/rosa.ps1.
+# Lê tools/mascotes-brutos/<nome>.png e grava assets/img/<nome>.png. Depois rode tools/rosa.ps1.
 
 Add-Type -ReferencedAssemblies System.Drawing -TypeDefinition @'
 using System;
@@ -57,7 +57,7 @@ public static class Chroma {
 '@
 
 $raw = Join-Path $PSScriptRoot 'mascotes-brutos'
-$img = Join-Path $PSScriptRoot '..\cuidapet\assets\img'
+$img = Join-Path $PSScriptRoot '..\assets\img'
 $magenta = @('turtle', 'frog') # bichos verdes foram gerados em fundo magenta
 foreach ($f in Get-ChildItem $raw -Filter *.png) {
   [Chroma]::Convert($f.FullName, (Join-Path $img $f.Name), $magenta -contains $f.BaseName, 800)
