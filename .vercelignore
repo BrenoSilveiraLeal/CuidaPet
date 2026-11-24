@@ -1,0 +1,7 @@
+.git
+.vercel
+.playwright-cli
+tools
+.env.local
+AGENTS.md
+README.md

@@ -1963,8 +1963,8 @@
           ${accHead(`Vacinas no CuidaPet · ${records.length} no calendário`)}<ul class="vet-vaccine-list">${vaccineRows}</ul><p class="muted-sm">“Sem registro” significa que a aplicação não está anotada no app; confirme o histórico com o tutor e os documentos veterinários.</p>${ACC_END}
         </section>
         <form data-form="vet-ficha">
-          ${field('Motivo da consulta', `<textarea name="reason" rows="2" maxlength="300" placeholder="Escreva aqui o motivo da consulta" required>${esc(draft.reason)}</textarea>`)}
-          ${field('Sintomas e observa\u00e7\u00f5es (opcional)', `<textarea name="notes" rows="3" maxlength="700" placeholder="Escreva aqui os sintomas e observa\u00e7\u00f5es">${esc(draft.notes)}</textarea>`)}
+          ${field('Motivo da consulta', `<textarea name="reason" rows="2" maxlength="300" placeholder="Ex.: coceira há três dias, retorno ou avaliação de rotina" required>${esc(draft.reason)}</textarea>`)}
+          ${field('Sintomas e observa&#231;&#245;es (opcional)', `<textarea name="notes" rows="3" maxlength="700" placeholder="Quando come&#231;ou, frequ&#234;ncia, mudan&#231;as recentes e outras informa&#231;&#245;es &#250;teis">${esc(draft.notes)}</textarea>`)}
           <div class="vet-ficha-actions"><button class="btn" type="button" data-act="sendVetFicha">${icon('phone', 18)} Enviar ficha PDF pelo WhatsApp</button><button class="btn ghost" type="button" data-act="printVetFicha">${icon('file', 18)} Abrir PDF para imprimir ou salvar</button></div>
         </form>`);
     },
