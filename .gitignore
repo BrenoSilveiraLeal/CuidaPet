@@ -24,3 +24,6 @@ id_ed25519*
 /.firebase/
 /firebase-debug.log*
 /firestore-debug.log*
+
+.vercel
+.env*
